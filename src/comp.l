@@ -20,13 +20,13 @@ D [0-9]
 	  return tNB;
 	}
 {D}"e"(+|-)?{D}+ {
-    yylval.nb = strtold(yytext,NULL);
-    return tEXP;}
+    yylval.nb = (int)strtold(yytext,NULL);
+    return tNB;}
 "{"	{ return OB; }
 ","	{ return tCOL}
 "}" { return tCB; }
 "="	{ return tEGAL; }
-"-"	{ return tSOU; }
+"-"	{ return tSUB; }
 "+"	{ return tADD; }
 "*"	{ return tMUL; }
 "/"	{ return tDIV; }

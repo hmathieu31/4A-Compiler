@@ -10,7 +10,7 @@ D [0-9]
 
 %%
 
-[ \t]+	{};
+[ \t\n]+	{};
 "main" {return tMAIN;}
 "const" {return tCONST;}
 "int" {return tINT;}
@@ -37,5 +37,4 @@ D [0-9]
 	  yylval.var = yytext[0];
 	  return tID;
 	}
-\n	{ return tFL; }
 .	{ return tERROR; }

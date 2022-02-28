@@ -19,6 +19,9 @@ D [0-9]
 	  yylval.nb = atoi(yytext);
 	  return tNB;
 	}
+{D}"e"(+|-)?{D}+ {
+    yylval.nb = strtold(yytext,NULL);
+    return tEXP;}
 "{"	{ return OB; }
 ","	{ return tCOL}
 "}" { return tCB; }
@@ -30,7 +33,7 @@ D [0-9]
 "("	{ return tOP; }
 ")"	{ return tCP; }
 ";" { return tSCOL}
-[a-zA-Z]{[a-zA-Z]|[0-9]|_}*   {
+[a-zA-Z]([a-zA-Z]|[0-9]|_)*   {
 	  yylval.var = yytext[0];
 	  return tID;
 	}

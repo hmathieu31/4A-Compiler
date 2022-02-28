@@ -6,10 +6,16 @@
 
 %option noyywrap
 
+D [0-9]
+
 %%
 
 [ \t]+	{};
-[0-9]+	{
+"main" {return tMAIN;}
+"const" {return tCONST;}
+"int" {return tINT;}
+"printf" {return tPRINT;}
+{D}+	{
 	  yylval.nb = atoi(yytext);
 	  return tNB;
 	}
@@ -24,7 +30,7 @@
 "("	{ return tOP; }
 ")"	{ return tCP; }
 ";" { return tSCOL}
-[a-z]	{
+[a-zA-Z]{[a-zA-Z]|[0-9]|_}*   {
 	  yylval.var = yytext[0];
 	  return tID;
 	}

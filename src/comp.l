@@ -18,7 +18,7 @@ D [0-9]
 	  yylval.nb = atoi(yytext);
 	  return tNB;
 	}
-{D}"e"(+|-)?{D}+ {
+{D}"e"[+-]?{D}+ {
     yylval.nb = (int)strtold(yytext,NULL);
     return tNB;}
 "{"	{ return OB; }

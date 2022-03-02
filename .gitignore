@@ -1,1 +1,4 @@
 /src/Makefile
+*.o
+*.tab.h
+/.vscode

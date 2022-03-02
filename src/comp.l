@@ -14,7 +14,7 @@ D [0-9]
 "const" {return tCONST;}
 "int" {return tINT;}
 "printf" {return tPRINT;}
-"if" {return tINT;}
+"if" {return tIF;}
 "while" {return tWHILE;}
 {D}+	{
 	  yylval.nb = atoi(yytext);
@@ -34,6 +34,12 @@ D [0-9]
 "("	{ return tOP; }
 ")"	{ return tCP; }
 ";" { return tSCOL;}
+"==" {return tEQUAL;}
+"!=" {return tNEQUAL;}
+">" {return tSUP;}
+"<" {return tINF;}
+"<=" {return tEQINF;}
+">=" {return tEQSUP;}
 [a-zA-Z]([a-zA-Z]|[0-9]|_)*   {
 	  yylval.var = yytext[0];
 	  return tID;

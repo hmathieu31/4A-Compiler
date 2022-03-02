@@ -9,9 +9,8 @@
 D [0-9]
 
 %%
-
 [ \t\n]+	{};
-"main" {return tMAIN;}
+"main()" {return tMAIN;}
 "const" {return tCONST;}
 "int" {return tINT;}
 "printf" {return tPRINT;}
@@ -25,7 +24,7 @@ D [0-9]
 "{"	{ return OB; }
 ","	{ return tCOL}
 "}" { return tCB; }
-"="	{ return tEGAL; }
+"="	{ return tEQ; }
 "-"	{ return tSUB; }
 "+"	{ return tADD; }
 "*"	{ return tMUL; }

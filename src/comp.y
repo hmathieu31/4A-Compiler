@@ -15,17 +15,17 @@ Code :  tMAIN Body
         |Fun Code;
 Body : tOB Ligne tCB;
 Ligne : Instr tSCOL Ligne 
-        | Instr tSCOL
+        |Instr tSCOL
         |;
 Instr: Boucle
        |Expr;
 Boucle: |If
         |While;
-Expr :  Def 
-        | Aff 
-        | Defaff 
-        | Ope 
-        | Print;
+Expr : Def 
+        |Aff 
+        |Defaff 
+        |Ope 
+        |Print;
 Fun: tINT tID tOP Params tCP Body;
 Params :Def tCOL Params
         |Def
@@ -36,7 +36,6 @@ Conds: Cond Conds
        |Cond;
 Cond : Compa Logi Cond
        |Compa
-       |Cond
        |tID
        |tNB;
 Logi: tOR

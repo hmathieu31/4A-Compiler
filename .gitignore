@@ -2,3 +2,5 @@
 *.o
 *.tab.h
 /.vscode
+exemples/test.c
+exemples/a.exe

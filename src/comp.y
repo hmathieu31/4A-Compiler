@@ -5,24 +5,28 @@ int var[26];
 void yyerror(char *s);
 %}
 %union { int nb; char var; }
-%token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL
+%token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR
 %token <nb> tNB
 %token <var> tID
 %type <nb> Expr
 %start Code
 %%
-Code :  tMAIN tOB Ligne tCB;
+Code :  tMAIN Body;
+Body : tOB Ligne tCB;
 Ligne : Expr tSCOL Ligne 
         | Expr tSCOL;
 Expr :  Def 
         | Aff 
         | Defaff 
         | Ope 
-        | Print;
+        | Print
+        |Fun
+        |If
+        |While;
 Def :   tCONST tINT tID
         |tINT tID
         |Def tCOL tID;
-Aff :   tID tEQ tNB;
+Aff :   tID tEQ Terme;
 Defaff :    Def tEQ tNB;
 Ope :   Add 
         | Sub 
@@ -33,6 +37,7 @@ Sub :   Terme tSUB Terme;
 Mul :   Terme tMUL Terme;
 Div :   Terme tDIV Terme;
 Terme : tOP Ope tCP
+        | Ope
         | tID
         | tNB;
 Print : tPRINT tOP tID tCP;

@@ -20,11 +20,11 @@ D [0-9]
 	  yylval.nb = atoi(yytext);
 	  return tNB;
 	}
-{D}"e"[+-]?{D}+ {
+{D}"e"("+"|-)?{D}+ {
     yylval.nb = (int)strtold(yytext,NULL);
     return tNB;}
-"{"	{ return OB; }
-","	{ return tCOL}
+"{"	{ return tOB; }
+","	{ return tCOL;}
 "}" { return tCB; }
 "="	{ return tEQ; }
 "-"	{ return tSUB; }
@@ -33,9 +33,10 @@ D [0-9]
 "/"	{ return tDIV; }
 "("	{ return tOP; }
 ")"	{ return tCP; }
-";" { return tSCOL}
+";" { return tSCOL;}
 [a-zA-Z]([a-zA-Z]|[0-9]|_)*   {
 	  yylval.var = yytext[0];
 	  return tID;
 	}
 .	{ return tERROR; }
+

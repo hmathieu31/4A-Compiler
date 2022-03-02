@@ -12,13 +12,22 @@ void yyerror(char *s);
 %start Code
 %%
 Code :  tMAIN tOB Ligne tCB;
-Ligne : Expr tSCOL Ligne | Expr tSCOL;
-Expr :  Def | Aff | Defaff | Ope | Print;
+Ligne : Expr tSCOL Ligne 
+        | Expr tSCOL;
+Expr :  Def 
+        | Aff 
+        | Defaff 
+        | Ope 
+        | Print;
 Def :   tCONST tINT tID
-        |tINT tID;
+        |tINT tID
+        |Def tCOL tID;
 Aff :   tID tEQ tNB;
 Defaff :    Def tEQ tNB;
-Ope :   Add | Sub | Mul | Div;      
+Ope :   Add 
+        | Sub 
+        | Mul 
+        | Div;      
 Add :   Terme tADD Terme;
 Sub :   Terme tSUB Terme;
 Mul :   Terme tMUL Terme;

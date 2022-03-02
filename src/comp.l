@@ -14,6 +14,8 @@ D [0-9]
 "const" {return tCONST;}
 "int" {return tINT;}
 "printf" {return tPRINT;}
+"if" {return tINT;}
+"while" {return tWHILE;}
 {D}+	{
 	  yylval.nb = atoi(yytext);
 	  return tNB;

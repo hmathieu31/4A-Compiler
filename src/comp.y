@@ -5,7 +5,7 @@ int var[26];
 void yyerror(char *s);
 %}
 %union { int nb; char var; }
-%token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tIF tWHILE tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF
+%token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tIF tWHILE tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tNOT tAND tOR
 %token <nb> tNB
 %token <var> tID
 %type <nb> Expr
@@ -24,10 +24,18 @@ Expr :  Def
         |Fun
         |If
         |While;
-Fun:;
-If:;
-While: tWHILE tOP Cond tCP Body;
-Cond:;
+Fun: tINT tID tOP Params tCP Body;
+Params :Def tCOL Params
+        |Def
+        |;
+If: tIF tOP Conds tCP Body;
+While: tWHILE tOP Conds tCP Body;
+Conds: Cond Conds
+       |Cond;
+Cond : Compa Cond
+       |Compa
+       |tID
+       |tNB;
 Def :   tCONST tINT tID
         |tINT tID
         |Def tCOL tID;

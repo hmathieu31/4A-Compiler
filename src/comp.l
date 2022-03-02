@@ -42,7 +42,6 @@ D [0-9]
 "<" {return tINF;}
 "&&" {return tAND;}
 "||" {return tOR;}
-"!" {return tNOT;}
 [a-zA-Z]([a-zA-Z]|[0-9]|_)*   {
 	  yylval.var = yytext[0];
 	  return tID;

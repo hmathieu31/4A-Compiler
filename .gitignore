@@ -1,6 +1,9 @@
-/src/Makefile
 *.o
-*.tab.h
+*.tab.*
+*.out
+*.output
+*.yy.*
 /.vscode
 exemples/test.c
 exemples/a.exe
+Makefile

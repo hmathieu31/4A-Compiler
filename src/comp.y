@@ -49,6 +49,15 @@ Add :   Terme tADD Terme;
 Sub :   Terme tSUB Terme;
 Mul :   Terme tMUL Terme;
 Div :   Terme tDIV Terme;
+
+Comp : EQSUP | EQINF | SUP | INF | EQUAL | NEQUAL
+EQSUP : Terme tEQSUP Terme;
+EQINF : Terme tEQINF Terme;
+SUP : Terme tEQSUP Terme;
+INF : Terme tINF Terme;
+EQUAL : Terme tEQUAL Terme;
+NEQUAL : Terme tNEQUAL Terme;
+
 Terme : tOP Ope tCP
         | Ope
         | tID

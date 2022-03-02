@@ -11,19 +11,21 @@ void yyerror(char *s);
 %type <nb> Expr
 %start Code
 %%
-Code :  tMAIN Body;
+Code :  tMAIN Body
+        |Fun Code;
 Body : tOB Ligne tCB;
-Ligne : Expr tSCOL Ligne 
-        | Expr tSCOL
+Ligne : Instr tSCOL Ligne 
+        | Instr tSCOL
         |;
+Instr: Boucle
+       |Expr;
+Boucle: |If
+        |While;
 Expr :  Def 
         | Aff 
         | Defaff 
         | Ope 
-        | Print
-        |Fun
-        |If
-        |While;
+        | Print;
 Fun: tINT tID tOP Params tCP Body;
 Params :Def tCOL Params
         |Def
@@ -53,7 +55,12 @@ Sub :   Terme tSUB Terme;
 Mul :   Terme tMUL Terme;
 Div :   Terme tDIV Terme;
 
-Compa : Eqsup | Eqinf | Sup | Inf | Equal | Nequal;
+Compa : Eqsup 
+        | Eqinf 
+        | Sup 
+        | Inf 
+        | Equal 
+        | Nequal;
 Eqsup : Terme tEQSUP Terme;
 Eqinf : Terme tEQINF Terme;
 Sup : Terme tSUP Terme;

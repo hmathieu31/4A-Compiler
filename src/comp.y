@@ -5,7 +5,7 @@ int var[26];
 void yyerror(char *s);
 %}
 %union { int nb; char var; }
-%token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tIF tWHILE tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR
+%token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tIF tWHILE tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR tRETURN
 %token <nb> tNB
 %token <var> tID
 %type <nb> Expr
@@ -14,6 +14,9 @@ void yyerror(char *s);
 Code :  tMAIN Body
         |Fun Code;
 Body : tOB Ligne tCB;
+FunBody : tOB Ligne Return tCB
+        | tOB Return tCB
+Return : tRETURN Terme tSCOL;
 Ligne : Instr tSCOL Ligne 
         |Instr tSCOL
         |;
@@ -26,7 +29,7 @@ Expr : Def
         |Defaff 
         |Ope 
         |Print;
-Fun: tINT tID tOP Params tCP Body;
+Fun: tINT tID tOP Params tCP FunBody;
 Params :Def tCOL Params
         |Def
         |;
@@ -78,7 +81,7 @@ Print : tPRINT tOP tID tCP;
 %%
 void yyerror(char *s) { fprintf(stderr, "%s\n", s); }
 int main(void) {
-  printf("Calculatrice\n"); // yydebug=1;
+  printf("Compiler\n"); // yydebug=1;
   yyparse();
   return 0;
 }

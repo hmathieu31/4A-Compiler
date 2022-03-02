@@ -16,6 +16,7 @@ D [0-9]
 "printf" {return tPRINT;}
 "if" {return tIF;}
 "while" {return tWHILE;}
+"return" {return tRETURN;}
 {D}+	{
 	  yylval.nb = atoi(yytext);
 	  return tNB;

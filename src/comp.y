@@ -47,7 +47,7 @@ Def :   tCONST tINT tID
         |tINT tID
         |Def tCOL tID;
 Aff :   tID tEQ Terme;
-Defaff : Def tEQ tNB;
+Defaff : Def tEQ Terme;
 Ope :   Add 
         | Sub 
         | Mul 

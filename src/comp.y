@@ -30,14 +30,17 @@ Expr : Def
         |Ope 
         |Print;
 Fun: tINT tID tOP Params tCP FunBody;
-Params :Def tCOL Params
+Params : Def tCOL Params
         |Def
         |;
+InvokeFun: tID tOP Args tCP;
+Args: Terme
+        | Terme tCOL Args
 If: tIF tOP Conds tCP Body;
 While: tWHILE tOP Conds tCP Body;
 Conds: Cond Conds
        |Cond;
-Cond : Compa Logi Cond
+Cond: Compa Logi Cond
        |Compa
        |tID
        |tNB;
@@ -74,6 +77,7 @@ Terme : tOP Ope tCP
         | Ope
         | tID
         | tNB;
+        | InvokeFun
 Print : tPRINT tOP tID tCP;
 
 

@@ -8,4 +8,5 @@ main() {
     int b = fun(2, 1);
     int d = f(x);
     int e = g(2 + 3);
+    printf(e);
 }

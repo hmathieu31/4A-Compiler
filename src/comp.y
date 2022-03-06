@@ -83,7 +83,7 @@ Print : tPRINT tOP tID tCP;
 
 
 %%
-void yyerror(char *s) { fprintf(stderr, "%s\n", s); }
+void yyerror(char *s) { fprintf(stderr, "%s\n", s); exit(1);}
 int main(void) {
   printf("Compiler\n"); // yydebug=1;
   yyparse();

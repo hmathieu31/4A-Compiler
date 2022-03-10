@@ -18,11 +18,11 @@ D [0-9]
 "while" {return tWHILE;}
 "return" {return tRETURN;}
 {D}+	{
-	  yylval.nb = atoi(yytext);
+	  yylval.nb = atoi(strdup(yytext));
 	  return tNB;
 	}
 {D}"e"("+"|-)?{D}+ {
-    yylval.nb = (int)strtold(yytext,NULL);
+    yylval.nb = (int)strtold(strdup(yytext),NULL);
     return tNB;}
 "{"	{ return tOB; }
 ","	{ return tCOL;}
@@ -44,7 +44,7 @@ D [0-9]
 "&&" {return tAND;}
 "||" {return tOR;}
 [a-zA-Z]([a-zA-Z]|[0-9]|_)*   {
-	  yylval.var = yytext[0];
+	  yylval.var = strdup(yytext);
 	  return tID;
 	}
 .	{ return tERROR; }

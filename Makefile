@@ -35,10 +35,11 @@ $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) bin/y.tab.o bin/lex.yy.o -o bin/$@
 
 clean:
-	ifeq($(OS), Windows_NT)
-		powershell Set-Location ./bin ; Remove-Item * -Include *.tab.c, *.tab.h, *.yy.c, *.o, *.output
-	else
-		cd ./bin ; rm *.tab.c *.tab.h *.yy.c *.o *.output
+ifeq ($(OS), Windows_NT)
+	pwsh -Command Set-location ./bin ; Remove-Item * -Include *.tab.c, *.tab.h, *.yy.c, *.o, *.output
+else
+	cd ./bin ; rm *.tab.c *.tab.h *.yy.c *.o *.output
+endif
 
 build: all
 	make clean

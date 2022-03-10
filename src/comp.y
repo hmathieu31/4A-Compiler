@@ -15,7 +15,7 @@ Code :  tMAIN Body
         |Fun Code;
 Body : tOB Ligne tCB;
 FunBody : tOB Ligne Return tCB
-        | tOB Return tCB
+        | tOB Return tCB;
 Return : tRETURN Terme tSCOL;
 Ligne : Instr tSCOL Ligne 
         |Instr tSCOL
@@ -35,7 +35,7 @@ Params : Def tCOL Params
         |;
 InvokeFun: tID tOP Args tCP;
 Args: Terme
-        | Terme tCOL Args
+        | Terme tCOL Args;
 If: tIF tOP Conds tCP Body;
 While: tWHILE tOP Conds tCP Body;
 Conds: Cond Conds
@@ -76,8 +76,8 @@ Nequal : Terme tNEQUAL Terme;
 Terme : tOP Ope tCP
         | Ope
         | tID
-        | tNB;
-        | InvokeFun
+        | tNB
+        | InvokeFun;
 Print : tPRINT tOP tID tCP;
 
 

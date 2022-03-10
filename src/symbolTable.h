@@ -28,6 +28,8 @@ typedef struct symbol
     int depth;
 } symbol;
 
+symbolTable table;
+
 
 int addSymbol(char* symbolName, enum type typ, int depth);
 

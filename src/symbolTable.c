@@ -11,27 +11,14 @@
 
 #include "symbolTable.h"
 
-typedef struct symbolTable
-{
-    symbol sym;
-    symbol* prev;
-} symbolTable;
-
-
-typedef struct symbol
-{
-    char* symbolName;
-    int index;
-    type typ;
-    int depth;
-}symbol;
-
 int addSymbol(char* symbolName, enum type typ, int depth);
 
 int deleteSymbol(char* symbolName);
     
 
-int isSymbolPresent(char* symbol);
+int isSymbolPresent(char* symbol) {
+    
+}
     
 
 int deleteFromChangeScope();

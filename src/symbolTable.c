@@ -30,19 +30,48 @@ int initTable() {
     return 0;
 }
 
-int addSymbol(char* symbolName, enum type typ, int depth);
+int deleteSymbol();
 
-int deleteSymbol(char* symbolName);
-
-int isSymbolPresent(char* symbol) {
-    int isPresent = 0;
-    if (!isEmpty()) {
-        while (table.prev != NULL && !isPresent) {
-            isPresent = strcmp(table.sym.symbolName, symbol);
-        }
+int isEmpty()
+{
+    if (symbolTable.topIndex==-1)
+    {
+        result=1;
     }
-    return isPresent;
-}
+    else
+    {
+        result=0;
+    };
+    return result;
+};
+    
+int addSymbol(char* symbolName, enum type typ, int depth)
+{
+    if (isEmpty())
+    {
+        symbolTable.symbolArray[0]={symbolName,typ,0};
+        symbolTable.topIndex=0;
+    }
+    else
+    {
+        symbolTable.symbolArray[symbolTable.topIndex+1]={symbolName,index,typ,depth};
+        (symboleTable.topIndex)++;      
+    }
+    return 0
+};
+   
+int deleteSymbol()
+{
+    if isEmpty()
+    {
+        printf("Nothing to delete, empty stack!\n");
+    }
+    else
+    {
+    symboleTable.topIndex--;
+    }
+    return 0;
+};
 
 int deleteFromChangeScope() {
     if (!isEmpty()) {

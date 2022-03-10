@@ -47,7 +47,7 @@ int addSymbol(char* symbolName, enum type typ, int depth)
     }
     return 0
 };
-    
+   
 int deleteSymbol()
 {
     if isEmpty()
@@ -62,7 +62,9 @@ int deleteSymbol()
 };
         
 
-int isSymbolPresent(char* symbol);
+int isSymbolPresent(char* symbol) {
+    
+}
     
 
 int deleteFromChangeScope();

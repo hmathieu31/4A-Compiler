@@ -9,16 +9,11 @@
  * 
  */
 
+#define TABLE_SIZE 1024
 
 enum type {
     t_int
 };
-
-typedef struct symbolTable
-{
-    symbol sym;
-    symbol* prev;
-} symbolTable;
 
 typedef struct symbol
 {
@@ -28,16 +23,28 @@ typedef struct symbol
     int depth;
 } symbol;
 
+symbol symbolTable[TABLE_SIZE];
 
 int addSymbol(char* symbolName, enum type typ, int depth);
 
 
 int deleteSymbol(char* symbolName);
 
-
+/**
+ * @brief Checks if the symbol is present in the table
+ * 
+ * @param symbol 
+ * @return 1 if the symbol is present
+ */
 int isSymbolPresent(char* symbol);
 
+int isEmpty();
 
+/**
+ * @brief Removes all symbols from 
+ * 
+ * @return int 
+ */
 int deleteFromChangeScope();
 
 

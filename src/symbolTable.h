@@ -34,7 +34,12 @@ int addSymbol(char* symbolName, enum type typ, int depth);
 
 int deleteSymbol(char* symbolName);
 
-
+/**
+ * @brief Checks if the symbol is present in the table
+ * 
+ * @param symbol 
+ * @return 1 if the symbol is present
+ */
 int isSymbolPresent(char* symbol);
 
 

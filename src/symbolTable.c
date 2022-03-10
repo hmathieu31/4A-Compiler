@@ -17,7 +17,9 @@ int addSymbol(char* symbolName, enum type typ, int depth);
 int deleteSymbol(char* symbolName);
 
 
-int isSymbolPresent(char* symbol);
+int isSymbolPresent(char* symbol){
+    
+}
 
 
 int deleteFromChangeScope();

@@ -11,7 +11,7 @@
 
 #include "symbolTable.h"
 
-int addSymbol(char* symbolName, type typ, int depth);
+int addSymbol(char* symbolName, enum type typ, int depth);
 
 
 int deleteSymbol(char* symbolName);

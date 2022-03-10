@@ -14,8 +14,22 @@ enum type {
     t_int
 };
 
+typedef struct symbolTable
+{
+    symbol sym;
+    symbol* prev;
+} symbolTable;
 
-int addSymbol(char* symbolName, type typ, int depth);
+typedef struct symbol
+{
+    char* symbolName;
+    int index;
+    enum type typ;
+    int depth;
+} symbol;
+
+
+int addSymbol(char* symbolName, enum type typ, int depth);
 
 
 int deleteSymbol(char* symbolName);

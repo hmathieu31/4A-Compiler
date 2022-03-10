@@ -4,9 +4,9 @@
  * @brief Symbol table for the compiler
  * @version 0.1
  * @date 2022-03-10
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 #define TABLE_SIZE 1024
@@ -15,37 +15,42 @@ enum type {
     t_int
 };
 
-typedef struct symbol
-{
+typedef struct symbol {
     char* symbolName;
-    int index;
     enum type typ;
     int depth;
 } symbol;
 
-symbol symbolTable[TABLE_SIZE];
+typedef struct symbolTable {
+    symbol symbolArray[TABLE_SIZE];
+    int topIndex;
+} symbolTable;
+
+
+/**
+ * @brief Initializes the table at the start of the compilation
+ * 
+ * @return 0 if executed correctly
+ */
+int initTable();
 
 int addSymbol(char* symbolName, enum type typ, int depth);
 
-
-int deleteSymbol(char* symbolName);
-
-/**
- * @brief Checks if the symbol is present in the table
- * 
- * @param symbol 
- * @return 1 if the symbol is present
- */
-int isSymbolPresent(char* symbol);
+int deleteSymbol();
 
 int isEmpty();
 
 /**
- * @brief Removes all symbols from 
- * 
- * @return int 
+ * @brief Removes all symbols at the highest scope from the table
+ *
+ * @return 0 if executed correctly
  */
 int deleteFromChangeScope();
 
-
+/**
+ * @brief Checks if the symbol is present in the table and returns its address if present
+ *
+ * @param symbol
+ * @return The address of the symbol if the symbol is present. 0 otherwise
+ */
 int getAddressSymbol(char* symbol);

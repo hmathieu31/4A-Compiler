@@ -17,6 +17,7 @@ typedef struct symbolTable
     symbol* prev;
 } symbolTable;
 
+
 typedef struct symbol
 {
     char* symbolName;
@@ -25,10 +26,7 @@ typedef struct symbol
     int depth;
 }symbol;
 
-int addSymbol(char* symbolName, enum type typ, int depth){
-    
-};
-
+int addSymbol(char* symbolName, enum type typ, int depth);
 
 int deleteSymbol(char* symbolName);
     

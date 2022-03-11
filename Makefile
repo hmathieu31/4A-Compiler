@@ -1,6 +1,8 @@
 GRM=src/comp.y
 LEX=src/comp.l
+TABL=src/symbolTable.c
 BIN=comp.exe
+TEST=testSymbol.exe
 
 CC=gcc
 
@@ -19,11 +21,17 @@ endif
 CFLAGS=-Wall -g
 
 OBJ=y.tab.o lex.yy.o #main.o
+T_OBJ=symbolTable.o
 
 all: $(BIN)
 
+test_sym: $(TEST)
+
 %.o: %.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) bin/$< -o bin/$@
+
+symbolTable.o: $(TABL)
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o bin/$@
 
 y.tab.c: $(GRM)
 	$(PARS) -v -d -t $< -o bin/$@
@@ -33,6 +41,9 @@ lex.yy.c: $(LEX)
 
 $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) bin/y.tab.o bin/lex.yy.o -o bin/$@
+
+$(TEST): $(T_OBJ)
+	$(CC) $(CFLAGS) $(CPPFLAGS) bin/symbolTable.o tests/testSymbolTable.c -o bin/$@
 
 clean:
 ifeq ($(OS), Windows_NT)

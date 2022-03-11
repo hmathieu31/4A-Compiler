@@ -11,30 +11,40 @@
 
 #define TABLE_SIZE 1024
 
-enum type {
+enum type
+{
     t_int
 };
 
-typedef struct symbol {
-    char* symbolName;
+typedef struct symbol
+{
+    char *symbolName;
     enum type typ;
     int depth;
 } symbol;
 
-typedef struct symbolTable {
+typedef struct symbolTable
+{
     symbol symbolArray[TABLE_SIZE];
     int topIndex;
 } symbolTable;
 
-
 /**
  * @brief Initializes the table at the start of the compilation
- * 
+ *
  * @return 0 if executed correctly
  */
 int initTable();
 
-int addSymbol(char* symbolName, enum type typ, int depth);
+/**
+ * @brief Add a new symbol to the table
+ *
+ * @param symbolName
+ * @param typ For now t_int only
+ * @param depth Corresponding to the scope of the variable (vars in main being at depth 0)
+ * @return 0 if the symbol was correctly. Fails with -1 and prints an error message if trying to add a 1025e symbol
+ */
+int addSymbol(char *symbolName, enum type typ, int depth);
 
 int deleteSymbol();
 
@@ -53,4 +63,4 @@ int deleteFromChangeScope();
  * @param symbol
  * @return The address of the symbol if the symbol is present. 0 otherwise
  */
-int getAddressSymbol(char* symbol);
+int getAddressSymbol(char *symbol);

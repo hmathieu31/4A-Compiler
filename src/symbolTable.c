@@ -39,7 +39,7 @@ int isEmpty()
         empty = 1;
     }
     return empty;
-};
+}
 
 int addSymbol(char *symbolName, enum type typ, int depth)
 {
@@ -52,7 +52,7 @@ int addSymbol(char *symbolName, enum type typ, int depth)
     table.symbolArray[table.topIndex + 1] = sym;
     table.topIndex += 1;
     return 0;
-};
+}
 
 int deleteSymbol()
 {
@@ -66,7 +66,7 @@ int deleteSymbol()
         table.topIndex--;
     }
     return 0;
-};
+}
 
 // int deleteFromChangeScope()
 // {

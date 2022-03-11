@@ -3,6 +3,7 @@
 *.out
 *.output
 *.yy.*
+*.exe
 /.vscode
 exemples/test.c
 exemples/a.exe

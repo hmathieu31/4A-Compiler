@@ -48,6 +48,11 @@ int addSymbol(char *symbolName, enum type typ, int depth);
 
 int deleteSymbol();
 
+/**
+ * @brief Checks if the symbolTable is empty.
+ * 
+ * @return 1 if the symbolTable is empty.
+ */
 int isEmpty();
 
 /**

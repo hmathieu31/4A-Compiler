@@ -2,18 +2,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int test_addSymbol()
+int test_addOneSymbol()
 {
+    addSymbol("a", t_int, 0);
+    if (isEmpty())
+    {
+        exit(1);
+    }
+
+    return 0;
+}
+
+int test_addMultipleSymbols()
+{
+    char buf[256];
     for (int i = 0; i < 1023; i++)
     {
-        char buf[4];
-        itoa(i, buf, 10);
+        itoa(i, buf, sizeof(buf));
         addSymbol(buf, t_int, 0);
     }
-    // if (addSymbol("err", t_int, 1) != -1)
-    // {
-    //     exit(1);
-    // }
+    if (isEmpty())
+    {
+        exit(1);
+    }
     return 0;
 }
 
@@ -33,17 +44,42 @@ int test_isEmpty()
 
 int main(int argc, char const *argv[])
 {
+    int allTestsPassed = 1;
     initTable();
+
     if (test_isEmpty())
     {
-        fprintf(stderr, "Test - isEmpty - FAILED");
+        fprintf(stderr, "Test - isEmpty - FAILED ❌ \n");
+        allTestsPassed = 0;
     }
-    else if (test_addSymbol())
+    else
     {
-        fprintf(stderr, "Test - addSymbol - FAILED");
-    } else
+        printf("Test - isEmpty - PASSED ✅\n");
+    }
+
+    if (test_addOneSymbol())
     {
-        fprintf(stdout, "All tests PASSED");
+        fprintf(stderr, "Test - test_addOneSymbol - FAILED ❌\n");
+        allTestsPassed = 0;
+    }
+    else
+    {
+        printf("Test - test_addOneSymbol - PASSED ✅ \n");
+    }
+
+    if (test_addMultipleSymbols())
+    {
+        fprintf(stderr, "Test - test_addMultipleSymbols - FAILED ❌ \n");
+        allTestsPassed = 0;
+    }
+    else
+    {
+        printf("Test - test_addMultipleSymbols - PASSED ✅ \n");
+    }
+
+    if (allTestsPassed)
+    {
+        printf("\n -- All test passed ✅ -- \n");
     }
     
 

@@ -52,6 +52,22 @@ int test_TableOverflow()
     return 0;
 }
 
+int test_deleteSymbol()
+{
+    initTable();
+    addSymbol("a", t_int, 0);
+    if (isEmpty())
+    {
+        exit(1);
+    }
+    deleteSymbol("a");
+    if (!isEmpty())
+    {
+        exit(1);
+    }
+    return 0;
+}
+
 int main(int argc, char const *argv[])
 {
     int allTestsPassed = 1;
@@ -87,15 +103,25 @@ int main(int argc, char const *argv[])
         printf("Test - test_addMultipleSymbols - PASSED ✅ \n");
     }
 
-    initTable();
-    if (test_TableOverflow())
+    // initTable();
+    // if (test_TableOverflow())
+    // {
+    //     fprintf(stderr, "Test - test_TableOverflow - FAILED ❌ \n");
+    // } else
+    // {
+    //     printf("Test - test_TableOverflow - PASSED ✅ \n");
+    //     allTestsPassed = 0;
+    // }
+    
+    if (test_deleteSymbol())
     {
-        fprintf(stderr, "Test - test_TableOverflow - FAILED ❌ \n");
+        fprintf(stderr, "Test - test_deleteSymbol - FAILED ❌ \n");
+        allTestsPassed = 0;
     } else
     {
-        printf("Test - test_TableOverflow - PASSED ✅ \n");
-        allTestsPassed = 0;
+        printf("Test - test_deleteSymbol - PASSED ✅ \n");
     }
+    
     
     
 

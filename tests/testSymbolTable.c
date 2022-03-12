@@ -42,6 +42,16 @@ int test_isEmpty()
     return 0;
 }
 
+int test_TableOverflow()
+{
+    test_addMultipleSymbols();
+    if (addSymbol("a", t_int, 0) != -1)
+    {
+        exit(1);
+    }
+    return 0;
+}
+
 int main(int argc, char const *argv[])
 {
     int allTestsPassed = 1;
@@ -77,11 +87,22 @@ int main(int argc, char const *argv[])
         printf("Test - test_addMultipleSymbols - PASSED ✅ \n");
     }
 
+    initTable();
+    if (test_TableOverflow())
+    {
+        fprintf(stderr, "Test - test_TableOverflow - FAILED ❌ \n");
+    } else
+    {
+        printf("Test - test_TableOverflow - PASSED ✅ \n");
+        allTestsPassed = 0;
+    }
+    
+    
+
     if (allTestsPassed)
     {
         printf("\n -- All test passed ✅ -- \n");
     }
-    
 
     return 0;
 }

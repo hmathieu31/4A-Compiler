@@ -71,17 +71,20 @@ int deleteSymbol()
     return 0;
 }
 
-// int deleteFromChangeScope()
-// {
-//     if (!isEmpty())
-//     {
-//         symbol sym = table.sym;
-//         int scope = sym.depth;
-//         while (table.prev != NULL && sym.depth == scope)
-//         {
-//         }
-//     }
-// }
+int deleteFromChangeScope() // TODO #1 Handle the changes of scope stemming from functions (defined before the main)
+{
+    if (!isEmpty())
+    {
+        int i = table.topIndex;
+        int deepestScope = table.symbolArray[i].depth;
+        while (i >= 0 && table.symbolArray[i].depth == deepestScope)
+        {
+            deleteSymbol();
+            i--;
+        }
+    }
+    return 0;
+}
 
 int getAddressSymbol(char *symbol)
 {

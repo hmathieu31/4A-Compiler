@@ -18,7 +18,7 @@ enum type
 
 typedef struct symbol
 {
-    char* symbolName;
+    char *symbolName;
     enum type typ;
     int depth;
 } symbol;
@@ -46,6 +46,11 @@ int initTable();
  */
 int addSymbol(char *symbolName, enum type typ, int depth);
 
+/**
+ * @brief Delete the symbol at the top of the table.
+ *
+ * @return 1 if the symbol was successfully deleted. Fails with -1 and prints an error message if trying to delete while table is empty.
+ */
 int deleteSymbol();
 
 /**
@@ -70,4 +75,9 @@ int deleteFromChangeScope();
  */
 int getAddressSymbol(char *symbol);
 
+/**
+ * @brief Get the Top Index of the symbolTable
+ *
+ * @return the index of the top.
+ */
 int getTopIndex();

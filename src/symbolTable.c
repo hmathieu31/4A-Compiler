@@ -21,7 +21,7 @@ int initTable()
 {
     table.topIndex = -1;
     symbol symInit = {
-        NULL,
+        "",
         t_int,
         -1};
     for (int i = 0; i < TABLE_SIZE; i++)
@@ -48,7 +48,10 @@ int addSymbol(char *symbolName, enum type typ, int depth)
         fprintf(stderr, "Symbol table is full. Program cannot compile!\n");
         exit(-1);
     }
-    symbol sym = {symbolName, typ, 0};
+    char * name = (char*)malloc(sizeof(char*));
+    strncpy(name, symbolName, sizeof(symbolName));
+    symbol sym = {name, typ, depth};
+    
     table.topIndex += 1;
     table.symbolArray[table.topIndex] = sym;
     return 0;
@@ -80,4 +83,27 @@ int deleteSymbol()
 //     }
 // }
 
-int getAddressSymbol(char *symbol);
+int getAddressSymbol(char *symbol)
+{
+    int symbolAddress = -1;
+    int i = 0;
+    while(i <= table.topIndex && symbolAddress == -1)
+    {
+        if (strcmp(table.symbolArray[i].symbolName, symbol) == 0)
+        {
+            symbolAddress = i;
+        }
+        i++;
+    }
+    if (symbolAddress == -1)
+    {
+        fprintf(stderr, "The symbol was not found in the symbol table \n");
+        exit(-1);
+    }
+    return symbolAddress;
+}
+
+int getTopIndex()
+{
+    return table.topIndex;
+}

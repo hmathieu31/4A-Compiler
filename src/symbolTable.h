@@ -18,7 +18,7 @@ enum type
 
 typedef struct symbol
 {
-    char *symbolName;
+    char* symbolName;
     enum type typ;
     int depth;
 } symbol;
@@ -50,7 +50,7 @@ int deleteSymbol();
 
 /**
  * @brief Checks if the symbolTable is empty.
- * 
+ *
  * @return 1 if the symbolTable is empty.
  */
 int isEmpty();
@@ -66,6 +66,8 @@ int deleteFromChangeScope();
  * @brief Checks if the symbol is present in the table and returns its address if present
  *
  * @param symbol
- * @return The address of the symbol if the symbol is present. 0 otherwise
+ * @return The address of the symbol if the symbol is present. Fails with -1 if the symbol is not present and displays an error message.
  */
 int getAddressSymbol(char *symbol);
+
+int getTopIndex();

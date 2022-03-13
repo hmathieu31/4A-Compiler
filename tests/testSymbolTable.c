@@ -7,7 +7,7 @@ int test_addOneSymbol()
     addSymbol("a", t_int, 0);
     if (isEmpty())
     {
-        return(1);
+        return (1);
     }
 
     return 0;
@@ -23,7 +23,7 @@ int test_addMultipleSymbols()
     }
     if (isEmpty())
     {
-        return(1);
+        return (1);
     }
     return 0;
 }
@@ -32,12 +32,12 @@ int test_isEmpty()
 {
     if (!isEmpty())
     {
-        return(1);
+        return (1);
     }
     addSymbol("a", t_int, 0);
     if (isEmpty())
     {
-        return(1);
+        return (1);
     }
     return 0;
 }
@@ -47,7 +47,7 @@ int test_TableOverflow()
     test_addMultipleSymbols();
     if (addSymbol("a", t_int, 0) != -1)
     {
-        return(1);
+        return (1);
     }
     return 0;
 }
@@ -58,12 +58,12 @@ int test_deleteSymbol()
     addSymbol("a", t_int, 0);
     if (isEmpty())
     {
-        return(1);
+        return (1);
     }
     deleteSymbol("a");
     if (!isEmpty())
     {
-        return(1);
+        return (1);
     }
     return 0;
 }
@@ -79,19 +79,36 @@ int test_getAddressSymbol()
     int add = getAddressSymbol("toto");
     if (add != 0)
     {
-        return(1);
+        return (1);
     }
     add = getAddressSymbol("pouf");
-    if(add != 4)
+    if (add != 4)
     {
-        return(1);
+        return (1);
     }
     add = getAddressSymbol("b");
     if (add != 2)
     {
-        return(1);
+        return (1);
     }
-    
+
+    return 0;
+}
+
+int test_deleteFromChangeScope()
+{
+    initTable();
+    addSymbol("toto", t_int, 0);
+    addSymbol("a", t_int, 0);
+    addSymbol("b", t_int, 1);
+    addSymbol("c", t_int, 1);
+    addSymbol("pouf", t_int, 1);
+    deleteFromChangeScope();
+    int top = getTopIndex();
+    if (top != 1)
+    {
+        return 1;
+    }
     return 0;
 }
 
@@ -139,24 +156,38 @@ int main(int argc, char const *argv[])
     //     printf("Test - test_TableOverflow - PASSED ✅ \n");
     //     allTestsPassed = 0;
     // }
-    
+
     if (test_deleteSymbol())
     {
         fprintf(stderr, "Test - test_deleteSymbol - FAILED ❌ \n");
         allTestsPassed = 0;
-    } else
+    }
+    else
     {
         printf("Test - test_deleteSymbol - PASSED ✅ \n");
     }
-    
+
     if (test_getAddressSymbol())
     {
         fprintf(stderr, "Test - test_getAddressSymbol- FAILED ❌ \n");
         allTestsPassed = 0;
-    } else
+    }
+    else
     {
         printf("Test - test_getAddressSymbol - PASSED ✅ \n");
     }
+
+    if (test_deleteFromChangeScope())
+    {
+        fprintf(stderr, "Test - test_deleteFromChangeScope - FAILED ❌ \n");
+        allTestsPassed = 0;
+    }
+    else
+    {
+        fprintf(stderr, "Test - test_deleteFromChangeScope - PASSED ✅ \n");
+        allTestsPassed = 0;
+    }
+    
 
 
     if (allTestsPassed)

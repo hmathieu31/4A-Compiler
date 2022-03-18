@@ -17,6 +17,18 @@
 
 symbolTable table;
 
+int depth;
+
+int increaseDepth() {
+    depth++;
+    return 0;
+}
+
+int decreaseDepth() {
+    depth--;
+    return depth;
+}
+
 int initTable()
 {
     table.topIndex = -1;
@@ -41,7 +53,7 @@ int isEmpty()
     return empty;
 }
 
-int addSymbol(char *symbolName, enum type typ, int depth)
+int addSymbol(char *symbolName, enum type typ)
 {
     if (table.topIndex == TABLE_SIZE - 1) // The symbol table being limited to 1024 (TABLE_SIZE) symbols, an error must be handled if trying to add another symbol
     {

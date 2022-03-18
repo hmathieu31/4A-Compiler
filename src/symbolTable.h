@@ -16,6 +16,20 @@ enum type
     t_int
 };
 
+/**
+ * @brief Increases the depth of a variable when entering a new body (if or while)
+ * 
+ * @return 0 if executed correctly.
+ */
+int increaseDepth();
+
+/**
+ * @brief Decreases the depth of a variable when exiting a new body (if or while)
+ * 
+ * @return 0 if executed correctly.
+ */
+int decreaseDepth();
+
 typedef struct symbol
 {
     char *symbolName;
@@ -44,7 +58,7 @@ int initTable();
  * @param depth Corresponding to the scope of the variable (vars in main being at depth 0)
  * @return 0 if the symbol was correctly. Fails with -1 and prints an error message if trying to add a 1025e symbol
  */
-int addSymbol(char *symbolName, enum type typ, int depth);
+int addSymbol(char *symbolName, enum type typ);
 
 /**
  * @brief Delete the symbol at the top of the table.

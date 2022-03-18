@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "symbolTable.h"
+#include "instr.h"
 int var[26];
 void yyerror(char *s);
 %}
@@ -54,11 +55,11 @@ Cond: Compa Logi Cond
 Logi: tOR
       |tAND;
 Dec :   tCONST tINT tID 
-                {addSymbol($3,int);}
+                {addSymbol($3,t_int);}
         |tINT tID 
-                {addSymbol($2,int);}
+                {addSymbol($2,t_int);}
         |Dec tCOL tID
-                {addSymbol($3,int);};
+                {addSymbol($3,t_int);};
 Aff :   tID tEQ Terme;
 Defaff : Dec tEQ Terme;
 Ope :   Add 

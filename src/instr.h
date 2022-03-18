@@ -7,7 +7,7 @@
  * @brief Initializes the array of instructions to ""
  * 
  */
-void initArrays();
+void initArray();
 
 /**
  * @brief Adds an instruction (string) to the array

@@ -18,7 +18,7 @@ else
  DICT=flex
 endif
 
-CFLAGS=-Wall -g
+CFLAGS=-Wall -g -Isrc/
 
 OBJ=y.tab.o lex.yy.o #main.o
 T_OBJ=symbolTable.o

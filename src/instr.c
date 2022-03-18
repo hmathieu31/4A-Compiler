@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "instr.h"
+
 #define TAILLE 1025
 
 char* instrArray[TAILLE];

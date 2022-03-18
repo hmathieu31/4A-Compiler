@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef INSTR_H
+#define INSTR_H
+
 #define TAILLE 1025
 
 /**
@@ -23,3 +26,5 @@ int addInstruction(char* instr);
  * @return 0 if executed successfully.
  */
 int printTable();
+
+#endif

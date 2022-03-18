@@ -9,6 +9,9 @@
  *
  */
 
+#ifndef SYMBOLTABLES_H
+#define SYMBOLTABLES_H
+
 #define TABLE_SIZE 1025
 
 enum type
@@ -95,3 +98,5 @@ int getAddressSymbol(char *symbol);
  * @return the index of the top.
  */
 int getTopIndex();
+
+#endif

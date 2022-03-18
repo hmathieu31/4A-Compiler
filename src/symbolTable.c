@@ -26,7 +26,7 @@ int increaseDepth() {
 
 int decreaseDepth() {
     depth--;
-    return depth;
+    return 0;
 }
 
 int initTable()

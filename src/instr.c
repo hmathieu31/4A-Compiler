@@ -6,13 +6,6 @@
 
 char* instrArray[TAILLE];
 
-int afficherTable()
-{
-    for(int i=0; i<TAILLE-1;i++)
-    {
-        printf(instrArray[i]);
-    }
-};
 
 void initArray() {
     for (int i = 0; i < TAILLE - 1; i++) {
@@ -31,3 +24,11 @@ int addInstruction(char* instr) {
     }
     instrArray[i] = instr;
 }
+
+int printTable()
+{
+    for(int i=0; i<TAILLE-1;i++)
+    {
+        printf(instrArray[i]);
+    }
+};

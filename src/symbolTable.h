@@ -9,7 +9,7 @@
  *
  */
 
-#define TABLE_SIZE 1024
+#define TABLE_SIZE 1025
 
 enum type
 {

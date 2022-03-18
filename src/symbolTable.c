@@ -43,7 +43,7 @@ int isEmpty()
 
 int addSymbol(char *symbolName, enum type typ, int depth)
 {
-    if (table.topIndex == TABLE_SIZE) // The symbol table being limited to 1024 (TABLE_SIZE) symbols, an error must be handled if trying to add another symbol
+    if (table.topIndex == TABLE_SIZE - 1) // The symbol table being limited to 1024 (TABLE_SIZE) symbols, an error must be handled if trying to add another symbol
     {
         fprintf(stderr, "Symbol table is full. Program cannot compile!\n");
         exit(-1);

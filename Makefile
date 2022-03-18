@@ -20,27 +20,32 @@ endif
 
 CFLAGS=-Wall -g -Isrc/
 
-OBJ=y.tab.o lex.yy.o symbolTable.o instr.o #main.o
+OBJ=bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o #main.o
 T_OBJ=symbolTable.o
 
 all: $(BIN)
 
 test_sym: $(TEST)
 
-%.o: %.c
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) bin/$< -o bin/$@
+bin/%.o: bin/%.c
+	echo test
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
-symbolTable.o: $(TABL)
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o bin/$@
+bin/%.o: src/%.c
+	echo test
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
-instr.o: $(TABL)
-	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o bin/$@
+#symbolTable.o: $(TABL)
+#	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o bin/$@
 
-y.tab.c: $(GRM)
-	$(PARS) -v -d -t $< -o bin/$@
+#instr.o: $(TABL)
+#	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o bin/$@
 
-lex.yy.c: $(LEX)
-	$(DICT) --outfile=bin/$@ $<
+bin/y.tab.c: $(GRM)
+	$(PARS) -v -d -t $< -o $@
+
+bin/lex.yy.c: $(LEX)
+	$(DICT) --outfile=$@ $<
 
 $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o -o bin/$@

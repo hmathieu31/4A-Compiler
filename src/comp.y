@@ -8,7 +8,7 @@
 int var[26];
 void yyerror(char *s);
 %}
-%union { int nb; char var; }
+%union { int nb; char *var; }
 %token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tIF tWHILE tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR tRETURN
 %token <nb> tNB
 %token <var> tID

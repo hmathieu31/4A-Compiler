@@ -100,7 +100,7 @@ int getAddressSymbol(char *symbol)
     }
     if (symbolAddress == -1)
     {
-        fprintf(stderr, "The symbol was not found in the symbol table \n");
+        fprintf(stderr, "The symbol %s is  undefined \n", symbol);
         exit(-1);
     }
     return symbolAddress;

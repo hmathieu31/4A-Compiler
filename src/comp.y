@@ -12,12 +12,14 @@ void yyerror(char *s);
 %type <nb> Expr
 %start Code
 %%
-Code :  tMAIN Body
+Code :  tMAIN 
+                {initTable();}
+         Body
         |Fun Code;
 Body : tOB 
-                {symbolTable.increaseDepth} 
+                {increaseDepth();} 
         Ligne tCB 
-                {symbolTable.decreaseDepth}
+                {decreaseDepth();deleteFromChangeScope();}
         ;
 FunBody : tOB Ligne Return tCB
         | tOB Return tCB;
@@ -52,9 +54,11 @@ Cond: Compa Logi Cond
 Logi: tOR
       |tAND;
 Dec :   tCONST tINT tID 
-                {symbolTable.addSymbol($3,int)}
-        |tINT tID {}
-        |Dec tCOL tID;
+                {addSymbol($3,int);}
+        |tINT tID 
+                {addSymbol($2,int);}
+        |Dec tCOL tID
+                {addSymbol($3,int);};
 Aff :   tID tEQ Terme;
 Defaff : Dec tEQ Terme;
 Ope :   Add 

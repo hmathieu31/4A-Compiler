@@ -1,6 +1,7 @@
 %{
 #include <stdlib.h>
 #include <stdio.h>
+#include "symbolTable.h"
 int var[26];
 void yyerror(char *s);
 %}
@@ -13,7 +14,11 @@ void yyerror(char *s);
 %%
 Code :  tMAIN Body
         |Fun Code;
-Body : tOB Ligne tCB;
+Body : tOB 
+                {symbolTable.increaseDepth} 
+        Ligne tCB 
+                {symbolTable.decreaseDepth}
+        ;
 FunBody : tOB Ligne Return tCB
         | tOB Return tCB;
 Return : tRETURN Terme tSCOL;
@@ -24,14 +29,14 @@ Instr: Boucle
        |Expr;
 Boucle: |If
         |While;
-Expr : Def 
+Expr : Dec 
         |Aff 
         |Defaff 
         |Ope 
         |Print;
 Fun: tINT tID tOP Params tCP FunBody;
-Params : Def tCOL Params
-        |Def
+Params : Dec tCOL Params
+        |Dec
         |;
 InvokeFun: tID tOP Args tCP;
 Args: Terme
@@ -46,11 +51,12 @@ Cond: Compa Logi Cond
        |tNB;
 Logi: tOR
       |tAND;
-Def :   tCONST tINT tID
-        |tINT tID
-        |Def tCOL tID;
+Dec :   tCONST tINT tID 
+                {symbolTable.addSymbol($3,int)}
+        |tINT tID {}
+        |Dec tCOL tID;
 Aff :   tID tEQ Terme;
-Defaff : Def tEQ Terme;
+Defaff : Dec tEQ Terme;
 Ope :   Add 
         | Sub 
         | Mul 

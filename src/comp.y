@@ -22,7 +22,7 @@ Code :  tMAIN
 Body : tOB 
                 {increaseDepth();} 
         Ligne tCB 
-                {decreaseDepth();deleteFromChangeScope(); printSymbolTable();}
+                {decreaseDepth();deleteFromChangeScope();}
         ;
 FunBody : tOB Ligne Return tCB
         | tOB Return tCB;

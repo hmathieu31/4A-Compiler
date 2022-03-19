@@ -21,14 +21,14 @@ enum type
 
 /**
  * @brief Increases the depth of a variable when entering a new body (if or while)
- * 
+ *
  * @return 0 if executed correctly.
  */
 int increaseDepth();
 
 /**
  * @brief Decreases the depth of a variable when exiting a new body (if or while)
- * 
+ *
  * @return 0 if executed correctly.
  */
 int decreaseDepth();
@@ -61,7 +61,7 @@ int initTable();
  * @param depth Corresponding to the scope of the variable (vars in main being at depth 0)
  * @return 0 if the symbol was correctly. Fails with -1 and prints an error message if trying to add a 1025e symbol
  */
-int addSymbol(char *symbolName, enum type typ);
+int addSymbol(char *symbolName, int sizeofSymbol, enum type typ);
 
 /**
  * @brief Delete the symbol at the top of the table.
@@ -93,10 +93,17 @@ int deleteFromChangeScope();
 int getAddressSymbol(char *symbol);
 
 /**
- * @brief Get the Top Index of the symbolTable
+ * @brief Get the Top Index of the symbolTable (Testing purposes)
  *
  * @return the index of the top.
  */
 int getTopIndex();
+
+/**
+ * @brief Testing function displaying the table of symbols.
+ * Called when the program has finished running.
+ *
+ */
+void printSymbolTable();
 
 #endif

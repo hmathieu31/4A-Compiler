@@ -12,19 +12,21 @@
 #include "symbolTable.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 symbolTable table;
 
 int depth;
 
-int increaseDepth() {
+int increaseDepth()
+{
     depth++;
     return 0;
 }
 
-int decreaseDepth() {
+int decreaseDepth()
+{
     depth--;
     return 0;
 }
@@ -53,19 +55,20 @@ int isEmpty()
     return empty;
 }
 
-int addSymbol(char *symbolName, enum type typ)
+int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
 {
     if (table.topIndex == TABLE_SIZE - 1) // The symbol table being limited to 1024 (TABLE_SIZE) symbols, an error must be handled if trying to add another symbol
     {
         fprintf(stderr, "Symbol table is full. Program cannot compile!\n");
         exit(-1);
     }
-    char * name = (char*)malloc(sizeof(char*));
-    strncpy(name, symbolName, sizeof(symbolName));
+    char *name = (char *)malloc(sizeofSymbol);
+    strncpy(name, symbolName, sizeofSymbol);
     symbol sym = {name, typ, depth};
-    
     table.topIndex += 1;
     table.symbolArray[table.topIndex] = sym;
+
+    // printf("Adding symbol '%s' to symbol table at depth %d and topindex is %d\n", table.symbolArray[table.topIndex].symbolName, table.symbolArray[table.topIndex].depth, table.topIndex);
     return 0;
 }
 
@@ -102,7 +105,7 @@ int getAddressSymbol(char *symbol)
 {
     int symbolAddress = -1;
     int i = 0;
-    while(i <= table.topIndex && symbolAddress == -1)
+    while (i <= table.topIndex && symbolAddress == -1)
     {
         if (strcmp(table.symbolArray[i].symbolName, symbol) == 0)
         {
@@ -121,4 +124,12 @@ int getAddressSymbol(char *symbol)
 int getTopIndex()
 {
     return table.topIndex;
+}
+
+void printSymbolTable()
+{
+    for (int i = 0; i < table.topIndex; i++)
+    {
+        printf("Symbol : %s, depth : %d\n", table.symbolArray[i].symbolName, table.symbolArray[i].depth);
+    }
 }

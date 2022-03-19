@@ -113,11 +113,6 @@ int getAddressSymbol(char *symbol)
         }
         i++;
     }
-    if (symbolAddress == -1)
-    {
-        fprintf(stderr, "The symbol %s is  undefined \n", symbol);
-        exit(-1);
-    }
     return symbolAddress;
 }
 

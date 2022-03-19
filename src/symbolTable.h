@@ -88,7 +88,7 @@ int deleteFromChangeScope();
  * @brief Checks if the symbol is present in the table and returns its address if present
  *
  * @param symbol
- * @return The address of the symbol if the symbol is present. Fails with -1 if the symbol is not present and displays an error message.
+ * @return The address of the symbol if the symbol is present. -1 if the symbol is not present
  */
 int getAddressSymbol(char *symbol);
 

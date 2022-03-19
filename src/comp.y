@@ -22,7 +22,7 @@ Code :  tMAIN
 Body : tOB 
                 {increaseDepth();} 
         Ligne tCB 
-                {decreaseDepth();deleteFromChangeScope();}
+                {decreaseDepth();deleteFromChangeScope(); printSymbolTable();}
         ;
 FunBody : tOB Ligne Return tCB
         | tOB Return tCB;
@@ -57,11 +57,11 @@ Cond: Compa Logi Cond
 Logi: tOR
       |tAND;
 Dec :   tCONST tINT tID 
-                {addSymbol($3,t_int);}
+                {addSymbol($3, sizeof($3), t_int);}
         |tINT tID 
-                {addSymbol($2,t_int);}
+                {addSymbol($2, sizeof($2), t_int);}
         |Dec tCOL tID
-                {addSymbol($3,t_int);};
+                {addSymbol($3, sizeof($3), t_int);};
 Aff :   tID tEQ Terme;
 Defaff : Dec tEQ Terme;
 Ope :   Add 

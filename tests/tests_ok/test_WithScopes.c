@@ -9,6 +9,7 @@ main() {
             int c = a;
             int d = b;
         }
+        // TODO #2 Fix issue: syntax error on 2 following brackets.
+            //! Les struct conditionnelles imbriquées marchent pas. Syntax error pour toute instruction après le premier Closing Bracket.
     }
-    
 }

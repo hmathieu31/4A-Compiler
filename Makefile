@@ -28,18 +28,10 @@ all: $(BIN)
 test_sym: $(TEST)
 
 bin/%.o: bin/%.c
-	echo test
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
 bin/%.o: src/%.c
-	echo test
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
-
-#symbolTable.o: $(TABL)
-#	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o bin/$@
-
-#instr.o: $(TABL)
-#	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o bin/$@
 
 bin/y.tab.c: $(GRM)
 	$(PARS) -v -d -t $< -o $@

@@ -4,7 +4,7 @@
 #include "../src/symbolTable.h"
 
 int test_addOneSymbol() {
-    addSymbol("a", t_int);
+    addSymbol("a", t_int, sizeof("a"));
     if (isEmpty()) {
         return (1);
     }
@@ -16,7 +16,7 @@ int test_addMultipleSymbols() {
     char buf[256];
     for (int i = 0; i < 1024; i++) {
         sprintf(buf, "%d", i);
-        addSymbol(buf, t_int);
+        addSymbol(buf, t_int, sizeof(buf));
     }
     if (isEmpty()) {
         return (1);
@@ -28,7 +28,7 @@ int test_isEmpty() {
     if (!isEmpty()) {
         return (1);
     }
-    addSymbol("a", t_int);
+    addSymbol("a", t_int, sizeof("a"));
     if (isEmpty()) {
         return (1);
     }
@@ -37,7 +37,7 @@ int test_isEmpty() {
 
 int test_TableOverflow() {
     test_addMultipleSymbols();
-    if (addSymbol("a", t_int) != -1) {
+    if (addSymbol("a", t_int, sizeof("a")) != -1) {
         return (1);
     }
     return 0;
@@ -45,7 +45,7 @@ int test_TableOverflow() {
 
 int test_deleteSymbol() {
     initTable();
-    addSymbol("a", t_int);
+    addSymbol("a", t_int, sizeof("a"));
     if (isEmpty()) {
         return (1);
     }
@@ -58,11 +58,11 @@ int test_deleteSymbol() {
 
 int test_getAddressSymbol() {
     initTable();
-    addSymbol("toto", t_int);
-    addSymbol("a", t_int);
-    addSymbol("b", t_int);
-    addSymbol("c", t_int);
-    addSymbol("pouf", t_int);
+    addSymbol("toto", t_int, sizeof("toto"));
+    addSymbol("a", t_int, sizeof("a"));
+    addSymbol("b", t_int, sizeof("b"));
+    addSymbol("c", t_int, sizeof("c"));
+    addSymbol("pouf", t_int, sizeof("pouf"));
     int add = getAddressSymbol("toto");
     if (add != 0) {
         return (1);
@@ -81,11 +81,11 @@ int test_getAddressSymbol() {
 
 int test_deleteFromChangeScope() {
     initTable();
-    addSymbol("toto", t_int);
-    addSymbol("a", t_int);
-    addSymbol("b", t_int);
-    addSymbol("c", t_int);
-    addSymbol("pouf", t_int);
+    addSymbol("toto", t_int, sizeof("toto"));
+    addSymbol("a", t_int, sizeof("a"));
+    addSymbol("b", t_int, sizeof("b"));
+    addSymbol("c", t_int, sizeof("c"));
+    addSymbol("pouf", t_int, sizeof("pouf"));
     deleteFromChangeScope();
     int top = getTopIndex();
     if (top != 1) {

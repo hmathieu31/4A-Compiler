@@ -14,10 +14,10 @@
 
 #define TABLE_SIZE 1025
 
-enum type
+typedef enum type
 {
     t_int
-};
+} type;
 
 /**
  * @brief Increases the depth of a variable when entering a new body (if or while)
@@ -36,7 +36,7 @@ int decreaseDepth();
 typedef struct symbol
 {
     char *symbolName;
-    enum type typ;
+    type typ;
     int depth;
 } symbol;
 

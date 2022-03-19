@@ -18,7 +18,7 @@ void initArray();
  * @param instr Asm instruction to add (string)
  * @return 0 if executed successfully.
  */
-int addInstruction(char* instr);
+int addInstruction(char* instr, int sizeofInstr);
 
 /**
  * @brief Prints the entire array of instructions.

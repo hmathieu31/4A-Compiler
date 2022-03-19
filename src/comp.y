@@ -57,17 +57,47 @@ Cond: Compa Logi Cond
 Logi: tOR
       |tAND;
 Dec :   tCONST tINT tID 
-                {addSymbol($3, sizeof($3), t_int);}
+                {
+                        addSymbol($3, sizeof($3), t_int);
+                        if(getAddressSymbol($3) != -1)
+                        {
+                                printf("Variable \"%s\" already exists. \n", $3);
+                        }
+                }
         |tINT tID 
-                {addSymbol($2, sizeof($2), t_int);}
+                {
+                        addSymbol($2, sizeof($2), t_int);
+                        if(getAddressSymbol($2) != -1)
+                        {
+                                printf("Variable \"%s\" already exists. \n", $2);
+                                exit(1);
+                        }
+                }
         |Dec tCOL tID
-                {addSymbol($3, sizeof($3), t_int);};
-Aff :   tID tEQ Terme;
+                {
+                        addSymbol($3, sizeof($3), t_int);
+                        if(getAddressSymbol($3) != -1)
+                        {
+                                printf("Variable \"%s\" already exists. \n", $3);
+                                exit(1);
+                        }
+                };
+Aff :   tID tEQ Terme
+                {
+                        if(getAddressSymbol($1) == -1) 
+                        {
+                                fprintf(stderr, "Variable \"%s\" is undefined.\n", $1);
+                                exit(1);
+                        } else {
+                                int addrSymbol = getAddressSymbol($1); /! WIP
+                        }
+                }  
+        ;
 Defaff : Dec tEQ Terme;
 Ope :   Add 
         | Sub 
         | Mul 
-        | Div;      
+        | Div;
 Add :   Terme tADD Terme;
 Sub :   Terme tSUB Terme;
 Mul :   Terme tMUL Terme;
@@ -90,6 +120,7 @@ Terme : tOP Ope tCP
         | Ope
         | tID
         | tNB
+                {}
         | InvokeFun;
 Print : tPRINT tOP tID tCP;
 

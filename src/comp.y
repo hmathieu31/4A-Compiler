@@ -4,6 +4,7 @@
 
 #include "symbolTable.h"
 #include "instr.h"
+#include "macrologger.h"
 
 int var[26];
 void yyerror(char *s);

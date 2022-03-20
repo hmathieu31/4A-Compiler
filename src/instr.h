@@ -15,23 +15,24 @@
 #define INSTR_H
 
 #define TAILLE 1025
-#define OPERATORS \
-    C(MOV)        \
-    C(MOV_I)      \
-    C(ADD)        \
-    C(SUB)        \
-    C(MUL)        \
-    C(DIV)
-#define C(x) x,
-typedef enum operator
-{
-    OPERATORS TOP
+
+typedef enum operator {
+    MOV,
+    MOV_I,
+    ADD,
+    SUB,
+    MUL,
+    DIV
 } operator;
-#undef C
 
-#define C(x) #x,
-
-const char *const operator_string[] = {OPERATORS};
+static const char* const operator_string[] = {
+    [MOV] = "MOV",
+    [MOV_I] = "MOV_I",
+    [ADD] = "ADD",
+    [SUB] = "SUB",
+    [MUL] = "MUL",
+    [DIV] = "DIV"
+};
 
 typedef struct instruction
 {

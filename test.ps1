@@ -1,20 +1,32 @@
+if (Test-Path -Path .\tests\tests_log.log) {
+    Remove-Item .\tests\tests_log.log
+}
+Write-Output "   --- Tests OK ---   " | Out-File .\tests\tests_log.log -Append
 foreach ($item in Get-ChildItem .\tests\tests_ok\) {
-    Get-Content $item | .\bin\comp.exe 2>&1 | Out-Null
+    $nameOfTest = $item.Name;
+    Write-Output "`n--- Test --- ${nameOfTest} ---" | Out-File -Append -FilePath .\tests\tests_log.log
+    Get-Content $item | .\bin\comp.exe 2>&1 | Out-File -Append -FilePath .\tests\tests_log.log
     $execSuccessful = $?
-    $test = "Test ok - " + $item.Name
+    $test = "Test ok - " + $nameOfTest
     if ($execSuccessful -eq $true) {
         Write-Output -InputObject $test" - passed successfully ✅"
-    } else {
+    }
+    else {
         Write-Output -InputObject $test" - failed ❌"
     }
 }
+
+Write-Output "   --- Tests KO ---   " | Out-File .\tests\tests_log.log -Append
 foreach ($item in Get-ChildItem .\tests\tests_ko) {
-    Get-Content $item | .\bin\comp.exe 2>&1 | Out-Null
+    $nameOfTest = $item.Name;
+    Write-Output "`n--- Test --- ${nameOfTest} ---" | Out-File -Append -FilePath .\tests\tests_log.log
+    Get-Content $item | .\bin\comp.exe 2>&1 | Out-File -Append -FilePath .\tests\tests_log.log
     $execSuccessful = $?
-    $test = "Test ko - " + $item.Name
+    $test = "Test ko - " + $nameOfTest
     if ($execSuccessful -eq $false) {
         Write-Output -InputObject $test" - passed successfully ✅"
-    } else {
+    }
+    else {
         Write-Output -InputObject $test" - failed ❌"
     }
 }

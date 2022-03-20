@@ -7,3 +7,4 @@
 /.vscode
 exemples/test.c
 exemples/a.exe
+tests/tests_log.log

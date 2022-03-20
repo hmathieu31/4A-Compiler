@@ -89,7 +89,7 @@ Aff :   tID tEQ Terme
                                 fprintf(stderr, "Variable \"%s\" is undefined.\n", $1);
                                 exit(1);
                         } else {
-                                int addrSymbol = getAddressSymbol($1); /! WIP
+                                int addrSymbol = getAddressSymbol($1); // WIP
                         }
                 }  
         ;

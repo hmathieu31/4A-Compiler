@@ -16,10 +16,10 @@ void yyerror(char *s);
 %type <nb> Expr
 %start Code
 %%
-Code :  tMAIN 
-                {initTable();}
-         Body
-        |Fun Code;
+Code :          {initTable();}  
+        tMAIN Body
+        |       {initTable();} 
+        Fun Code;
 Body : tOB 
                 {increaseDepth();} 
         Ligne tCB 
@@ -59,28 +59,41 @@ Logi: tOR
       |tAND;
 Dec :   tCONST tINT tID 
                 {
-                        addSymbol($3, sizeof($3), t_int);
                         if(getAddressSymbol($3) != -1)
                         {
-                                printf("Variable \"%s\" already exists. \n", $3);
+                                fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
+                        }
+                        if(addSymbol($3, sizeof($3), t_int))
+                        {
+                                fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $3);
+                                exit(1);
                         }
                 }
         |tINT tID 
                 {
-                        addSymbol($2, sizeof($2), t_int);
                         if(getAddressSymbol($2) != -1)
                         {
-                                printf("Variable \"%s\" already exists. \n", $2);
+                                fprintf(stderr, "Variable \"%s\" already exists. \n", $2);
+                                exit(1);
+                        }
+                        if(addSymbol($2, sizeof($2), t_int))
+                        {
+                                fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $2);
                                 exit(1);
                         }
                 }
         |Dec tCOL tID
                 {
-                        addSymbol($3, sizeof($3), t_int);
                         if(getAddressSymbol($3) != -1)
                         {
-                                printf("Variable \"%s\" already exists. \n", $3);
+                                fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
                                 exit(1);
+                        }
+                        if(addSymbol($3, sizeof($3), t_int))
+                        {
+                                fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $3);
+                                exit(1);
+
                         }
                 };
 Aff :   tID tEQ Terme
@@ -90,9 +103,22 @@ Aff :   tID tEQ Terme
                                 fprintf(stderr, "Variable \"%s\" is undefined.\n", $1);
                                 exit(1);
                         } else {
-                                int addrSymbol = getAddressSymbol($1); // WIP
+                                int addrSymbol = getAddressSymbol($1);
+                                int ops[3];
+                                ops[0] = addrSymbol;
+                                ops[1] = $3;
+                                ops [3] = -1;
+                                instruction instr = {
+                                        MOV_i,
+                                        ops
+                                }
+                                if(addInstruction(instr))
+                                {
+                                        fprintf(stderr, "Failed to add instruction.\n");
+                                        exit(1);
+                                }
                         }
-                }  
+                }
         ;
 Defaff : Dec tEQ Terme;
 Ope :   Add 

@@ -59,7 +59,7 @@ int initTable();
  * @param symbolName
  * @param typ For now t_int only
  * @param depth Corresponding to the scope of the variable (vars in main being at depth 0)
- * @return 0 if the symbol was correctly. Fails with -1 and prints an error message if trying to add a 1025e symbol
+ * @return 0 if the symbol was correctly. -1 if the symbol could not be added. (table full)
  */
 int addSymbol(char *symbolName, int sizeofSymbol, enum type typ);
 

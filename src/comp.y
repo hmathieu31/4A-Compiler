@@ -103,9 +103,22 @@ Aff :   tID tEQ Terme
                                 fprintf(stderr, "Variable \"%s\" is undefined.\n", $1);
                                 exit(1);
                         } else {
-                                int addrSymbol = getAddressSymbol($1); // WIP
+                                int addrSymbol = getAddressSymbol($1);
+                                int ops[3];
+                                ops[0] = addrSymbol;
+                                ops[1] = $3;
+                                ops [3] = -1;
+                                instruction instr = {
+                                        MOV_i,
+                                        ops
+                                }
+                                if(addInstruction(instr))
+                                {
+                                        fprintf(stderr, "Failed to add instruction.\n");
+                                        exit(1);
+                                }
                         }
-                }  
+                }
         ;
 Defaff : Dec tEQ Terme;
 Ope :   Add 

@@ -6,14 +6,14 @@
 #include "instr.h"
 #include "macrologger.h"
 
-int var[26];
+int var[TABLE_SIZE];
 void yyerror(char *s);
 %}
 %union { int nb; char *var; }
 %token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tIF tWHILE tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR tRETURN
 %token <nb> tNB
 %token <var> tID
-%type <nb> Expr
+%type <nb> Terme Add Sub Mul Div Ope
 %start Code
 %%
 Code :          {initTable();}  
@@ -109,9 +109,10 @@ Aff :   tID tEQ Terme
                                 ops[1] = $3;
                                 ops [3] = -1;
                                 instruction instr = {
-                                        MOV_i,
+                                        MOV_I,
                                         ops
-                                }
+                                };
+                                var[addrSymbol] = $3;
                                 if(addInstruction(instr))
                                 {
                                         fprintf(stderr, "Failed to add instruction.\n");
@@ -120,12 +121,16 @@ Aff :   tID tEQ Terme
                         }
                 }
         ;
-Defaff : Dec tEQ Terme;
+Defaff : Dec tEQ Terme; //TODO #4 Probablement nécessaire de transformer la règle pour se retrouver avec un tID à l'intérieur
 Ope :   Add 
         | Sub 
         | Mul 
         | Div;
-Add :   Terme tADD Terme;
+Add :   Terme tADD Terme
+        {
+                
+        }        
+        ;
 Sub :   Terme tSUB Terme;
 Mul :   Terme tMUL Terme;
 Div :   Terme tDIV Terme;
@@ -145,9 +150,14 @@ Nequal : Terme tNEQUAL Terme;
 
 Terme : tOP Ope tCP
         | Ope
+                {$$ = $1;}
         | tID
+                {
+                        int addrSymbol = getAddressSymbol($1);
+                        $$ = var[addrSymbol];
+                }
         | tNB
-                {}
+                {$$ = $1;}
         | InvokeFun;
 Print : tPRINT tOP tID tCP;
 
@@ -158,5 +168,8 @@ void yyerror(char *s) { fprintf(stderr, "%s\n", s); exit(1);}
 int main(void) {
   printf("Compiler\n"); // yydebug=1;
   yyparse();
+
+  printf("--- Table des symboles ---\n");
+  printTable();
   return 0;
 }

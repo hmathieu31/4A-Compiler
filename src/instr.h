@@ -47,9 +47,9 @@ typedef struct instruction
 void initArray();
 
 /**
- * @brief Adds an instruction (string) to the array
+ * @brief Adds an instruction to the array
  *
- * @param instr Asm instruction to add (string)
+ * @param instr Asm instruction to add
  * @return 0 if executed successfully.
  */
 int addInstruction(instruction instr);

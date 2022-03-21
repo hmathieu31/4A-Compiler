@@ -19,6 +19,30 @@ symbolTable table;
 
 int depth;
 
+void freeAddrsTemp()
+{
+    addr_temp1 = -1;
+    addr_temp2 = -1;
+}
+
+int affectToAddrTemp(int value)
+{
+    if (addr_temp1 == -1)
+    {
+        addr_temp1 = value;
+        return addr_temp1;
+    }
+    else if (addr_temp2 == -1)
+    {
+        addr_temp2 = value;
+        return addr_temp2;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
 int increaseDepth()
 {
     depth++;

@@ -19,6 +19,24 @@ typedef enum type
     t_int
 } type;
 
+int addr_temp1;
+
+int addr_temp2;
+
+/**
+ * @brief Free the temporary addresses.
+ * 
+ */
+void freeAddrsTemp();
+
+/**
+ * @brief Affects the value to the temporary address addr_temp1 or addr_temp2 if 1 is unavailable.
+ * 
+ * @param value Value to be stored at the address.
+ * @return The temporary address used.
+ */
+int affectToAddrTemp(int value);
+
 /**
  * @brief Increases the depth of a variable when entering a new body (if or while)
  *

@@ -16,10 +16,10 @@ void yyerror(char *s);
 %type <nb> Expr
 %start Code
 %%
-Code :  tMAIN 
-                {initTable();}
-         Body
-        |Fun Code;
+Code :          {initTable();}  
+        tMAIN Body
+        |       {initTable();} 
+        Fun Code;
 Body : tOB 
                 {increaseDepth();} 
         Ligne tCB 
@@ -63,7 +63,11 @@ Dec :   tCONST tINT tID
                         {
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
                         }
-                        addSymbol($3, sizeof($3), t_int);
+                        if(addSymbol($3, sizeof($3), t_int))
+                        {
+                                fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $3);
+                                exit(1);
+                        }
                 }
         |tINT tID 
                 {
@@ -72,7 +76,11 @@ Dec :   tCONST tINT tID
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $2);
                                 exit(1);
                         }
-                        addSymbol($2, sizeof($2), t_int);
+                        if(addSymbol($2, sizeof($2), t_int))
+                        {
+                                fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $2);
+                                exit(1);
+                        }
                 }
         |Dec tCOL tID
                 {
@@ -81,7 +89,12 @@ Dec :   tCONST tINT tID
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
                                 exit(1);
                         }
-                        addSymbol($3, sizeof($3), t_int);
+                        if(addSymbol($3, sizeof($3), t_int))
+                        {
+                                fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $3);
+                                exit(1);
+
+                        }
                 };
 Aff :   tID tEQ Terme
                 {

@@ -38,7 +38,7 @@ int initTable()
         "",
         t_int,
         -1};
-    for (int i = 0; i < TABLE_SIZE; i++)
+    for (int i = 0; i < TABLE_SIZE - 1; i++)
     {
         table.symbolArray[i] = symInit;
     }
@@ -60,7 +60,7 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
     if (table.topIndex == TABLE_SIZE - 1) // The symbol table being limited to 1024 (TABLE_SIZE) symbols, an error must be handled if trying to add another symbol
     {
         fprintf(stderr, "Symbol table is full. Program cannot compile!\n");
-        exit(-1);
+        return -1;
     }
     char *name = (char *)malloc(sizeofSymbol);
     strncpy(name, symbolName, sizeofSymbol);

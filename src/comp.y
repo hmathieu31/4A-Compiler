@@ -28,11 +28,11 @@ Body : tOB
 FunBody : tOB Ligne Return tCB
         | tOB Return tCB;
 Return : tRETURN Terme tSCOL;
-Ligne : Instr tSCOL Ligne 
-        |Instr tSCOL
+Ligne : Instr Ligne 
+        |Instr
         |;
 Instr: Boucle
-       |Expr;
+       |Expr tSCOL;
 Boucle: |If
         |While;
 Expr : Dec 
@@ -166,6 +166,7 @@ Print : tPRINT tOP tID tCP;
 %%
 void yyerror(char *s) { fprintf(stderr, "%s\n", s); exit(1);}
 int main(void) {
+        
   printf("Compiler\n"); // yydebug=1;
   yyparse();
 

@@ -17,27 +17,39 @@
 #define TAILLE 1025
 
 typedef enum operator {
-    MOV,
-    MOV_I,
     ADD,
     SUB,
     MUL,
-    DIV
+    DIV,
+    COP,
+    AFC,
+    JMP,
+    JMF,
+    INF,
+    SUP,
+    EQU,
+    PRI
 } operator;
 
 static const char* const operator_string[] = {
-    [MOV] = "MOV",
-    [MOV_I] = "MOV_I",
     [ADD] = "ADD",
     [SUB] = "SUB",
     [MUL] = "MUL",
-    [DIV] = "DIV"
+    [DIV] = "DIV",
+    [COP]="COP",
+    [AFC]="AFC",
+    [JMP]="JMP",
+    [JMF]="JMF",
+    [INF]="INF",
+    [SUP]="SUP",
+    [EQU]="EQU",
+    [PRI]="PRI"
 };
 
 typedef struct instruction
 {
     operator ope;
-    int ops[2];
+    int ops[3];
 } instruction;
 
 /**

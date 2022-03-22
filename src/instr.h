@@ -36,14 +36,14 @@ static const char* const operator_string[] = {
     [SUB] = "SUB",
     [MUL] = "MUL",
     [DIV] = "DIV",
-    [COP]="COP",
-    [AFC]="AFC",
-    [JMP]="JMP",
-    [JMF]="JMF",
-    [INF]="INF",
-    [SUP]="SUP",
-    [EQU]="EQU",
-    [PRI]="PRI"
+    [COP]= "COP",
+    [AFC]= "AFC",
+    [JMP]= "JMP",
+    [JMF]= "JMF",
+    [INF]= "INF",
+    [SUP]= "SUP",
+    [EQU]= "EQU",
+    [PRI]= "PRI"
 };
 
 typedef struct instruction

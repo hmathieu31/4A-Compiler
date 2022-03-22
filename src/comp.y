@@ -109,7 +109,7 @@ Aff :   tID tEQ Terme
                                 ops[1] = $3;
                                 ops [3] = -1;
                                 instruction instr = {
-                                        MOV_I,
+                                        AFC,
                                         ops
                                 };
                                 var[addrSymbol] = $3;
@@ -121,7 +121,8 @@ Aff :   tID tEQ Terme
                         }
                 }
         ;
-Defaff : Dec tEQ Terme; //TODO #4 Probablement nécessaire de transformer la règle pour se retrouver avec un tID à l'intérieur
+Defaff : tCONST tINT tID tEQ Terme
+        |tINT tID tEQ Terme; //TODO #4 Probablement nécessaire de transformer la règle pour se retrouver avec un tID à l'intérieur
 Ope :   Add 
         | Sub 
         | Mul 
@@ -154,10 +155,10 @@ Terme : tOP Ope tCP
         | tID
                 {
                         int addrSymbol = getAddressSymbol($1);
-                        $$ = var[addrSymbol];
+
                 }
         | tNB
-                {$$ = $1;}
+                {int a =newTMP()}
         | InvokeFun;
 Print : tPRINT tOP tID tCP;
 
@@ -166,7 +167,7 @@ Print : tPRINT tOP tID tCP;
 %%
 void yyerror(char *s) { fprintf(stderr, "%s\n", s); exit(1);}
 int main(void) {
-        
+
   printf("Compiler\n"); // yydebug=1;
   yyparse();
 

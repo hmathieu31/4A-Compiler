@@ -20,6 +20,13 @@ typedef enum type
 } type;
 
 /**
+ * @brief Creates a new temporary variable in the symbol table.
+ * 
+ * @return  The address of the new temporary variable. Or -1 if the table was full.
+ */
+int newTmp();
+
+/**
  * @brief Free the temporary addresses.
  * 
  */

@@ -19,11 +19,7 @@ symbolTable table;
 
 int depth;
 
-/**
- * @brief Creates a new temporary variable in the symbol table.
- * 
- * @return  The address of the new temporary variable. Or -1 if the table was full.
- */
+
 int newTmp()
 {
     if (table.topIndex < TABLE_SIZE - 1)

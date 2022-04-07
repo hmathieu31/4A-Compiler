@@ -6,8 +6,6 @@
 #include "instr.h"
 #include "macrologger.h"
 
-int var[TABLE_SIZE];
-
 void yyerror(char *s);
 %}
 %union { int nb; char *var; }
@@ -50,7 +48,7 @@ Args: Terme
         | Terme tCOL Args;
 If: tIF tOP Conds tCP Body;
 While: tWHILE tOP Conds tCP Body;
-Conds: Cond Conds
+Conds: Cond Conds //TODO: #6 Implement conditionals
        |Cond;
 Cond: Compa Logi Cond
        |Compa
@@ -108,12 +106,11 @@ Aff :   tID tEQ Terme
                                 int ops[3];
                                 ops[0] = addrSymbol;
                                 ops[1] = $3;
-                                ops [3] = -1;
+                                ops[2] = -1;
                                 instruction instr = {
                                         AFC,
                                         ops
                                 };
-                                var[addrSymbol] = $3;
                                 if(addInstruction(instr))
                                 {
                                         fprintf(stderr, "Failed to add instruction.\n");
@@ -123,19 +120,180 @@ Aff :   tID tEQ Terme
                 }
         ;
 Defaff : tCONST tINT tID tEQ Terme
-        |tINT tID tEQ Terme; //TODO #4 Probablement nécessaire de transformer la règle pour se retrouver avec un tID à l'intérieur
-Ope :   Add 
+                {
+                        if(getAddressSymbol($3) == -1) 
+                        {
+                                fprintf(stderr, "Variable \"%s\" is undefined.\n", $3);
+                                exit(1);
+                        } else {
+                                int addrSymbol = getAddressSymbol($3);
+                                int ops[3];
+                                ops[0] = addrSymbol;
+                                ops[1] = $5;
+                                ops[2] = -1;
+                                instruction instr = {
+                                        AFC,
+                                        ops
+                                };
+                                if(addInstruction(instr))
+                                {
+                                        fprintf(stderr, "Failed to add instruction.\n");
+                                        exit(1);
+                                }
+                        }
+                }
+        |tINT tID tEQ Terme
+                {
+                        if(getAddressSymbol($2) == -1) 
+                        {
+                                fprintf(stderr, "Variable \"%s\" is undefined.\n", $2);
+                                exit(1);
+                        } else {
+                                int addrSymbol = getAddressSymbol($2);
+                                int ops[3];
+                                ops[0] = addrSymbol;
+                                ops[1] = $4;
+                                ops[2] = -1;
+                                instruction instr = {
+                                        AFC,
+                                        ops
+                                };
+                                if(addInstruction(instr))
+                                {
+                                        fprintf(stderr, "Failed to add instruction.\n");
+                                        exit(1);
+                                }
+                        }
+                }
+                ;
+Ope :   Add     // TODO: #7 Handle priorities in operations
+                {$$ = $1;}
         | Sub 
+                {$$ = $1;}
         | Mul 
-        | Div;
+                {$$ = $1;}
+        | Div
+                {$$ = $1;};
 Add :   Terme tADD Terme
         {
-
+                int temp1 = newTmp();
+                int ops[3];
+                ops[0] = temp1; ops[1] = $1; ops[2] = -1;
+                instruction instr = {AFC, ops}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                int ops2[3]; ops2[0] = temp2; ops2[1] = $3; ops2[2] = -1;
+                instruction instr2 = {AFC, ops2};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                int ops3[3]; ops3[0] = temp3; ops3[1] = temp1; ops3[2] = temp2;
+                instruction instr3 = {ADD, ops3};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
         }        
         ;
-Sub :   Terme tSUB Terme;
-Mul :   Terme tMUL Terme;
-Div :   Terme tDIV Terme;
+Sub :   Terme tSUB Terme
+        {
+                int temp1 = newTmp();
+                int ops[3];
+                ops[0] = temp1; ops[1] = $1; ops[2] = -1;
+                instruction instr = {AFC, ops}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                int ops2[3]; ops2[0] = temp2; ops2[1] = $3; ops2[2] = -1;
+                instruction instr2 = {AFC, ops2};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                int ops3[3]; ops3[0] = temp3; ops3[1] = temp1; ops3[2] = temp2;
+                instruction instr3 = {SUB, ops3};       // Substract the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        }        
+        ;
+Mul :   Terme tMUL Terme
+        {
+                int temp1 = newTmp();
+                int ops[3];
+                ops[0] = temp1; ops[1] = $1; ops[2] = -1;
+                instruction instr = {AFC, ops}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                int ops2[3]; ops2[0] = temp2; ops2[1] = $3; ops2[2] = -1;
+                instruction instr2 = {AFC, ops2};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                int ops3[3]; ops3[0] = temp3; ops3[1] = temp1; ops3[2] = temp2;
+                instruction instr3 = {MUL, ops3};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        }        
+        ;
+Div :   Terme tDIV Terme
+        {
+                int temp1 = newTmp();
+                int ops[3];
+                ops[0] = temp1; ops[1] = $1; ops[2] = -1;
+                instruction instr = {AFC, ops}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                int ops2[3]; ops2[0] = temp2; ops2[1] = $3; ops2[2] = -1;
+                instruction instr2 = {AFC, ops2};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                int ops3[3]; ops3[0] = temp3; ops3[1] = temp1; ops3[2] = temp2;
+                instruction instr3 = {DIV, ops3};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        }        
+        ;
 
 Compa : Eqsup 
         | Eqinf 
@@ -151,15 +309,29 @@ Equal : Terme tEQUAL Terme;
 Nequal : Terme tNEQUAL Terme;
 
 Terme : tOP Ope tCP
+                {$$ = $2;}
         | Ope
                 {$$ = $1;}
         | tID
-                {
-                        int addrSymbol = getAddressSymbol($1);
-
-                }
+                {$$ = getAddressSymbol($1);}
         | tNB
-                {int a =newTMP()}
+                {
+                        int addrTemp =newTmp();
+                        int ops[3];
+                        ops[0] = addrTemp;
+                        ops[1] = $1;
+                        ops[2] = -1;
+                        instruction instr = {
+                                AFC,
+                                ops
+                        };
+                        if(addInstruction(instr))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        $$ = addrTemp;
+                }
         | InvokeFun;
 Print : tPRINT tOP tID tCP;
 

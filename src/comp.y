@@ -7,6 +7,7 @@
 #include "macrologger.h"
 
 int var[TABLE_SIZE];
+
 void yyerror(char *s);
 %}
 %union { int nb; char *var; }
@@ -129,7 +130,7 @@ Ope :   Add
         | Div;
 Add :   Terme tADD Terme
         {
-                
+
         }        
         ;
 Sub :   Terme tSUB Terme;

@@ -19,29 +19,23 @@ symbolTable table;
 
 int depth;
 
-void freeAddrsTemp()
+/**
+ * @brief Creates a new temporary variable in the symbol table.
+ * 
+ * @return  The address of the new temporary variable. Or -1 if the table was full.
+ */
+int newTmp()
 {
-    addr_temp1 = -1;
-    addr_temp2 = -1;
+    if (table.topIndex < TABLE_SIZE - 1)
+    {
+        return table.topIndex + 1;
+    } else
+    {
+        return -1;
+    }
 }
 
-int affectToAddrTemp(int value)
-{
-    if (addr_temp1 == -1)
-    {
-        addr_temp1 = value;
-        return addr_temp1;
-    }
-    else if (addr_temp2 == -1)
-    {
-        addr_temp2 = value;
-        return addr_temp2;
-    }
-    else
-    {
-        return 1;
-    }
-}
+
 
 int increaseDepth()
 {

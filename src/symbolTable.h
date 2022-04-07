@@ -19,10 +19,6 @@ typedef enum type
     t_int
 } type;
 
-int addr_temp1;
-
-int addr_temp2;
-
 /**
  * @brief Free the temporary addresses.
  * 

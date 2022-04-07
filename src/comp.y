@@ -61,6 +61,7 @@ Dec :   tCONST tINT tID
                         if(getAddressSymbol($3) != -1)
                         {
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
+                                exit(1);
                         }
                         if(addSymbol($3, sizeof($3), t_int))
                         {
@@ -103,13 +104,9 @@ Aff :   tID tEQ Terme
                                 exit(1);
                         } else {
                                 int addrSymbol = getAddressSymbol($1);
-                                int ops[3];
-                                ops[0] = addrSymbol;
-                                ops[1] = $3;
-                                ops[2] = -1;
                                 instruction instr = {
                                         AFC,
-                                        ops
+                                        {addrSymbol, $3, -1}
                                 };
                                 if(addInstruction(instr))
                                 {
@@ -121,20 +118,18 @@ Aff :   tID tEQ Terme
         ;
 Defaff : tCONST tINT tID tEQ Terme
                 {
-                        if(getAddressSymbol($3) == -1) 
+                        if(getAddressSymbol($3) != -1)
                         {
-                                fprintf(stderr, "Variable \"%s\" is undefined.\n", $3);
+                                fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
+                                exit(1);
+                        }
+                        if(addSymbol($3, sizeof($3), t_int))
+                        {
+                                fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $3);
                                 exit(1);
                         } else {
                                 int addrSymbol = getAddressSymbol($3);
-                                int ops[3];
-                                ops[0] = addrSymbol;
-                                ops[1] = $5;
-                                ops[2] = -1;
-                                instruction instr = {
-                                        AFC,
-                                        ops
-                                };
+                                instruction instr = {AFC, {addrSymbol, $5, -1}};
                                 if(addInstruction(instr))
                                 {
                                         fprintf(stderr, "Failed to add instruction.\n");
@@ -144,20 +139,18 @@ Defaff : tCONST tINT tID tEQ Terme
                 }
         |tINT tID tEQ Terme
                 {
-                        if(getAddressSymbol($2) == -1) 
+                        if(getAddressSymbol($2) != -1)
                         {
-                                fprintf(stderr, "Variable \"%s\" is undefined.\n", $2);
+                                fprintf(stderr, "Variable \"%s\" already exists. \n", $2);
+                                exit(1);
+                        }
+                        if(addSymbol($2, sizeof($2), t_int))
+                        {
+                                fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $2);
                                 exit(1);
                         } else {
                                 int addrSymbol = getAddressSymbol($2);
-                                int ops[3];
-                                ops[0] = addrSymbol;
-                                ops[1] = $4;
-                                ops[2] = -1;
-                                instruction instr = {
-                                        AFC,
-                                        ops
-                                };
+                                instruction instr = {AFC, {addrSymbol, $4, -1}};
                                 if(addInstruction(instr))
                                 {
                                         fprintf(stderr, "Failed to add instruction.\n");
@@ -177,25 +170,21 @@ Ope :   Add     // TODO: #7 Handle priorities in operations
 Add :   Terme tADD Terme
         {
                 int temp1 = newTmp();
-                int ops[3];
-                ops[0] = temp1; ops[1] = $1; ops[2] = -1;
-                instruction instr = {AFC, ops}; // Affect the first operand to a temporary var
+                instruction instr = {AFC, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
                         exit(1);
                 }
                 int temp2 = newTmp();
-                int ops2[3]; ops2[0] = temp2; ops2[1] = $3; ops2[2] = -1;
-                instruction instr2 = {AFC, ops2};       // Affect the second operand to a temporary var
+                instruction instr2 = {AFC, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
                         exit(1);
                 }
                 int temp3 = newTmp();
-                int ops3[3]; ops3[0] = temp3; ops3[1] = temp1; ops3[2] = temp2;
-                instruction instr3 = {ADD, ops3};       // Add the two temporary vars with the result being in temp3
+                instruction instr3 = {ADD, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
@@ -207,25 +196,21 @@ Add :   Terme tADD Terme
 Sub :   Terme tSUB Terme
         {
                 int temp1 = newTmp();
-                int ops[3];
-                ops[0] = temp1; ops[1] = $1; ops[2] = -1;
-                instruction instr = {AFC, ops}; // Affect the first operand to a temporary var
+                instruction instr = {AFC, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
                         exit(1);
                 }
                 int temp2 = newTmp();
-                int ops2[3]; ops2[0] = temp2; ops2[1] = $3; ops2[2] = -1;
-                instruction instr2 = {AFC, ops2};       // Affect the second operand to a temporary var
+                instruction instr2 = {AFC, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
                         exit(1);
                 }
                 int temp3 = newTmp();
-                int ops3[3]; ops3[0] = temp3; ops3[1] = temp1; ops3[2] = temp2;
-                instruction instr3 = {SUB, ops3};       // Substract the two temporary vars with the result being in temp3
+                instruction instr3 = {SUB, {temp3, temp1, temp2}};       // Substract the two temporary vars with the result being in temp3
                 if(addInstruction(instr3))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
@@ -237,25 +222,21 @@ Sub :   Terme tSUB Terme
 Mul :   Terme tMUL Terme
         {
                 int temp1 = newTmp();
-                int ops[3];
-                ops[0] = temp1; ops[1] = $1; ops[2] = -1;
-                instruction instr = {AFC, ops}; // Affect the first operand to a temporary var
+                instruction instr = {AFC, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
                         exit(1);
                 }
                 int temp2 = newTmp();
-                int ops2[3]; ops2[0] = temp2; ops2[1] = $3; ops2[2] = -1;
-                instruction instr2 = {AFC, ops2};       // Affect the second operand to a temporary var
+                instruction instr2 = {AFC, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
                         exit(1);
                 }
                 int temp3 = newTmp();
-                int ops3[3]; ops3[0] = temp3; ops3[1] = temp1; ops3[2] = temp2;
-                instruction instr3 = {MUL, ops3};       // Add the two temporary vars with the result being in temp3
+                instruction instr3 = {MUL, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
@@ -267,25 +248,21 @@ Mul :   Terme tMUL Terme
 Div :   Terme tDIV Terme
         {
                 int temp1 = newTmp();
-                int ops[3];
-                ops[0] = temp1; ops[1] = $1; ops[2] = -1;
-                instruction instr = {AFC, ops}; // Affect the first operand to a temporary var
+                instruction instr = {AFC, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
                         exit(1);
                 }
                 int temp2 = newTmp();
-                int ops2[3]; ops2[0] = temp2; ops2[1] = $3; ops2[2] = -1;
-                instruction instr2 = {AFC, ops2};       // Affect the second operand to a temporary var
+                instruction instr2 = {AFC, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
                         exit(1);
                 }
                 int temp3 = newTmp();
-                int ops3[3]; ops3[0] = temp3; ops3[1] = temp1; ops3[2] = temp2;
-                instruction instr3 = {DIV, ops3};       // Add the two temporary vars with the result being in temp3
+                instruction instr3 = {DIV, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3))
                 {
                         fprintf(stderr, "Failed to add instruction.\n");
@@ -317,14 +294,7 @@ Terme : tOP Ope tCP
         | tNB
                 {
                         int addrTemp =newTmp();
-                        int ops[3];
-                        ops[0] = addrTemp;
-                        ops[1] = $1;
-                        ops[2] = -1;
-                        instruction instr = {
-                                AFC,
-                                ops
-                        };
+                        instruction instr = {AFC, {addrTemp, $1, -1}};
                         if(addInstruction(instr))
                         {
                                 fprintf(stderr, "Failed to add instruction.\n");

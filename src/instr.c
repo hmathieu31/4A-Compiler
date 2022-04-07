@@ -61,6 +61,7 @@ char *stringOfInstruction(instruction instruction)  // TODO #3 Test the function
     if (instruction.ops[0] == -1)
     {
         fprintf(stderr, "No instruction passed");
+        exit(1);
     }
 
     char *str_out = "Instruction: ";

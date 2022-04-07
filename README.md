@@ -21,7 +21,6 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
 
 
 
@@ -62,7 +61,7 @@
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <li><a href="#license">License</a></li>
+    <li><a href="#realised-by">Realised by</a></li>
   </ol>
 </details>
 
@@ -72,7 +71,9 @@
 ## About The Project
 
 
-*Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `hmathieu-insat`, `4A-Compiler`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`*
+L’objectif de ce Projet Systèmes Informatiques est de réaliser un système informatique complet. 
+Nous allons réaliser un compilateur qui traduit un langage source (proche du C) en un langage 
+cible (jeu d’instructions assembleur orientées mémoire)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -131,10 +132,12 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <p align="right">(<a href="#top">back to top</a>)</p>*
 
 
-<!-- LICENSE -->
-## License
+<!-- Contributors -->
+## Realised by
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+[Hugo Mathieu](https://github.com/hmathieu-insat)
+
+[Guillaume Aubut](https://github.com/Ger0th)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -150,4 +153,3 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 [issues-shield]: https://img.shields.io/github/issues/hmathieu-insat/4A-Compiler.svg?style=for-the-badge
 [issues-url]: https://github.com/hmathieu-insat/4A-Compiler/issues
 [license-shield]: https://img.shields.io/github/license/hmathieu-insat/4A-Compiler.svg?style=for-the-badge
-[license-url]: https://github.com/hmathieu-insat/4A-Compiler/blob/master/LICENSE.txt

@@ -64,21 +64,20 @@ char *stringOfInstruction(instruction instruction)  // TODO #3 Test the function
         exit(1);
     }
 
-    char* str_out = malloc(60); char str_operator[7];
+    char* str_out = malloc(100); char str_operator[7];
     strcpy(str_out, "Instruction: ");
     strcpy(str_operator, operator_string[instruction.ope]);
     strcat(str_out, str_operator);
     strcat(str_out, "  ");
 
-    char operands[30];
     int i = 0;
+    char op[100];
+    strcpy(op, " ");
     while (instruction.ops[i] != -1 && i < 3)
     {
-        char op[10];
         sprintf(op, "%d  ", instruction.ops[i]);
-        strcat(operands, op);
+        strcat(str_out, op);
         i++;
     }
-    strcat(str_out, operands);
     return str_out;
 }

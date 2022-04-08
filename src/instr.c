@@ -64,7 +64,7 @@ char *stringOfInstruction(instruction instruction)  // TODO #3 Test the function
         exit(1);
     }
 
-    char* str_out = malloc(30); char str_operator[30];
+    char* str_out = malloc(60); char str_operator[7];
     strcpy(str_out, "Instruction: ");
     strcpy(str_operator, operator_string[instruction.ope]);
     strcat(str_out, str_operator);

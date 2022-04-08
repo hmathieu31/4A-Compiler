@@ -14,6 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../external/macrologger.h"
+
+
 #define TAILLE 1025
 
 instruction instrArray[TAILLE];
@@ -64,21 +67,23 @@ char *stringOfInstruction(instruction instruction)  // TODO #3 Test the function
         exit(1);
     }
 
-    char *str_out = "Instruction: ";
-    char *str_operator = operator_string[instruction.ope];
+    char* str_out = malloc(30); char str_operator[30];
+    strcpy(str_out, "Instruction: ");
+    strcpy(str_operator, operator_string[instruction.ope]);
+    LOG_DEBUG("str_out: %s", str_out);
+    LOG_DEBUG("str_operator: %s", str_operator);
     strcat(str_out, str_operator);
     strcat(str_out, "  ");
 
-    char *operands = "";
+    char operands[30];
     int i = 0;
     while (instruction.ops[i] != -1 && i < 3)
     {
-        int length = sprintf(NULL, 0, "%d", instruction.ops[i]);
-        char *op = malloc(length + 3);
-        snprintf(op, length + 1, "%d  ", instruction.ops[i]);
+        char op[10];
+        sprintf(op, "%d  ", instruction.ops[i]);
         strcat(operands, op);
         i++;
     }
-
+    strcat(str_out, operands);
     return str_out;
 }

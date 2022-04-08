@@ -21,7 +21,7 @@ endif
 CFLAGS=-Wall -g -Isrc/ -Iexternal/
 
 OBJ=bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o #main.o
-T_OBJ=bin/instr.o tests/testInstr.o
+T_OBJ=bin/instr.o bin/testInstr.o
 
 all: $(BIN)
 
@@ -46,17 +46,24 @@ $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o -o bin/$@
 
 $(TEST): $(T_OBJ)
-	$(CC) $(CFLAGS) $(CPPFLAGS) bin/instr.o tests/testInstr.o -o bin/$@
+	$(CC) $(CFLAGS) $(CPPFLAGS) bin/instr.o bin/testInstr.o -o bin/$@
 
-clean:
+clean_obj:
 ifeq ($(OS), Windows_NT)
 	pwsh -Command Set-location ./bin ; Remove-Item * -Include *.tab.c, *.tab.h, *.yy.c, *.o, *.output
 else
 	cd ./bin ; rm *.tab.c *.tab.h *.yy.c *.o *.output
 endif
 
+clean:
+ifeq ($(OS), Windows_NT)
+	pwsh -Command Set-location ./bin ; Remove-Item *
+else
+	cd ./bin ; rm *
+endif
+
 build: all
-	make clean
+	make clean_obj
 
 test: build
 	pwsh ./test.ps1

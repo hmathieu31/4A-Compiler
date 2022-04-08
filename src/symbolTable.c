@@ -31,8 +31,6 @@ int newTmp()
     }
 }
 
-
-
 int increaseDepth()
 {
     depth++;

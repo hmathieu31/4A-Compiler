@@ -1,14 +1,3 @@
-*.o
-*.tab.*
-*.out
-*.output
-*.yy.*
-*.exe
-/.vscode
-exemples/test.c
-exemples/a.exe
-tests/tests_log.log
-
 #########################################################################################################
 ##	This is an example .gitignore file for Vivado, please treat it as an example as 
 ##	it might not be complete. In addition, XAPP 1165 should be followed.
@@ -95,3 +84,14 @@ tests/tests_log.log
 !*.elf
 !*.bmm
 !*.xmp
+
+*.o
+*.tab.*
+*.out
+*.output
+*.yy.*
+*.exe
+/.vscode
+exemples/test.c
+exemples/a.exe
+tests/tests_log.log

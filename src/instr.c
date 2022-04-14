@@ -45,11 +45,11 @@ int addInstruction(instruction instr)
     if (i == TAILLE - 1)
     {
         fprintf(stderr, "Maximum instruction array size exceeded\n");
-        exit(1);
+        exit(-1);
     }
     instrArray[i] = instr;
     // LOG_DEBUG("Instruction added %s", stringOfInstruction(instr));
-    return 0;
+    return i;
 }
 
 int printInstrTable()
@@ -87,3 +87,18 @@ char *stringOfInstruction(instruction instruction)
     }
     return str_out;
 }
+
+int getNumberOfInstructions()
+{
+    int i = 0;
+    while (instrArray[i].ops[0] != -1)
+    {
+        i++;
+    }
+    return i;
+}
+
+void patchJmpInstruction(int from, int to) {
+    instrArray[from].ops[0] = to;
+}
+    

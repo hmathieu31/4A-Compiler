@@ -13,6 +13,7 @@
 #define SYMBOLTABLES_H
 
 #define TABLE_SIZE 1025
+#define BASE_VAR_TEMP 925
 
 typedef enum type
 {
@@ -64,7 +65,8 @@ typedef struct symbol
 typedef struct symbolTable
 {
     symbol symbolArray[TABLE_SIZE];
-    int topIndex;
+    int topIndexSymbol;
+    int topIndexTemp;
 } symbolTable;
 
 /**
@@ -96,7 +98,7 @@ int deleteSymbol();
  *
  * @return 1 if the symbolTable is empty.
  */
-int isEmpty();
+int isSymbolTableEmpty();
 
 /**
  * @brief Removes all symbols at the highest scope from the table

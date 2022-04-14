@@ -5,7 +5,7 @@
 
 int test_addOneSymbol() {
     addSymbol("a", t_int, sizeof("a"));
-    if (isEmpty()) {
+    if (isSymbolTableEmpty()) {
         return (1);
     }
 
@@ -18,18 +18,18 @@ int test_addMultipleSymbols() {
         sprintf(buf, "%d", i);
         addSymbol(buf, t_int, sizeof(buf));
     }
-    if (isEmpty()) {
+    if (isSymbolTableEmpty()) {
         return (1);
     }
     return 0;
 }
 
 int test_isEmpty() {
-    if (!isEmpty()) {
+    if (!isSymbolTableEmpty()) {
         return (1);
     }
     addSymbol("a", t_int, sizeof("a"));
-    if (isEmpty()) {
+    if (isSymbolTableEmpty()) {
         return (1);
     }
     return 0;
@@ -46,11 +46,11 @@ int test_TableOverflow() {
 int test_deleteSymbol() {
     initTable();
     addSymbol("a", t_int, sizeof("a"));
-    if (isEmpty()) {
+    if (isSymbolTableEmpty()) {
         return (1);
     }
     deleteSymbol("a");
-    if (!isEmpty()) {
+    if (!isSymbolTableEmpty()) {
         return (1);
     }
     return 0;
@@ -99,10 +99,10 @@ int main(int argc, char const *argv[]) {
     initTable();
 
     if (test_isEmpty()) {
-        fprintf(stderr, "Test - isEmpty - FAILED ❌ \n");
+        fprintf(stderr, "Test - isSymbolTableEmpty - FAILED ❌ \n");
         allTestsPassed = 0;
     } else {
-        printf("Test - isEmpty - PASSED ✅\n");
+        printf("Test - isSymbolTableEmpty - PASSED ✅\n");
     }
 
     if (test_addOneSymbol()) {

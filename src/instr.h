@@ -56,7 +56,7 @@ typedef struct instruction
  * @brief Initializes the array of instructions to instructions without specified operator and operands to -1
  *
  */
-void initArray();
+void initInstrArray();
 
 /**
  * @brief Adds an instruction to the array
@@ -71,7 +71,7 @@ int addInstruction(instruction instr);
  *
  * @return 0 if executed successfully.
  */
-int printTable();
+int printInstrTable();
 
 /**
  * @brief Function to convert an instruction to a string.

@@ -8,23 +8,27 @@
  * @copyright Copyright (c) 2022
  *
  */
-#include "instr.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "instr.h"
+#include "../external/macrologger.h"
 
 #define TAILLE 1025
 
 instruction instrArray[TAILLE];
 
-void initArray()
+void initInstrArray()
 {
-    instruction instrInit;
-    for (int i = 0; i < 2; i++)
-    {
-        instrInit.ops[i] = -1;
-    }
+    instruction instrInit = {
+        .ope = ADD,
+        .ops = {
+            -1,
+            -1,
+            -1
+        }
+    };
     for (int i = 0; i < TAILLE - 1; i++)
     {
         instrArray[i] = instrInit;
@@ -34,7 +38,7 @@ void initArray()
 int addInstruction(instruction instr)
 {
     int i = 0;
-    while (i < TAILLE - 1 && instrArray[i].ops[0] == -1)
+    while (i < TAILLE - 1 && instrArray[i].ops[0] != -1)
     {
         i++;
     }
@@ -44,14 +48,16 @@ int addInstruction(instruction instr)
         exit(1);
     }
     instrArray[i] = instr;
+    // LOG_DEBUG("Instruction added %s", stringOfInstruction(instr));
     return 0;
 }
 
-int printTable()
+int printInstrTable()
 {
     for (int i = 0; i < TAILLE - 1; i++)
     {
         printf(stringOfInstruction(instrArray[i]));
+        printf("\n");
     }
     return 0;
 }
@@ -60,8 +66,8 @@ char *stringOfInstruction(instruction instruction)
 {
     if (instruction.ops[0] == -1)
     {
-        fprintf(stderr, "No instruction passed");
-        exit(1);
+        // fprintf(stderr, "No instruction passed");
+        exit(0);
     }
 
     char* str_out = malloc(100); char str_operator[7];

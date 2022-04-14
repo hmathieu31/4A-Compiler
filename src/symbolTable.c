@@ -19,16 +19,24 @@ symbolTable table;
 
 int depth;
 
-
 int newTmp()
 {
-    if (table.topIndex < TABLE_SIZE - 1)
+    if (table.topIndexSymbol < TABLE_SIZE - 1)
     {
-        return table.topIndex + 1;
-    } else
+        int addrTemp = table.topIndexTemp + 1;
+        table.topIndexTemp += 1;
+        return addrTemp;
+    }
+    else
     {
+        fprintf(stderr, "Error: the symbol table is full of temp var.\n");
         return -1;
     }
+}
+
+void freeAddrsTemp()
+{
+    table.topIndexTemp = BASE_VAR_TEMP - 1;
 }
 
 int increaseDepth()
@@ -45,7 +53,8 @@ int decreaseDepth()
 
 int initTable()
 {
-    table.topIndex = -1;
+    table.topIndexSymbol = -1;
+    table.topIndexTemp = BASE_VAR_TEMP - 1;
     symbol symInit = {
         "",
         t_int,
@@ -57,10 +66,10 @@ int initTable()
     return 0;
 }
 
-int isEmpty()
+int isSymbolTableEmpty()
 {
     int empty = 0;
-    if (table.topIndex == -1)
+    if (table.topIndexSymbol == -1)
     {
         empty = 1;
     }
@@ -69,7 +78,7 @@ int isEmpty()
 
 int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
 {
-    if (table.topIndex == TABLE_SIZE - 1) // The symbol table being limited to 1024 (TABLE_SIZE) symbols, an error must be handled if trying to add another symbol
+    if (table.topIndexSymbol == BASE_VAR_TEMP - 1) // The symbol table being limited to 924 (BASE_VAR_TEMP) symbols, an error must be handled if trying to add another symbol
     {
         fprintf(stderr, "Symbol table is full. Program cannot compile!\n");
         return -1;
@@ -77,32 +86,32 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
     char *name = (char *)malloc(sizeofSymbol);
     strncpy(name, symbolName, sizeofSymbol);
     symbol sym = {name, typ, depth};
-    table.topIndex += 1;
-    table.symbolArray[table.topIndex] = sym;
+    table.topIndexSymbol += 1;
+    table.symbolArray[table.topIndexSymbol] = sym;
 
-    // printf("Adding symbol '%s' to symbol table at depth %d and topindex is %d\n", table.symbolArray[table.topIndex].symbolName, table.symbolArray[table.topIndex].depth, table.topIndex);
+    // printf("Adding symbol '%s' to symbol table at depth %d and topindex is %d\n", table.symbolArray[table.topIndexSymbol].symbolName, table.symbolArray[table.topIndexSymbol].depth, table.topIndexSymbol);
     return 0;
 }
 
 int deleteSymbol()
 {
-    if (isEmpty())
+    if (isSymbolTableEmpty())
     {
         fprintf(stderr, "Nothing to delete, empty stack!\n");
         exit(-1);
     }
     else
     {
-        table.topIndex--;
+        table.topIndexSymbol--;
     }
     return 0;
 }
 
 int deleteFromChangeScope() // TODO #1 Handle the changes of scope stemming from functions (defined before the main)
 {
-    if (!isEmpty())
+    if (!isSymbolTableEmpty())
     {
-        int i = table.topIndex;
+        int i = table.topIndexSymbol;
         int deepestScope = table.symbolArray[i].depth;
         while (i >= 0 && table.symbolArray[i].depth == deepestScope)
         {
@@ -117,7 +126,7 @@ int getAddressSymbol(char *symbol)
 {
     int symbolAddress = -1;
     int i = 0;
-    while (i <= table.topIndex && symbolAddress == -1)
+    while (i <= table.topIndexSymbol && symbolAddress == -1)
     {
         if (strcmp(table.symbolArray[i].symbolName, symbol) == 0)
         {
@@ -130,12 +139,12 @@ int getAddressSymbol(char *symbol)
 
 int getTopIndex()
 {
-    return table.topIndex;
+    return table.topIndexSymbol;
 }
 
 void printSymbolTable()
 {
-    for (int i = 0; i < table.topIndex; i++)
+    for (int i = 0; i < table.topIndexSymbol; i++)
     {
         printf("Symbol : %s, depth : %d\n", table.symbolArray[i].symbolName, table.symbolArray[i].depth);
     }

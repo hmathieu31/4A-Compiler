@@ -10,6 +10,10 @@ void yyerror(char *s);
 %}
 %union { int nb; char *var; }
 %token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR tRETURN tELSE
+%right tEQ
+%left tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF
+%left tADD tSUB
+%left tMUL tDIV
 %token <nb> tNB tIF tWHILE
 %token <var> tID
 %type <nb> Terme Add Sub Mul Div Ope Eqinf Eqsup Sup Inf Equal Nequal Cond And Or

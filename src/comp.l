@@ -15,6 +15,7 @@ D [0-9]
 "int" {return tINT;}
 "printf" {return tPRINT;}
 "if" {return tIF;}
+"else" {return tELSE;}
 "while" {return tWHILE;}
 "return" {return tRETURN;}
 {D}+	{

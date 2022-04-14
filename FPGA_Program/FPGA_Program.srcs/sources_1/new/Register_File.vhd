@@ -47,7 +47,6 @@ entity Register_File is
 end Register_File;
 
 architecture Behavioral of Register_File is
-
   type Fischl is array (0 to 15) of STD_LOGIC_VECTOR(7 downto 0);
   signal poiss : Fischl;
   
@@ -58,17 +57,10 @@ begin
         if RST='0' then
            poiss<= (others => X"00");
         elsif W='1' then
-            if addrW = addrA then
-                QA<=DATA;
-            elsif addrW = addrB then
-                QB<=DATA;
-            else
                 poiss(to_integer(unsigned(addrW)))<=DATA;
             end if;
-         end if ;   
-    end process;
-    QA<=poiss(to_integer(unsigned(addrA)));
-    QB<=poiss(to_integer(unsigned(addrB)));
-    
+        end process;
+    QA<=DATA when addrW = addrA and W='1' else poiss(to_integer(unsigned(addrA)));
+    QB<=DATA when addrW = addrB and W='1' else poiss(to_integer(unsigned(addrB)));  
 end Behavioral;
 

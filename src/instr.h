@@ -27,7 +27,12 @@ typedef enum operator {
     JMF,
     INF,
     SUP,
-    EQU,
+    EQUAL,
+    NEQUAL,
+    EQINF,
+    EQSUP,
+    AND,
+    OR,
     PRI
 } operator;
 
@@ -42,7 +47,12 @@ static const char* const operator_string[] = {
     [JMF]= "JMF",
     [INF]= "INF",
     [SUP]= "SUP",
-    [EQU]= "EQU",
+    [EQUAL]= "EQUAL",
+    [NEQUAL]= "NEQUAL",
+    [EQINF]= "EQINF",
+    [EQSUP]= "EQU",
+    [AND]= "AND",
+    [OR]= "OR",
     [PRI]= "PRI"
 };
 

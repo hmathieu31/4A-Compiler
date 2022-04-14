@@ -12,7 +12,7 @@ void yyerror(char *s);
 %token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tIF tWHILE tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR tRETURN
 %token <nb> tNB
 %token <var> tID
-%type <nb> Terme Add Sub Mul Div Ope
+%type <nb> Terme Add Sub Mul Div Ope Compa Eqinf Eqsup Sup Inf Equal Nequal Cond
 %start Code
 %%
 Code :          {initTable(); initInstrArray();}  
@@ -46,16 +46,113 @@ Params : Dec tCOL Params
 InvokeFun: tID tOP Args tCP;
 Args: Terme
         | Terme tCOL Args;
-If: tIF tOP Conds tCP Body;
-While: tWHILE tOP Conds tCP Body;
-Conds: Cond Conds //TODO: #6 Implement conditionals
-       |Cond;
-Cond: Compa Logi Cond
+If: tIF tOP Cond tCP Body;
+While: tWHILE tOP Cond tCP Body;
+/* Conds: Cond Conds //TODO: #6 Implement conditionals
+       |Cond; */
+Cond: Compa tAND Cond
+                {
+                        int temp1 = newTmp();
+                        instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                        if(addInstruction(instr))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        int temp2 = newTmp();
+                        instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
+                        if(addInstruction(instr2))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        int temp3 = newTmp();
+                        instruction instr3 = {AND, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                        if(addInstruction(instr3))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        $$ = temp3;  
+                }
+        | Compa tOR Cond
+                {
+                        int temp1 = newTmp();
+                        instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                        if(addInstruction(instr))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        int temp2 = newTmp();
+                        instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
+                        if(addInstruction(instr2))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        int temp3 = newTmp();
+                        instruction instr3 = {OR, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                        if(addInstruction(instr3))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        $$ = temp3;
+                }
        |Compa
+                { $$ = $1; }
        |tID
-       |tNB;
-Logi: tOR
-      |tAND;
+                {
+                        int temp1 = newTmp();
+                        int addrInstr = getAddressSymbol($1);
+                        instruction instr = {COP, {temp1, addrInstr, -1}}; // Affect the first operand to a temporary var
+                        if(addInstruction(instr))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        int temp2 = newTmp();
+                        instruction instr2 = {AFC, {temp2, 0, -1}};       // Affect the second operand to a temporary var
+                        if(addInstruction(instr2))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        int temp3 = newTmp();
+                        instruction instr3 = {NEQUAL, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                        if(addInstruction(instr3))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        $$ = temp3;
+                }
+       |tNB
+                {
+                        int temp1 = newTmp();
+                        instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                        if(addInstruction(instr))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        int temp2 = newTmp();
+                        instruction instr2 = {AFC, {temp2, 0, -1}};       // Affect the second operand to a temporary var
+                        if(addInstruction(instr2))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        int temp3 = newTmp();
+                        instruction instr3 = {NEQUAL, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                        if(addInstruction(instr3))
+                        {
+                                fprintf(stderr, "Failed to add instruction.\n");
+                                exit(1);
+                        }
+                        $$ = temp3;
+                }
 Dec :   tCONST tINT tID 
                 {
                         if(getAddressSymbol($3) != -1)
@@ -272,18 +369,168 @@ Div :   Terme tDIV Terme
         }        
         ;
 
-Compa : Eqsup 
+Compa : Eqsup
+        {$$ = $1;}
         | Eqinf 
+        {$$ = $1;}
         | Sup 
+        {$$ = $1;}
         | Inf 
+        {$$ = $1;}
         | Equal 
-        | Nequal;
-Eqsup : Terme tEQSUP Terme;
-Eqinf : Terme tEQINF Terme;
-Sup : Terme tSUP Terme;
-Inf : Terme tINF Terme;
-Equal : Terme tEQUAL Terme;
-Nequal : Terme tNEQUAL Terme;
+        {$$ = $1;}
+        | Nequal
+        {$$ = $1;};
+Eqsup : Terme tEQSUP Terme
+        {
+                int temp1 = newTmp();
+                instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                instruction instr3 = {EQSUP, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        };
+Eqinf : Terme tEQINF Terme
+        {
+                int temp1 = newTmp();
+                instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                instruction instr3 = {EQINF, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        };
+Sup : Terme tSUP Terme
+        {
+                int temp1 = newTmp();
+                instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                instruction instr3 = {SUP, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        };
+Inf : Terme tINF Terme
+        {
+                int temp1 = newTmp();
+                instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                instruction instr3 = {INF, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        };
+Equal : Terme tEQUAL Terme
+        {
+                int temp1 = newTmp();
+                instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                instruction instr3 = {EQUAL, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        };
+Nequal : Terme tNEQUAL Terme
+        {
+                int temp1 = newTmp();
+                instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
+                if(addInstruction(instr))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp2 = newTmp();
+                instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
+                if(addInstruction(instr2))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                int temp3 = newTmp();
+                instruction instr3 = {NEQUAL, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
+                if(addInstruction(instr3))
+                {
+                        fprintf(stderr, "Failed to add instruction.\n");
+                        exit(1);
+                }
+                $$ = temp3;
+        }
 
 Terme : tOP Ope tCP
                 {$$ = $2;}

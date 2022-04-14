@@ -57,21 +57,21 @@ If: tIF tOP Terme tCP
                 instruction instr = {COP, {temp1, $1, -1}};
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {AFC, 0, -1}};
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {EQUAL, {temp3, temp1, temp2}};
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 instruction instrJMPF = {JMF, {temp3, -1, -1}};
@@ -145,14 +145,14 @@ While: tWHILE tOP Cond tCP
                 instruction instr = {COP, {temp1, $1, -1}};
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {AFC, 0, -1}};
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
@@ -160,7 +160,7 @@ While: tWHILE tOP Cond tCP
                 int line = addInstruction(instr3);
                 if(line == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 instruction instrJMPF = {JMF, {temp3, -1, -1}};
@@ -177,7 +177,7 @@ While: tWHILE tOP Cond tCP
                 patchJmpInstruction($1, currentLine + 2);
                 instruction instrJMP = {JMP, {$1, -1, -1}};
                 if(addInstruction(instrJMP) == -1) {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMP));
                         exit(1);
                 }
         };
@@ -235,7 +235,7 @@ Aff :   tID tEQ Terme
                         };
                         if(addInstruction(instr) == -1)
                         {
-                                fprintf(stderr, "Failed to add instruction.\n");
+                                fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                                 exit(1);
                         }
                         freeAddrsTemp();
@@ -258,7 +258,7 @@ Defaff : tCONST tINT tID tEQ Terme
                         instruction instr = {COP, {addrSymbol, $5, -1}};
                         if(addInstruction(instr) == -1)
                         {
-                                fprintf(stderr, "Failed to add instruction.\n");
+                                fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                                 exit(1);
                         }
                         freeAddrsTemp();
@@ -280,7 +280,7 @@ Defaff : tCONST tINT tID tEQ Terme
                         instruction instr = {COP, {addrSymbol, $4, -1}};
                         if(addInstruction(instr) == -1)
                         {
-                                fprintf(stderr, "Failed to add instruction.\n");
+                                fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                                 exit(1);
                         }
                         freeAddrsTemp();
@@ -300,21 +300,21 @@ Add :   Terme tADD Terme
                 instruction instr = {COP, {temp1, $1, -1}};     // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {ADD, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -326,21 +326,21 @@ Sub :   Terme tSUB Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {SUB, {temp3, temp1, temp2}};       // Substract the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -352,21 +352,21 @@ Mul :   Terme tMUL Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {MUL, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -378,21 +378,21 @@ Div :   Terme tDIV Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {DIV, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -421,21 +421,21 @@ Eqsup : Terme tEQSUP Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {EQSUP, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -446,21 +446,21 @@ Eqinf : Terme tEQINF Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {EQINF, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -471,21 +471,21 @@ Sup : Terme tSUP Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {SUP, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -496,21 +496,21 @@ Inf : Terme tINF Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {INF, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -521,21 +521,21 @@ Equal : Terme tEQUAL Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {EQUAL, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -546,21 +546,21 @@ Nequal : Terme tNEQUAL Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {NEQUAL, {temp3, temp1, temp2}};       // Add the two temporary vars with the result being in temp3
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -571,21 +571,21 @@ Or: Terme tOR Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {OR, {temp3, temp1, temp2}};
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -596,21 +596,21 @@ And: Terme tAND Terme
                 instruction instr = {COP, {temp1, $1, -1}}; // Affect the first operand to a temporary var
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
                 instruction instr2 = {COP, {temp2, $3, -1}};       // Affect the second operand to a temporary var
                 if(addInstruction(instr2) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
                         exit(1);
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {AND, {temp3, temp1, temp2}};
                 if(addInstruction(instr3) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 $$ = temp3;
@@ -633,7 +633,7 @@ Terme : tOP Ope tCP
                         instruction instr = {AFC, {addrTemp, $1, -1}};
                         if(addInstruction(instr) == -1)
                         {
-                                fprintf(stderr, "Failed to add instruction.\n");
+                                fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                                 exit(1);
                         }
                         $$ = addrTemp;
@@ -642,10 +642,15 @@ Terme : tOP Ope tCP
 Print : tPRINT tOP tID tCP
         {
                 int addrSymbol = getAddressSymbol($3);
+                if(addrSymbol == -1) 
+                {
+                        fprintf(stderr, "Failed to get address of symbol \"%s\".\n", $3);
+                        exit(1);
+                }
                 instruction instr = {PRI, {addrSymbol, -1, -1}};
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf(stderr, "Failed to add instruction.\n");
+                        fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
         }

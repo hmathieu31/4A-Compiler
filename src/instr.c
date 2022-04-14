@@ -56,7 +56,7 @@ int printTable()
     return 0;
 }
 
-char *stringOfInstruction(instruction instruction)  // TODO #3 Test the function
+char *stringOfInstruction(instruction instruction)
 {
     if (instruction.ops[0] == -1)
     {

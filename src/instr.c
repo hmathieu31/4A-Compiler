@@ -52,6 +52,22 @@ int addInstruction(instruction instr)
     return i;
 }
 
+instruction getInstruction(int i) {
+    if (i < 0 || i >= TAILLE - 1)
+    {
+        instruction instr = {
+            .ope = -1,
+            .ops = {
+                -1,
+                -1,
+                -1
+            }
+        };
+        return instr;
+    }
+    return instrArray[i];
+}
+
 int printInstrTable()
 {
     for (int i = 0; i < TAILLE - 1; i++)

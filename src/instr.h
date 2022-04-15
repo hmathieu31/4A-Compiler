@@ -77,6 +77,14 @@ void initInstrArray();
 int addInstruction(instruction instr);
 
 /**
+ * @brief Get the Instruction at the specified index
+ * 
+ * @param i 
+ * @return instrArray[i]
+ */
+instruction getInstruction(int i);
+
+/**
  * @brief Prints the entire array of instructions.
  *
  * @return 0 if executed successfully.

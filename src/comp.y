@@ -663,7 +663,11 @@ int main(void) {
   printf("Compiler\n"); // yydebug=1;
   yyparse();
 
-  printf("--- Table des instructions ---\n");
-  printInstrTable();
+  /* printf("--- Table des instructions ---\n"); */
+  /* printInstrTable(); */
+
+  // Apply interpreter
+  printf("--- Interpret code ---\n");
+  interpret();  
   return 0;
 }

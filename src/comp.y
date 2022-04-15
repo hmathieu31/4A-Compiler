@@ -139,7 +139,7 @@ If: tIF tOP Terme tCP
                         int current = getNumberOfInstructions();
                         patchJmpInstruction($1, current + 1);
         }; */
-While: tWHILE tOP Cond tCP
+While: tWHILE tOP Cond tCP      // TODO: #27 Debug While
         {
                 int temp1 = newTmp();
                 instruction instr = {COP, {temp1, $1, -1}};

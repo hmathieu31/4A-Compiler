@@ -142,14 +142,14 @@ If: tIF tOP Terme tCP
 While: tWHILE tOP Cond tCP      // TODO: #27 Debug While
         {
                 int temp1 = newTmp();
-                instruction instr = {COP, {temp1, $1, -1}};
+                instruction instr = {COP, {temp1, $3, -1}};
                 if(addInstruction(instr) == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
-                instruction instr2 = {COP, {AFC, 0, -1}};
+                instruction instr2 = {COP, {temp2, 0, -1}};
                 if(addInstruction(instr2) == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
@@ -157,14 +157,14 @@ While: tWHILE tOP Cond tCP      // TODO: #27 Debug While
                 }
                 int temp3 = newTmp();
                 instruction instr3 = {EQUAL, {temp3, temp1, temp2}};
-                int line = addInstruction(instr3);
-                if(line == -1)
+                if(addInstruction(instr3) == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
                         exit(1);
                 }
                 instruction instrJMPF = {JMF, {temp3, -1, -1}};
-                if(addInstruction(instrJMPF) == -1)
+                int line = addInstruction(instrJMPF);
+                if(line == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMPF));
                         exit(1);
@@ -173,13 +173,13 @@ While: tWHILE tOP Cond tCP      // TODO: #27 Debug While
         }
         Body
                 {
-                int currentLine = getNumberOfInstructions();
-                patchJmpInstruction($1, currentLine + 2);
-                instruction instrJMP = {JMP, {$1, -1, -1}};
+                instruction instrJMP = {JMP, {$1 - 1, -1, -1}};
                 if(addInstruction(instrJMP) == -1) {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMP));
                         exit(1);
                 }
+                int currentLine = getNumberOfInstructions();
+                patchJmpInstruction($1, currentLine);
         };
 Dec :   tCONST tINT tID 
                 {
@@ -663,11 +663,11 @@ int main(void) {
   printf("Compiler\n"); // yydebug=1;
   yyparse();
 
-  /* printf("--- Table des instructions ---\n"); */
-  /* printInstrTable(); */
+  printf("--- Table des instructions ---\n");
+  printInstrTable();
 
   // Apply interpreter
-  printf("--- Interpret code ---\n");
-  interpret();  
+/*   printf("--- Interpret code ---\n");
+  interpret();   */
   return 0;
 }

@@ -3,6 +3,8 @@ main() {
     while (i < 10)
     {
         i = i + 1;
+        int j = 3;
+        int k = j;
     }
     int a;
     int b;

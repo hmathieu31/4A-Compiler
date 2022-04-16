@@ -72,6 +72,7 @@ int printInstrTable()
 {
     for (int i = 0; i < TAILLE - 1; i++)
     {
+        printf("%d - ", i);
         printf(stringOfInstruction(instrArray[i]));
         printf("\n");
     }
@@ -115,6 +116,6 @@ int getNumberOfInstructions()
 }
 
 void patchJmpInstruction(int from, int to) {
-    instrArray[from].ops[0] = to;
+    instrArray[from].ops[1] = to;
 }
     

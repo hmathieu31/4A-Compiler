@@ -18,7 +18,7 @@
  * @brief Initialize the symbol interpreterTable with -1
  * 
  */
-void initSymbolTable();
+void initInterpretTable();
 
 /**
  * @brief Runs the interpreter on the instruction interpreterTable

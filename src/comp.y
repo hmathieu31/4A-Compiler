@@ -9,12 +9,12 @@
 void yyerror(char *s);
 %}
 %union { int nb; char *var; }
-%token tEQ tOP tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR tRETURN tELSE
+%token tEQ tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR tRETURN tELSE
 %right tEQ
 %left tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF
 %left tADD tSUB
 %left tMUL tDIV
-%token <nb> tNB tIF tWHILE
+%token <nb> tNB tIF tWHILE tOP
 %token <var> tID
 %type <nb> Terme Add Sub Mul Div Ope Eqinf Eqsup Sup Inf Equal Nequal Cond And Or
 %start Code
@@ -51,17 +51,19 @@ Params : Dec tCOL Params
 InvokeFun: tID tOP Args tCP;
 Args: Terme
         | Terme tCOL Args;
-If: tIF tOP Terme tCP
+If: tIF tOP
+        {$2 = getNumberOfInstructions();}
+        Terme tCP
         {
                 int temp1 = newTmp();
-                instruction instr = {COP, {temp1, $1, -1}};
+                instruction instr = {COP, {temp1, $4, -1}};
                 if(addInstruction(instr) == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
-                instruction instr2 = {COP, {temp2, 0, -1}};
+                instruction instr2 = {AFC, {temp2, 1, -1}};
                 if(addInstruction(instr2) == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
@@ -86,7 +88,7 @@ If: tIF tOP Terme tCP
         Body
         {
                 int currentLine = getNumberOfInstructions();
-                patchJmpInstruction($1, currentLine + 1);
+                patchJmpInstruction($1, currentLine);
         };
 /* Ifel: tIF tOP Terme tCP 
         {
@@ -139,17 +141,19 @@ If: tIF tOP Terme tCP
                         int current = getNumberOfInstructions();
                         patchJmpInstruction($1, current + 1);
         }; */
-While: tWHILE tOP Cond tCP      // TODO: #27 Debug While
+While: tWHILE tOP 
+        {$2 = getNumberOfInstructions();}
+        Cond tCP      // TODO: #27 Debug While
         {
                 int temp1 = newTmp();
-                instruction instr = {COP, {temp1, $3, -1}};
+                instruction instr = {COP, {temp1, $4, -1}};
                 if(addInstruction(instr) == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
                         exit(1);
                 }
                 int temp2 = newTmp();
-                instruction instr2 = {COP, {temp2, 0, -1}};
+                instruction instr2 = {AFC, {temp2, 1, -1}};
                 if(addInstruction(instr2) == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));
@@ -173,7 +177,7 @@ While: tWHILE tOP Cond tCP      // TODO: #27 Debug While
         }
         Body
                 {
-                instruction instrJMP = {JMP, {$1 - 1, -1, -1}};
+                instruction instrJMP = {JMP, {$2 -  1, -1, -1}};
                 if(addInstruction(instrJMP) == -1) {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMP));
                         exit(1);
@@ -663,11 +667,11 @@ int main(void) {
   printf("Compiler\n"); // yydebug=1;
   yyparse();
 
-  printf("--- Table des instructions ---\n");
-  printInstrTable();
+/*   printf("--- Table des instructions ---\n");
+  printInstrTable(); */
 
   // Apply interpreter
-/*   printf("--- Interpret code ---\n");
-  interpret();   */
+  printf("--- Interpret code ---\n");
+  interpret();  
   return 0;
 }

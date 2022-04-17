@@ -290,7 +290,7 @@ Defaff : tCONST tINT tID tEQ Terme
                         freeAddrsTemp();
                 }
                 ;
-Ope :   Add     // TODO: #7 Handle priorities in operations
+Ope :   Add
                 {$$ = $1;}
         | Sub 
                 {$$ = $1;}

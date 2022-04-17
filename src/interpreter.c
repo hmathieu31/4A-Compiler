@@ -38,16 +38,16 @@ void interpret()
         switch (instr.ope)
         {
         case ADD:
-            interpreterTable[instr.ops[0]] += interpreterTable[instr.ops[1]];
+            interpreterTable[instr.ops[0]] = interpreterTable[instr.ops[1]] + interpreterTable[instr.ops[2]];
             break;
         case SUB:
-            interpreterTable[instr.ops[0]] -= interpreterTable[instr.ops[1]];
+            interpreterTable[instr.ops[0]] = interpreterTable[instr.ops[1]] - interpreterTable[instr.ops[2]];
             break;
         case MUL:
-            interpreterTable[instr.ops[0]] *= interpreterTable[instr.ops[1]];
+            interpreterTable[instr.ops[0]] = interpreterTable[instr.ops[1]] * interpreterTable[instr.ops[2]];
             break;
         case DIV:
-            interpreterTable[instr.ops[0]] /= interpreterTable[instr.ops[1]];
+            interpreterTable[instr.ops[0]] = interpreterTable[instr.ops[1]] / interpreterTable[instr.ops[2]];
             break;
         case COP:
             interpreterTable[instr.ops[0]] = interpreterTable[instr.ops[1]];

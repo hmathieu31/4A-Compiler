@@ -61,7 +61,7 @@ If: tIF tOP Terme tCP
                         exit(1);
                 }
                 int temp2 = newTmp();
-                instruction instr2 = {COP, {AFC, 0, -1}};
+                instruction instr2 = {COP, {temp2, 0, -1}};
                 if(addInstruction(instr2) == -1)
                 {
                         fprintf(stderr, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr2));

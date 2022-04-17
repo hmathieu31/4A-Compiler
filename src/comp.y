@@ -88,7 +88,7 @@ If: tIF tOP
         Body
         {
                 int currentLine = getNumberOfInstructions();
-                patchJmpInstruction($1, currentLine);
+                patchJmpInstruction($1, currentLine - 1);
         };
 /* Ifel: tIF tOP Terme tCP 
         {

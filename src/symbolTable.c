@@ -108,6 +108,7 @@ int deleteSymbol()
 }
 
 int deleteFromChangeScope() // TODO #1 Handle the changes of scope stemming from functions (defined before the main)
+                            // TODO #29 Fix bug in change of scopes
 {
     if (!isSymbolTableEmpty())
     {

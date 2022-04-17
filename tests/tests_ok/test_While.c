@@ -10,5 +10,5 @@ main() {
     int b;
     a = b + 3;
     int c = a > 2;
-    printf(a);
+    printf(i);
 }

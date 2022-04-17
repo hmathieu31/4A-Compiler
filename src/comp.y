@@ -26,7 +26,7 @@ Code :          {initTable(); initInstrArray();}
 Body : tOB 
                 {increaseDepth();} 
         Ligne tCB 
-                {decreaseDepth();deleteFromChangeScope();}
+                {deleteFromChangeScope();decreaseDepth();}
         ;
 FunBody : tOB Ligne Return tCB
         | tOB Return tCB;

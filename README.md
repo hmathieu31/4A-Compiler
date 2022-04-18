@@ -60,6 +60,7 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href=#documentation> Documentation</a></li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#realised-by">Realised by</a></li>
   </ol>
@@ -70,10 +71,8 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-
-L’objectif de ce Projet Systèmes Informatiques est de réaliser un système informatique complet. 
-Nous allons réaliser un compilateur qui traduit un langage source (proche du C) en un langage 
-cible (jeu d’instructions assembleur orientées mémoire)
+The objective of this project is to realize a complete computer system. We will design a compiler
+translating a source language (close from C) into a target language (assembly oriented memory instructions)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -120,6 +119,11 @@ To get a local copy up and running follow these simple example steps.*
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+### Documentation
+
+[Subject of the Project](https://github.com/hmathieu-insat/4A-Compiler/blob/main/doc/Projet_Syst_Info_2021.pdf)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- USAGE EXAMPLES -->
@@ -129,7 +133,7 @@ To get a local copy up and running follow these simple example steps.*
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
-<p align="right">(<a href="#top">back to top</a>)</p>*
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 
 <!-- Contributors -->

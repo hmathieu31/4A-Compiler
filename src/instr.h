@@ -27,7 +27,12 @@ typedef enum operator {
     JMF,
     INF,
     SUP,
-    EQU,
+    EQUAL,
+    NEQUAL,
+    EQINF,
+    EQSUP,
+    AND,
+    OR,
     PRI
 } operator;
 
@@ -42,7 +47,12 @@ static const char* const operator_string[] = {
     [JMF]= "JMF",
     [INF]= "INF",
     [SUP]= "SUP",
-    [EQU]= "EQU",
+    [EQUAL]= "EQUAL",
+    [NEQUAL]= "NEQUAL",
+    [EQINF]= "EQINF",
+    [EQSUP]= "EQU",
+    [AND]= "AND",
+    [OR]= "OR",
     [PRI]= "PRI"
 };
 
@@ -62,9 +72,17 @@ void initInstrArray();
  * @brief Adds an instruction to the array
  *
  * @param instr Asm instruction to add
- * @return 0 if executed successfully.
+ * @return The number of the instruction line added if excecuted correctly. -1 otherwise.
  */
 int addInstruction(instruction instr);
+
+/**
+ * @brief Get the Instruction at the specified index
+ * 
+ * @param i 
+ * @return instrArray[i]
+ */
+instruction getInstruction(int i);
 
 /**
  * @brief Prints the entire array of instructions.
@@ -80,5 +98,20 @@ int printInstrTable();
  * @return Formatted string representation of the instruction.
  */
 char *stringOfInstruction(instruction instr);
+
+/**
+ * @brief Get the Number Of Instructions in the table
+ * 
+ * @return int 
+ */
+int getNumberOfInstructions();
+
+/**
+ * @brief Patch the jump based instruction with the correct address
+ * 
+ * @param from Address from where the jump is
+ * @param to Address to where the jump is
+ */
+void patchJmpInstruction(int from, int to);
 
 #endif

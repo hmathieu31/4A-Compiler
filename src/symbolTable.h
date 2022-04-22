@@ -65,7 +65,7 @@ typedef struct symbol
 typedef struct symbolTable
 {
     symbol symbolArray[TABLE_SIZE];
-    int topIndexSymbol;
+    int topSymbolIndex;
     int topIndexTemp;
 } symbolTable;
 
@@ -102,7 +102,7 @@ int isSymbolTableEmpty();
 
 /**
  * @brief Removes all symbols at the highest scope from the table
- *
+ * 
  * @return 0 if executed correctly
  */
 int deleteFromChangeScope();

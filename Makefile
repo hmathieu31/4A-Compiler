@@ -20,7 +20,7 @@ endif
 
 CFLAGS=-Wall -g -Isrc/ -Iexternal/
 
-OBJ=bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o #main.o
+OBJ=bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o bin/interpreter.o #main.o
 T_OBJ=bin/instr.o bin/testInstr.o
 
 all: $(BIN)
@@ -43,7 +43,7 @@ bin/lex.yy.c: $(LEX)
 	$(DICT) --outfile=$@ $<
 
 $(BIN): $(OBJ)
-	$(CC) $(CFLAGS) $(CPPFLAGS) bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o -o bin/$@
+	$(CC) $(CFLAGS) $(CPPFLAGS) bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o bin/interpreter.o -o bin/$@
 
 $(TEST): $(T_OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) bin/instr.o bin/testInstr.o -o bin/$@

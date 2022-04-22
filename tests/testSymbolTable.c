@@ -56,22 +56,22 @@ int test_deleteSymbol() {
     return 0;
 }
 
-int test_getAddressSymbol() {
+int test_getSymbolAddress() {
     initTable();
     addSymbol("toto", t_int, sizeof("toto"));
     addSymbol("a", t_int, sizeof("a"));
     addSymbol("b", t_int, sizeof("b"));
     addSymbol("c", t_int, sizeof("c"));
     addSymbol("pouf", t_int, sizeof("pouf"));
-    int add = getAddressSymbol("toto");
+    int add = getSymbolAddress("toto");
     if (add != 0) {
         return (1);
     }
-    add = getAddressSymbol("pouf");
+    add = getSymbolAddress("pouf");
     if (add != 4) {
         return (1);
     }
-    add = getAddressSymbol("b");
+    add = getSymbolAddress("b");
     if (add != 2) {
         return (1);
     }
@@ -136,11 +136,11 @@ int main(int argc, char const *argv[]) {
         printf("Test - test_deleteSymbol - PASSED ✅ \n");
     }
 
-    if (test_getAddressSymbol()) {
-        fprintf(stderr, "Test - test_getAddressSymbol- FAILED ❌ \n");
+    if (test_getSymbolAddress()) {
+        fprintf(stderr, "Test - test_getSymbolAddress- FAILED ❌ \n");
         allTestsPassed = 0;
     } else {
-        printf("Test - test_getAddressSymbol - PASSED ✅ \n");
+        printf("Test - test_getSymbolAddress - PASSED ✅ \n");
     }
 
     if (test_deleteFromChangeScope()) {

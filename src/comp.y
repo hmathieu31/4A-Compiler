@@ -5,6 +5,7 @@
 #include "symbolTable.h"
 #include "instr.h"
 #include "macrologger.h"
+#include "interpreter.h"
 
 void yyerror(char *s);
 %}
@@ -20,16 +21,20 @@ void yyerror(char *s);
 %start Code
 %%
 Code :          {initTable(); initInstrArray();}  
-        tMAIN Body
+        tMAIN {resetFunctionDepth();} Body
         |       {initTable(); initInstrArray();} 
         Fun Code;
 Body : tOB 
                 {increaseDepth();} 
         Ligne tCB 
-                {deleteFromChangeScope();decreaseDepth();}
+                {decreaseDepth();deleteFromChangeScope();}
         ;
-FunBody : tOB Ligne Return tCB
-        | tOB Return tCB;
+FunBody : tOB
+                {increaseFunctionDepth();}
+        Ligne Return tCB
+        | tOB Return tCB
+                
+        ;
 Return : tRETURN Terme tSCOL;
 Ligne : Instr Ligne 
         |Instr
@@ -44,7 +49,30 @@ Expr : Dec
         |Defaff 
         |Ope 
         |Print;
-Fun: tINT tID tOP Params tCP FunBody;
+Fun: tINT tID 
+        {
+                if(getFunctionAddress($2) != -1)
+                {
+                        fprintf("Error : function %s already defined\n", $2);
+                        exit(1);
+                }
+                int line = getNumberOfInstructions();
+                if(addFunction($2, line) == -1)
+                {
+                        fprintf("Error : Function table is full\n");
+                        exit(1);
+                }
+        }
+        tOP Params tCP FunBody
+        {
+                instruction instr = {JMP, {-1}};
+                if(addInstruction(instr) == -1)
+                {
+                        fprintf("Error : Instruction table is full\n");
+                        exit(1);
+                }
+        }
+        ;
 Params : Dec tCOL Params
         |Dec
         |;
@@ -187,7 +215,7 @@ While: tWHILE tOP
         };
 Dec :   tCONST tINT tID 
                 {
-                        if(getAddressSymbol($3) != -1)
+                        if(getSymbolAddress($3) != -1)
                         {
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
                                 exit(1);
@@ -200,7 +228,7 @@ Dec :   tCONST tINT tID
                 }
         |tINT tID 
                 {
-                        if(getAddressSymbol($2) != -1)
+                        if(getSymbolAddress($2) != -1)
                         {
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $2);
                                 exit(1);
@@ -213,7 +241,7 @@ Dec :   tCONST tINT tID
                 }
         |Dec tCOL tID
                 {
-                        if(getAddressSymbol($3) != -1)
+                        if(getSymbolAddress($3) != -1)
                         {
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
                                 exit(1);
@@ -227,7 +255,7 @@ Dec :   tCONST tINT tID
                 };
 Aff :   tID tEQ Terme
                 {
-                        int addrSymbol = getAddressSymbol($1);
+                        int addrSymbol = getSymbolAddress($1);
                         if(addrSymbol == -1) 
                         {
                                 fprintf(stderr, "Variable \"%s\" is undefined.\n", $1);
@@ -247,7 +275,7 @@ Aff :   tID tEQ Terme
         ;
 Defaff : tCONST tINT tID tEQ Terme
                 {
-                        int addrSymbol = getAddressSymbol($3);
+                        int addrSymbol = getSymbolAddress($3);
                         if(addrSymbol != -1)
                         {
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $3);
@@ -258,7 +286,7 @@ Defaff : tCONST tINT tID tEQ Terme
                                 fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $3);
                                 exit(1);
                         }
-                        addrSymbol = getAddressSymbol($3);
+                        addrSymbol = getSymbolAddress($3);
                         instruction instr = {COP, {addrSymbol, $5, -1}};
                         if(addInstruction(instr) == -1)
                         {
@@ -269,7 +297,7 @@ Defaff : tCONST tINT tID tEQ Terme
                 }
         |tINT tID tEQ Terme
                 {
-                        int addrSymbol = getAddressSymbol($2);
+                        int addrSymbol = getSymbolAddress($2);
                         if(addrSymbol != -1)
                         {
                                 fprintf(stderr, "Variable \"%s\" already exists. \n", $2);
@@ -280,7 +308,7 @@ Defaff : tCONST tINT tID tEQ Terme
                                 fprintf(stderr, "Symbol table full. Could not add variable \"%s\"", $2);
                                 exit(1);
                         }
-                        addrSymbol = getAddressSymbol($2);
+                        addrSymbol = getSymbolAddress($2);
                         instruction instr = {COP, {addrSymbol, $4, -1}};
                         if(addInstruction(instr) == -1)
                         {
@@ -630,7 +658,7 @@ Terme : tOP Ope tCP
         | Cond
                 {$$ = $1;}
         | tID
-                {$$ = getAddressSymbol($1);}
+                {$$ = getSymbolAddress($1);}
         | tNB
                 {
                         int addrTemp =newTmp();
@@ -645,7 +673,7 @@ Terme : tOP Ope tCP
         | InvokeFun;
 Print : tPRINT tOP tID tCP
         {
-                int addrSymbol = getAddressSymbol($3);
+                int addrSymbol = getSymbolAddress($3);
                 if(addrSymbol == -1) 
                 {
                         fprintf(stderr, "Failed to get address of symbol \"%s\".\n", $3);

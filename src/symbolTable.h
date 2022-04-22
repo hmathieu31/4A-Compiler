@@ -14,6 +14,7 @@
 
 #define TABLE_SIZE 1025
 #define BASE_VAR_TEMP 925
+#define FUNCTION_TABLE_SIZE 65
 
 typedef enum type
 {
@@ -22,20 +23,20 @@ typedef enum type
 
 /**
  * @brief Creates a new temporary variable in the symbol table.
- * 
+ *
  * @return  The address of the new temporary variable. Or -1 if the table was full.
  */
 int newTmp();
 
 /**
  * @brief Free the temporary addresses.
- * 
+ *
  */
 void freeAddrsTemp();
 
 /**
  * @brief Affects the value to the temporary address addr_temp1 or addr_temp2 if 1 is unavailable.
- * 
+ *
  * @param value Value to be stored at the address.
  * @return The temporary address used.
  */
@@ -55,19 +56,47 @@ int increaseDepth();
  */
 int decreaseDepth();
 
+/**
+ * @brief Increases the current function depth
+ *
+ */
+void increaseFunctionDepth();
+
+/**
+ * @brief Reset the current function depth before entering the main
+ *
+ */
+void resetFunctionDepth();
+
 typedef struct symbol
 {
     char *symbolName;
     type typ;
     int depth;
+    int functionDepth;
 } symbol;
 
-typedef struct symbolTable
+
+typedef struct Function
+{
+    char *functionName;
+    int functionAddress;
+    int returnAddress;
+} Function;
+
+
+typedef struct SymbolTable
 {
     symbol symbolArray[TABLE_SIZE];
     int topSymbolIndex;
     int topIndexTemp;
-} symbolTable;
+} SymbolTable;
+
+typedef struct FunctionTable
+{
+    Function functionArray[FUNCTION_TABLE_SIZE];
+    int topFunctionIndex;
+} FunctionTable;
 
 /**
  * @brief Initializes the table at the start of the compilation
@@ -77,14 +106,29 @@ typedef struct symbolTable
 int initTable();
 
 /**
+ * @brief Initializes the function table at the start of the compilation
+ * 
+ */
+void initFunctionTable();
+
+/**
  * @brief Add a new symbol to the table
  *
  * @param symbolName
- * @param typ For now t_int only
- * @param depth Corresponding to the scope of the variable (vars in main being at depth 0)
+ * @param size_of_symbol The size of the symbol in bytes
+ * @param type For now int only
  * @return 0 if the symbol was correctly. -1 if the symbol could not be added. (table full)
  */
 int addSymbol(char *symbolName, int sizeofSymbol, enum type typ);
+
+/**
+ * @brief Add a new function name to the function table
+ * 
+ * @param functionName
+ * @param functionAddress The address of the first line of assembler code of the function
+ * @return 0 if the function was correctly. -1 if the function could not be added. (table full)
+ */
+int addFunction(char* FunctionName, int functionAddress);
 
 /**
  * @brief Delete the symbol at the top of the table.
@@ -94,15 +138,15 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ);
 int deleteSymbol();
 
 /**
- * @brief Checks if the symbolTable is empty.
+ * @brief Checks if the SymbolTable is empty.
  *
- * @return 1 if the symbolTable is empty.
+ * @return 1 if the SymbolTable is empty.
  */
 int isSymbolTableEmpty();
 
 /**
  * @brief Removes all symbols at the highest scope from the table
- * 
+ *
  * @return 0 if executed correctly
  */
 int deleteFromChangeScope();
@@ -113,14 +157,29 @@ int deleteFromChangeScope();
  * @param symbol
  * @return The address of the symbol if the symbol is present. -1 if the symbol is not present
  */
-int getAddressSymbol(char *symbol);
+int getSymbolAddress(char *symbol);
 
 /**
- * @brief Get the Top Index of the symbolTable (Testing purposes)
+ * @brief Checks if the function has been declared and returns the address of its first line of code if present
+ * 
+ * @param functionName 
+ * @return The address of the first line of assembler code of the function. -1 if the function is not present
+ */
+int getFunctionAddress(char *functionName);
+
+/**
+ * @brief Get the Top Index of the SymbolTable (Testing purposes)
  *
  * @return the index of the top.
  */
 int getTopIndex();
+
+/**
+ * @brief Get the return address corresponding to the current function then resets it.
+ * 
+ * @return The address the function must return to. Or -1 if the return address is not set.
+ */
+int getFunctionReturnAddress(char* functionName);
 
 /**
  * @brief Testing function displaying the table of symbols.

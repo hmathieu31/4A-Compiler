@@ -39,7 +39,7 @@ entity Data_Memory_File is
            RW : in STD_LOGIC;
            RST : in STD_LOGIC;
            CLK : in STD_LOGIC;
-           O : out STD_LOGIC_VECTOR (0 downto 0));
+           O : out STD_LOGIC_VECTOR (7 downto 0));
 end Data_Memory_File;
 
 architecture Behavioral of Data_Memory_File is

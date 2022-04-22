@@ -36,6 +36,45 @@ end Processor;
 
 architecture Behavioral of Processor is
 
+COMPONENT Instruction_Memory_File
+PORT(
+Addr : in STD_LOGIC_VECTOR (7 downto 0);
+CLK : in STD_LOGIC;
+O : out STD_LOGIC_VECTOR (31 downto 0)
+);
+END COMPONENT;
+--Instruction_Memory_File
+--Inputs
+signal IMF_Addr: std_logic_vector(7 downto 0) := (others => '0');
+signal IMF_CLK: std_logic;
+--Outputs
+signal IMF_O: std_logic_vector(31 downto 0) := (others => '0');
+
+COMPONENT Register_File
+PORT(
+addrA : in STD_LOGIC_VECTOR (3 downto 0);
+addrB : in STD_LOGIC_VECTOR (3 downto 0);
+addrW : in STD_LOGIC_VECTOR (3 downto 0);
+W : in STD_LOGIC;
+DATA : in STD_LOGIC_VECTOR (7 downto 0);
+RST : in STD_LOGIC;--actif bas
+CLK : in STD_LOGIC;
+QA : out STD_LOGIC_VECTOR (7 downto 0);
+QB : out STD_LOGIC_VECTOR (7 downto 0)
+);
+END COMPONENT;
+--Register_File
+--Inputs
+signal RF_addrA : STD_LOGIC_VECTOR (3 downto 0) := (others => '0');
+signal RF_addrB : STD_LOGIC_VECTOR (3 downto 0) := (others => '0');
+signal RF_addrW : STD_LOGIC_VECTOR (3 downto 0) := (others => '0');
+signal RF_W : STD_LOGIC;
+signal RF_DATA : STD_LOGIC_VECTOR (7 downto 0) := (others => '0');
+signal RF_RST : STD_LOGIC;--actif bas
+signal RF_CLK : STD_LOGIC;
+--Outputs
+signal RF_QA : STD_LOGIC_VECTOR (7 downto 0) := (others => '0');
+signal RF_QB : STD_LOGIC_VECTOR (7 downto 0) := (others => '0');
 
 COMPONENT UAL
 PORT(
@@ -46,19 +85,40 @@ S : out STD_LOGIC_VECTOR (7 downto 0);
 N : out STD_LOGIC;
 O : out STD_LOGIC;
 Z : out STD_LOGIC;
-C : out STD_LOGIC);
+C : out STD_LOGIC
+);
 END COMPONENT;
 --UAL
 --Inputs
-signal A_UAL: std_logic_vector(7 downto 0) := (others => '0');
-signal B_UAL: std_logic_vector(7 downto 0) := (others => '0');
-signal Ctrl_Alu_UAL : STD_LOGIC_VECTOR (2 downto 0) := (others =>'0');
+signal UAL_A: std_logic_vector(7 downto 0) := (others => '0');
+signal UAL_B: std_logic_vector(7 downto 0) := (others => '0');
+signal UAL_Ctrl_Alu : STD_LOGIC_VECTOR (2 downto 0) := (others =>'0');
 --Outputs
-signal S_UAL : STD_LOGIC_VECTOR (7 downto 0);
-signal N_UAL : STD_LOGIC;
-signal O_UAL : STD_LOGIC;
-signal Z_UAL : STD_LOGIC;
-signal C_UAL : STD_LOGIC;
+signal UAL_S : STD_LOGIC_VECTOR (7 downto 0);
+signal UAL_N : STD_LOGIC;
+signal UAL_O : STD_LOGIC;
+signal UAL_Z : STD_LOGIC;
+signal UAL_C : STD_LOGIC;
+
+COMPONENT Data_Memory_File
+PORT(
+Addr : in STD_LOGIC_VECTOR (7 downto 0);
+I : in STD_LOGIC_VECTOR (7 downto 0);
+RW : in STD_LOGIC;
+RST : in STD_LOGIC;
+CLK : in STD_LOGIC;
+O : out STD_LOGIC_VECTOR (7 downto 0)
+);
+END COMPONENT;
+--DMF
+--Inputs
+signal DMF_Addr : STD_LOGIC_VECTOR (7 downto 0) := (others =>'0');
+signal DMF_I : STD_LOGIC_VECTOR (7 downto 0) := (others =>'0');
+signal DMF_RW : STD_LOGIC;
+signal DMF_RST : STD_LOGIC;
+signal DMF_CLK : STD_LOGIC;
+--Outputs
+signal DMF_O : STD_LOGIC_VECTOR (7 downto 0) := (others =>'0');
 
 COMPONENT Pipeline
 PORT(
@@ -70,9 +130,9 @@ Aout : out STD_LOGIC_VECTOR (7 downto 0);
 Bouftou : out STD_LOGIC_VECTOR (7 downto 0);     
 Cout : out STD_LOGIC_VECTOR (7 downto 0);
 OPout : out STD_LOGIC_VECTOR (3 downto 0);
-CLK : in STD_LOGIC);
+CLK : in STD_LOGIC
+);
 END COMPONENT;
-
 --LIDI
 --Inputs
 signal Ain_LIDI: std_logic_vector(7 downto 0) := (others=> '0');
@@ -85,7 +145,6 @@ signal Aout_LIDI : std_logic_vector(7 downto 0) := (others=> '0');
 signal Bouftou_LIDI : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_LIDI : std_logic_vector(7 downto 0) := (others=> '0');
 signal OPout_LIDI : std_logic_vector(3 downto 0) := (others=> '0');
-
 --DIEX
 --Inputs
 signal Ain_DIEX: std_logic_vector(7 downto 0) := (others=> '0');
@@ -98,7 +157,6 @@ signal Aout_DIEX : std_logic_vector(7 downto 0) := (others=> '0');
 signal Bouftou_DIEX : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_DIEX : std_logic_vector(7 downto 0) := (others=> '0');
 signal OPout_DIEX : std_logic_vector(3 downto 0) := (others=> '0');
-
 --EXmem
 --Inputs
 signal Ain_Exmem: std_logic_vector(7 downto 0) := (others=> '0');
@@ -111,7 +169,6 @@ signal Aout_Exmem : std_logic_vector(7 downto 0) := (others=> '0');
 signal Bouftou_Exmem : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_Exmem : std_logic_vector(7 downto 0) := (others=> '0');
 signal OPout_Exmem : std_logic_vector(3 downto 0) := (others=> '0');
-
 --MemRE
 --Inputs
 signal Ain_MemRE: std_logic_vector(7 downto 0) := (others=> '0');
@@ -125,18 +182,43 @@ signal Bouftou_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
 signal OPout_MemRE : std_logic_vector(3 downto 0) := (others=> '0');
 
+
+
+
 begin
---UAL
-C_UAL : UAL PORT MAP(
-A=> A_UAL,
-B=> B_UAL,
-Ctrl_Alu=> Ctrl_Alu_UAL,
-S=> S_UAL,
-N=> N_UAL
-O=> O_UAL,
-Z=> Z_UAL,
-C=> C_UAL
+
+--IMF
+IMF : Instruction_Memory_File PORT MAP(
+Addr => IMF_Addr,
+CLK => IMF_CLK,
+O => IMF_O
 );
+
+--RF
+RF : Register_File PORT MAP(
+addrA => RF_addrA,
+addrB => RF_addrB,
+addrW => RF_addrW,
+W  => RF_W,
+DATA => RF_DATA,
+RST => RF_RST,
+CLK => RF_CLK,
+QA => RF_QA,
+QB => RF_QB
+);
+
+--UAL
+Ual_UAL : UAL PORT MAP(
+A=> UAL_A,
+B=> UAL_B,
+Ctrl_Alu=> UAL_Ctrl_Alu,
+S=> UAL_S,
+N=> UAL_N,
+O=> UAL_O,
+Z=> UAL_Z,
+C=> UAL_C
+);
+
 --LIDI
 Pipeline_LIDI: Pipeline PORT MAP(
 Ain=>Ain_LIDI,
@@ -150,6 +232,7 @@ OPout=>OPout_LIDI,
 CLK=>CLK_LIDI
 );
 
+--DIEX
 Pipeline_DIEX: Pipeline PORT MAP(
 Ain=>Ain_DIEX,
 Bin=>Bin_DIEX,
@@ -162,6 +245,7 @@ OPout=>OPout_DIEX,
 CLK=>CLK_DIEX
 );
 
+--Exmem
 Pipeline_Exmem: Pipeline PORT MAP(
 Ain=>Ain_Exmem,
 Bin=>Bin_Exmem,
@@ -174,6 +258,7 @@ OPout=>OPout_Exmem,
 CLK=>CLK_Exmem
 );
 
+--MemRE
 Pipeline_MemRE: Pipeline PORT MAP(
 Ain=>Ain_MemRE,
 Bin=>Bin_MemRE,

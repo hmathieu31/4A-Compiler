@@ -43,25 +43,24 @@ entity UAL is
 end UAL;
 
 architecture Behavioral of UAL is
-            signal mlda : std_logic_vector(15 downto 0);
+            signal mlda : std_logic_vector(15 downto 0) :=(others => '0');
             signal A16 : std_logic_vector(15 downto 0); 
             signal B16 : std_logic_vector(15 downto 0);
 begin
     A16<=X"00"&A;
     B16<=X"00"&B;
-        mlda<=A16+B16 when Ctrl_Alu="001";
+        mlda<= A16+B16 when Ctrl_Alu="001" else
             
-        mlda<= A*B when Ctrl_Alu="010";
+                A*B when Ctrl_Alu="010" else 
             
-        mlda<=A16-B16 when Ctrl_Alu="011";
-        --when "100" =>
-            --mlda<= A sll B;--vérifier comment sll marche avec des bits fields
-     N<='1' when B>A;
-     N<='0' when A>B;
-     O<='0' when mlda(15 downto 8)=X"00";
-     O<='1' when mlda(15 downto 8)/=X"00";
-     Z<='1' when mlda=X"0000";
-     Z<='0' when mlda/=X"0000";
-     C<=mlda(8);    
+               A16-B16 when Ctrl_Alu="011" and A>B else
+               
+               B16-A16 when Ctrl_Alu="011" and B>A
+               ;
+
+     N<='1' when B>A and Ctrl_Alu="011" else '0';
+     O<='1' when mlda(15 downto 8)/=X"00" else '0';
+     Z<='1' when mlda=X"0000" else '0';
+     C<=mlda(8) when Ctrl_Alu="001" else '0';    
      S<=mlda(7 downto 0);
 end Behavioral;

@@ -53,13 +53,13 @@ Fun: tINT tID
         {
                 if(getFunctionAddress($2) != -1)
                 {
-                        fprintf("Error : function %s already defined\n", $2);
+                        fprintf(stderr ,"Error : function %s already defined\n", $2);
                         exit(1);
                 }
                 int line = getNumberOfInstructions();
                 if(addFunction($2, line) == -1)
                 {
-                        fprintf("Error : Function table is full\n");
+                        fprintf(stderr, "Error : Function table is full\n");
                         exit(1);
                 }
         }
@@ -68,7 +68,7 @@ Fun: tINT tID
                 instruction instr = {JMP, {-1}};
                 if(addInstruction(instr) == -1)
                 {
-                        fprintf("Error : Instruction table is full\n");
+                        fprintf(stderr, "Error : Instruction table is full\n");
                         exit(1);
                 }
         }

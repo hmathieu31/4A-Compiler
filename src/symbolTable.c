@@ -151,18 +151,6 @@ int setFunctionReturnAddress(char* functionName, int returnAddress)
     return 0;
 }
 
-int getFunctionReturnAddress(int functionAddress)
-{
-    for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
-    {
-        if (functionTable.functionArray[i].functionAddress == functionAddress)
-        {
-            return functionTable.functionArray[i].returnAddress;
-        }
-    }
-    return -1;
-}
-
 int getFunctionAddress(char* functionName)
 {
     for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
@@ -170,30 +158,6 @@ int getFunctionAddress(char* functionName)
         if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
         {
             return functionTable.functionArray[i].functionAddress;
-        }
-    }
-    return -1;
-}
-
-int getSymbolAddress(char *symbolName)
-{
-    for (int i = 0; i < TABLE_SIZE; i++)
-    {
-        if (strcmp(symbolTable.symbolArray[i].symbolName, symbolName) == 0)
-        {
-            return symbolTable.symbolArray[i].depth;
-        }
-    }
-    return -1;
-}
-
-int getSymbolType(char *symbolName)
-{
-    for (int i = 0; i < TABLE_SIZE; i++)
-    {
-        if (strcmp(symbolTable.symbolArray[i].symbolName , symbolName) == 0)
-        {
-            return symbolTable.symbolArray[i].typ;
         }
     }
     return -1;
@@ -241,21 +205,6 @@ int getSymbolAddress(char *symbol)
         i++;
     }
     return symbolAddress;
-}
-
-int getFunctionAddress(char *functionName)
-{
-    int functionIndex = -1;
-    int i = 0;
-    while (i <= functionTable.topFunctionIndex && functionIndex == -1)
-    {
-        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
-        {
-            functionIndex = i;
-        }
-        i++;
-    }
-    return functionTable.functionArray[functionIndex].functionAddress;
 }
 
 int getTopIndex()

@@ -17,12 +17,12 @@ void yyerror(char *s);
 %left tMUL tDIV
 %token <nb> tNB tIF tWHILE tOP
 %token <var> tID
-%type <nb> Terme Add Sub Mul Div Ope Eqinf Eqsup Sup Inf Equal Nequal Cond And Or
+%type <nb> Terme Add Sub Mul Div Ope Eqinf Eqsup Sup Inf Equal Nequal Cond And Or InvokeFun
 %start Code
 %%
 Code :          {initTable(); initInstrArray();}  
         tMAIN {resetFunctionDepth();} Body
-        |       {initTable(); initInstrArray();} 
+        |       {initTable(); initInstrArray(); initFunctionTable();} 
         Fun Code;
 Body : tOB 
                 {increaseDepth();} 
@@ -66,9 +66,15 @@ Fun: tINT tID
         tOP Params tCP FunBody
         {
                 instruction instr = {JMP, {-1}};
-                if(addInstruction(instr) == -1)
+                int line = addInstruction(instr);
+                if(line == -1)
                 {
                         fprintf(stderr, "Error : Instruction table is full\n");
+                        exit(1);
+                }
+                if(setFunctionReturnAddress($2, line) == -1)
+                {
+                        fprintf(stderr, "Error : Function %s not found\n", $2);
                         exit(1);
                 }
         }
@@ -76,9 +82,31 @@ Fun: tINT tID
 Params : Dec tCOL Params
         |Dec
         |;
-InvokeFun: tID tOP Args tCP;
+InvokeFun: tID tOP Args tCP
+        {
+                int currentLine = getNumberOfInstructions();
+                if(currentLine == -1)
+                {
+                        fprintf(stderr, "Error : Instruction table is full\n");
+                        exit(1);
+                }
+                if(setFunctionScope($1) == -1)
+                {
+                        fprintf(stderr, "Error : Function %s not defined\n", $1);
+                        exit(1);
+                }
+                patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1);
+                instruction instr = {JMP, {getFunctionAddress($1)}};
+                if(addInstruction(instr) == -1)
+                {
+                        fprintf(stderr, "Error : Instruction table is full\n");
+                        exit(1);
+                }
+        }
+        ;
 Args: Terme
-        | Terme tCOL Args;
+        | Terme tCOL Args
+        |;
 If: tIF tOP
         {$2 = getNumberOfInstructions();}
         Terme tCP
@@ -670,7 +698,9 @@ Terme : tOP Ope tCP
                         }
                         $$ = addrTemp;
                 }
-        | InvokeFun;
+        | InvokeFun
+                {$$ = $1;}
+        ;
 Print : tPRINT tOP tID tCP
         {
                 int addrSymbol = getSymbolAddress($3);

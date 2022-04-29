@@ -76,14 +76,13 @@ typedef struct symbol
     int functionDepth;
 } symbol;
 
-
 typedef struct Function
 {
     char *functionName;
     int functionAddress;
     int returnAddress;
+    int functionDepth
 } Function;
-
 
 typedef struct SymbolTable
 {
@@ -107,7 +106,7 @@ int initTable();
 
 /**
  * @brief Initializes the function table at the start of the compilation
- * 
+ *
  */
 void initFunctionTable();
 
@@ -123,12 +122,12 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ);
 
 /**
  * @brief Add a new function name to the function table
- * 
+ *
  * @param functionName
  * @param functionAddress The address of the first line of assembler code of the function
  * @return 0 if the function was correctly. -1 if the function could not be added. (table full)
  */
-int addFunction(char* FunctionName, int functionAddress);
+int addFunction(char *FunctionName, int functionAddress);
 
 /**
  * @brief Delete the symbol at the top of the table.
@@ -161,11 +160,27 @@ int getSymbolAddress(char *symbol);
 
 /**
  * @brief Checks if the function has been declared and returns the address of its first line of code if present
- * 
- * @param functionName 
+ *
+ * @param functionName
  * @return The address of the first line of assembler code of the function. -1 if the function is not present
  */
 int getFunctionAddress(char *functionName);
+
+/**
+ * @brief Checks if the function has been declared and returns its depth (function identifier == rank at which 
+ * the function has been declared)
+ * @param functionName
+ * @return The identifier of the function (depth). -1 if the function is not preset.
+ */
+int getFunctionDepth(char *functionName);
+
+/**
+ * @brief Set the current Function to the depth corresponding of the function going to.
+ * 
+ * @param functionName 
+ * @return 0 if effected correclty. -1 if the function could not be found.
+ */
+int setFunctionScope(char* functionName);
 
 /**
  * @brief Get the Top Index of the SymbolTable (Testing purposes)
@@ -175,11 +190,18 @@ int getFunctionAddress(char *functionName);
 int getTopIndex();
 
 /**
+ * @brief Set the address of the return instruction in the function
+ *
+ * @return 0 if the operation executed correctly. -1 if the function could not be found.
+ */
+int setFunctionReturnAddress(char* functionName, int returnAddress);
+
+/**
  * @brief Get the return address corresponding to the current function then resets it.
- * 
+ *
  * @return The address the function must return to. Or -1 if the return address is not set.
  */
-int getFunctionReturnAddress(char* functionName);
+int getFunctionReturnAddress(char *functionName);
 
 /**
  * @brief Testing function displaying the table of symbols.

@@ -112,11 +112,11 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
     }
     char *name = (char *)malloc(sizeofSymbol);
     strncpy(name, symbolName, sizeofSymbol);
-    symbol sym = {name, typ, depth};
+    symbol sym = {name, typ, depth, currentFunctionDepth};
     symbolTable.topSymbolIndex += 1;
     symbolTable.symbolArray[symbolTable.topSymbolIndex] = sym;
 
-    // printf("Adding symbol '%s' to symbol table at depth %d and topindex is %d\n", table.symbolArray[table.topIndexSymbol].symbolName, table.symbolArray[table.topIndexSymbol].depth, table.topIndexSymbol);
+    printf("Adding symbol '%s' to symbol table at depth %d and topindex is %d -- function depth: %d\n", symbolTable.symbolArray[symbolTable.topSymbolIndex].symbolName, symbolTable.symbolArray[symbolTable.topSymbolIndex].depth, symbolTable.topSymbolIndex, symbolTable.symbolArray[symbolTable.topSymbolIndex].functionDepth);
     return 0;
 }
 
@@ -130,7 +130,7 @@ int addFunction(char *functionName, int functionAddress)
     char *name = (char *)malloc(strlen(functionName) + 1);
     strcpy(name, functionName);
     functionTable.topFunctionIndex += 1;
-    Function function = {name, functionAddress, -1};
+    Function function = {name, functionAddress, -1, currentFunctionDepth};
     functionTable.functionArray[functionTable.topFunctionIndex] = function;
     return 0;
 }
@@ -163,6 +163,31 @@ int getFunctionAddress(char* functionName)
     return -1;
 }
 
+int getFunctionDepth(char* functionName)
+{
+    for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
+    {
+        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
+        {
+            return functionTable.functionArray[i].functionAddress;
+        }
+    }
+    return -1;
+}
+
+int setFunctionScope(char* functionName)
+{
+       for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
+    {
+        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
+        {
+            currentFunctionDepth = functionTable.functionArray[i].functionDepth;
+            return 0;
+        }
+    }
+    return -1; 
+}
+
 int deleteSymbol()
 {
     if (isSymbolTableEmpty())
@@ -178,7 +203,6 @@ int deleteSymbol()
 }
 
 int deleteFromChangeScope() // TODO #1 Handle the changes of scope stemming from functions (defined before the main)
-                            // TODO #29 Fix bug in change of scopes
 {
     if (!isSymbolTableEmpty())
     {

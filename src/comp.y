@@ -84,7 +84,7 @@ Fun: tINT tID
 Params : Dec tCOL Params
         |Dec
         |;
-InvokeFun: tID tOP Args tCP
+InvokeFun: tID tOP Args tCP     // TODO: #36 Implement a getAddress of arguments function to be called here
         {
                 int currentLine = getNumberOfInstructions();
                 if(currentLine == -1)
@@ -104,6 +104,7 @@ InvokeFun: tID tOP Args tCP
                         fprintf(stderr, "Error : Instruction table is full\n");
                         exit(1);
                 }
+                // TODO: #37 Handle the return variable issue
         }
         ;
 Args: Terme

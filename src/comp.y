@@ -18,11 +18,12 @@ void yyerror(char *s);
 %token <nb> tNB tIF tWHILE tOP
 %token <var> tID
 %type <nb> Terme Add Sub Mul Div Ope Eqinf Eqsup Sup Inf Equal Nequal Cond And Or InvokeFun
-%start Code
+%start Program
 %%
-Code :          {initTable(); initInstrArray();}  
+Program: {initTable(); initInstrArray(); initFunctionTable();} Code;
+Code : 
         tMAIN {resetFunctionDepth();} Body
-        |       {initTable(); initInstrArray(); initFunctionTable();} 
+        |        
         Fun Code;
 Body : tOB 
                 {increaseDepth();} 

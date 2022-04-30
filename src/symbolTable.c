@@ -63,7 +63,7 @@ void resetFunctionDepth()
     currentFunctionDepth = 0;
 }
 
-int initTable()
+void initTable()
 {
     symbolTable.topSymbolIndex = -1;
     symbolTable.topIndexTemp = BASE_VAR_TEMP - 1;
@@ -75,7 +75,6 @@ int initTable()
     {
         symbolTable.symbolArray[i] = symInit;
     }
-    return 0;
 }
 
 void initFunctionTable()

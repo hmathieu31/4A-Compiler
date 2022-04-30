@@ -97,11 +97,10 @@ typedef struct FunctionTable
 } FunctionTable;
 
 /**
- * @brief Initializes the table at the start of the compilation
+ * @brief Initialise the table at the start of the compilation
  *
- * @return 0 if executed correctly
  */
-int initTable();
+void initTable();
 
 /**
  * @brief Initializes the function table at the start of the compilation

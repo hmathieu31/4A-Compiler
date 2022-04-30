@@ -30,10 +30,11 @@ Body : tOB
                 {decreaseDepth();deleteFromChangeScope();}
         ;
 FunBody : tOB
-                {increaseFunctionDepth();}
-        Ligne Return tCB
-        | tOB Return tCB
-                
+                {increaseFunctionDepth(); increaseDepth();}
+        Ligne Return tCB {decreaseDepth();}
+        | tOB
+                {increaseDepth();}
+        Return tCB {decreaseDepth();}
         ;
 Return : tRETURN Terme tSCOL;
 Ligne : Instr Ligne 

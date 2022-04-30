@@ -43,16 +43,14 @@ void freeAddrsTemp()
     symbolTable.topIndexTemp = BASE_VAR_TEMP - 1;
 }
 
-int increaseDepth()
+void increaseDepth()
 {
     depth++;
-    return 0;
 }
 
-int decreaseDepth()
+void decreaseDepth()
 {
     depth--;
-    return 0;
 }
 
 void increaseFunctionDepth()

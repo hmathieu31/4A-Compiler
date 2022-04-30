@@ -45,16 +45,15 @@ int affectToAddrTemp(int value);
 /**
  * @brief Increases the depth of a variable when entering a new body (if or while)
  *
- * @return 0 if executed correctly.
  */
-int increaseDepth();
+void increaseDepth();
 
 /**
  * @brief Decreases the depth of a variable when exiting a new body (if or while)
  *
- * @return 0 if executed correctly.
  */
-int decreaseDepth();
+void decreaseDepth();
+
 
 /**
  * @brief Increases the current function depth

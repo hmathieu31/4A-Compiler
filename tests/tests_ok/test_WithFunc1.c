@@ -1,4 +1,4 @@
-int fun() {
+int fun(int a, int b) {
     return 3;
 }
 

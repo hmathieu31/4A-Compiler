@@ -83,7 +83,6 @@ char *stringOfInstruction(instruction instruction)
 {
     if (instruction.ops[0] == -1)
     {
-        // fprintf(stderr, "No instruction passed");
         exit(0);
     }
 

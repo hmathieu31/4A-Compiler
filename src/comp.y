@@ -83,15 +83,29 @@ Params : Dec tCOL Params
         |;
 InvokeFun: tID tOP Args tCP
         {
-                int currentLine = getNumberOfInstructions();
-                if(currentLine == -1)
-                {
-                        fprintf(stderr, "Error : Instruction table is full\n");
-                        exit(1);
-                }
                 if(setFunctionScope($1) == -1)
                 {
                         fprintf(stderr, "Error : Function %s not defined\n", $1);
+                        exit(1);
+                }
+                int argAddr = getNextArgumentAddress();
+                int i = 1;
+                while(argAddr != -1)
+                {
+                        int paramAddr = getFunctionParameterAddress($1, i);
+                        instruction instr = {COP, {paramAddr, argAddr, -1}};
+                        if(addInstruction(instr) == -1)
+                        {
+                                fprintf(stderr, "Error : Instruction table is full\n");
+                                exit(1);
+                        }
+                        argAddr = getNextArgumentAddress();
+                        i++;
+                }
+                int currentLine = getNumberOfInstructions();
+                if(currentLine == -1)
+                {
+                        fprintf(stderr, "Error : Instruction table is empty\n");
                         exit(1);
                 }
                 patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1);
@@ -104,8 +118,18 @@ InvokeFun: tID tOP Args tCP
                 // TODO: #37 Handle the return variable issue
         }
         ;
-Args: Terme {addArgument($1, t_int)}
-        | Terme {addArgument($1, t_int)} tCOL Args
+Args: Terme
+        {
+                int argAddr = addArgument();
+                instruction instr = {AFC, {argAddr, $1, -1}};
+                addInstruction(instr);
+        }
+        | Terme
+        {
+                int argAddr = addArgument();
+                instruction instr = {AFC, {argAddr, $1, -1}};
+                addInstruction(instr);
+        } tCOL Args
         |;
 If: tIF tOP
         {$2 = getNumberOfInstructions();}

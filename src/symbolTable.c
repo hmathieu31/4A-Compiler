@@ -134,7 +134,7 @@ int addFunction(char *functionName, int functionAddress)
     return 0;
 }
 
-int setFunctionReturnAddress(char* functionName, int returnAddress)
+int setFunctionReturnAddress(char *functionName, int returnAddress)
 {
     int i = 0;
     while (i < FUNCTION_TABLE_SIZE && strcmp(functionTable.functionArray[i].functionName, functionName) != 0)
@@ -150,7 +150,7 @@ int setFunctionReturnAddress(char* functionName, int returnAddress)
     return 0;
 }
 
-int getFunctionAddress(char* functionName)
+int getFunctionAddress(char *functionName)
 {
     for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
     {
@@ -162,7 +162,7 @@ int getFunctionAddress(char* functionName)
     return -1;
 }
 
-int getFunctionDepth(char* functionName)
+int getFunctionDepth(char *functionName)
 {
     for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
     {
@@ -174,9 +174,9 @@ int getFunctionDepth(char* functionName)
     return -1;
 }
 
-int setFunctionScope(char* functionName)
+int setFunctionScope(char *functionName)
 {
-       for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
+    for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
     {
         if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
         {
@@ -184,7 +184,7 @@ int setFunctionScope(char* functionName)
             return 0;
         }
     }
-    return -1; 
+    return -1;
 }
 
 int deleteSymbol()
@@ -291,26 +291,37 @@ int getFunctionReturnAddress(char *functionName)
     return functionReturnAddress;
 }
 
-int addArgument(char *argumentName, type typ)
+int addArgument()
 {
     if (symbolTable.topIndexArgs == SYMBOL_TABLE_SIZE - 1)
     {
         fprintf(stderr, "Argument table is full. Program cannot compile!\n");
         return -1;
     }
-    char *name = (char *)malloc(strlen(argumentName) + 1);
-    strcpy(name, argumentName);
     symbolTable.topIndexArgs += 1;
-    symbolTable.symbolArray[symbolTable.topIndexArgs].symbolName = name;
-    symbolTable.symbolArray[symbolTable.topIndexArgs].typ = typ;
+    symbolTable.symbolArray[symbolTable.topIndexArgs].symbolName = NULL;
+    symbolTable.symbolArray[symbolTable.topIndexArgs].typ = t_int;
     symbolTable.symbolArray[symbolTable.topIndexArgs].depth = -1;
     symbolTable.symbolArray[symbolTable.topIndexArgs].functionDepth = -1;
-    return 0;
+    return symbolTable.topIndexArgs;
+}
+
+int iterator = BASE_ARGS - 1;
+int getNextArgumentAddress()
+{
+    int nextArgumentAddress = -1;
+    if (iterator < symbolTable.topIndexArgs) // If there are arguments to be iterated on
+    {
+        nextArgumentAddress = iterator;
+        iterator++;
+    }
+    return nextArgumentAddress;
 }
 
 void clearArgumentTable()
 {
-    symbolTable.topIndexArgs = -1;
+    symbolTable.topIndexArgs = BASE_ARGS - 1;
+    iterator = BASE_ARGS - 1;
 }
 
 void printSymbolTable()

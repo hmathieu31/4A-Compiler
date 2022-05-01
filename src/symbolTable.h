@@ -55,7 +55,6 @@ void increaseDepth();
  */
 void decreaseDepth();
 
-
 /**
  * @brief Increases the current function depth
  *
@@ -167,7 +166,7 @@ int getSymbolAddress(char *symbol);
 int getFunctionAddress(char *functionName);
 
 /**
- * @brief Checks if the function has been declared and returns its depth (function identifier == rank at which 
+ * @brief Checks if the function has been declared and returns its depth (function identifier == rank at which
  * the function has been declared)
  * @param functionName
  * @return The identifier of the function (depth). -1 if the function is not preset.
@@ -176,11 +175,11 @@ int getFunctionDepth(char *functionName);
 
 /**
  * @brief Set the current Function to the depth corresponding of the function going to.
- * 
- * @param functionName 
+ *
+ * @param functionName
  * @return 0 if effected correclty. -1 if the function could not be found.
  */
-int setFunctionScope(char* functionName);
+int setFunctionScope(char *functionName);
 
 /**
  * @brief Get the Top Index of the SymbolTable (Testing purposes)
@@ -194,7 +193,7 @@ int getTopIndex();
  *
  * @return 0 if the operation executed correctly. -1 if the function could not be found.
  */
-int setFunctionReturnAddress(char* functionName, int returnAddress);
+int setFunctionReturnAddress(char *functionName, int returnAddress);
 
 /**
  * @brief Get the return address corresponding to the current function then resets it.
@@ -205,7 +204,7 @@ int getFunctionReturnAddress(char *functionName);
 
 /**
  * @brief Get the address of the functions's parameter of given index
- * 
+ *
  * @param functionName Name of the function
  * @param parameterIndex Index of the parameter (starting at 1)
  * @return The address of the parameter. -1 if the function or the parameter could not be found.
@@ -214,20 +213,23 @@ int getFunctionParameterAddress(char *functionName, int parameterIndex);
 
 /**
  * @brief Add a new argument to the table of arguments
- * 
- * @param argumentName 
- * @param typ 
- * @return 0 if the argument was correctly added. -1 if the argument could not be added. (table full)
+ *
+ * @return The address of the added arguments if the argument was correctly added. -1 if the argument could not be added. (table full)
  */
-int addArgument(char *argumentName, type typ);
+int addArgument();
+
+/**
+ * @brief Get the next available argument address
+ *
+ * @return The address of the next argument. -1 if there are no more arguments (or no arguments were defined).
+ */
+int getNextArgumentAddress();
 
 /**
  * @brief Clears all the arguments in the table
- * 
+ *
  */
 void clearArgumentTable();
-
-
 
 /**
  * @brief Testing function displaying the table of symbols.

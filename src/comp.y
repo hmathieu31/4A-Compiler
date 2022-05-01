@@ -21,10 +21,17 @@ void yyerror(char *s);
 %start Program
 %%
 Program: {initTable(); initInstrArray(); initFunctionTable();} Code;
-Code : 
-        tMAIN {resetFunctionDepth();} Body
-        |        
-        Fun Code;
+Code : Main | Fun Code;
+Main: tMAIN
+        {
+                resetFunctionDepth();
+                instruction instr = {ENTRY, {1, 1, 1}};
+                if(addInstruction(instr) == -1)
+                {
+                        fprintf(stderr, "Error : could not add entry point\n");
+                        exit(1);
+                }
+        } Body;
 Body : tOB 
                 {increaseDepth();} 
         Ligne tCB 

@@ -26,17 +26,39 @@ void initInterpretTable()
     }
 }
 
+int getEntryPoint()
+{
+    int entryPoint = -1;
+    int i = 0;
+    while (entryPoint == -1 && i < TAILLE - 1)
+    {
+        if (getInstruction(i).ope == ENTRY)
+        {
+            entryPoint = i;
+        }
+        i++;
+    }
+    return entryPoint;
+}
+
 void interpret()
 {
     initInterpretTable();
 
-    int i = 0;
-    instruction instr = getInstruction(i);
+    int i = getEntryPoint();
+    if (i == -1)
+    {
+        fprintf(stderr, "No entry point found\n");
+        exit(-1);
+    }
+    instruction instr = getInstruction(i + 1);
     while (instr.ope != -1)
     {
         instr = getInstruction(i);
         switch (instr.ope)
         {
+        case ENTRY:
+            printf("Entry point\n");
         case ADD:
             interpreterTable[instr.ops[0]] = interpreterTable[instr.ops[1]] + interpreterTable[instr.ops[2]];
             break;

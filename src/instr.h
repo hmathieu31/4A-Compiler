@@ -33,7 +33,8 @@ typedef enum operator {
     EQSUP,
     AND,
     OR,
-    PRI
+    PRI,
+    ENTRY,
 } operator;
 
 static const char* const operator_string[] = {
@@ -53,7 +54,8 @@ static const char* const operator_string[] = {
     [EQSUP]= "EQU",
     [AND]= "AND",
     [OR]= "OR",
-    [PRI]= "PRI"
+    [PRI]= "PRI",
+    [ENTRY]= "ENTRY"
 };
 
 typedef struct instruction

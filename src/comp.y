@@ -68,7 +68,7 @@ Fun: tINT tID
 		int line = getNumberOfInstructions();
 		if(addFunction($2, line) == -1)
 		{
-			sprintf(err, "Error : Function table is full\n");
+			sprintf(err, "Error : could not add function %s\n", $2);
 			yyerror(err);
 		}
 	}
@@ -103,6 +103,16 @@ InvokeFun: tID tOP Args tCP
 		while(argAddr != -1)
 		{
 			int paramAddr = getFunctionParameterAddress($1, i);
+            if(paramAddr == -1)
+            {
+                sprintf(err, "Error : Function %s is undefined\n", $1);
+                yyerror(err);
+            }
+            if(paramAddr == -2)
+            {
+                sprintf(err, "Error : Function %s has no argument %d\n", $1, i);
+                yyerror(err);
+            }
 			instruction instr = {COP, {paramAddr, argAddr, -1}};
 			if(addInstruction(instr) == -1)
 			{
@@ -131,12 +141,22 @@ InvokeFun: tID tOP Args tCP
 Args: Terme
 	{
 		int argAddr = addArgument();
+        if(argAddr == -1)
+        {
+            sprintf(err, "Error : Memory space allocated to arguments overflowed\n");
+            yyerror(err);
+        }
 		instruction instr = {AFC, {argAddr, $1, -1}};
 		addInstruction(instr);
 	}
 	| Terme
 	{
 		int argAddr = addArgument();
+        if(argAddr == -1)
+        {
+            sprintf(err, "Error : Memory space allocated to arguments overflowed\n");
+            yyerror(err);
+        }
 		instruction instr = {AFC, {argAddr, $1, -1}};
 		addInstruction(instr);
 	} tCOL Args
@@ -146,6 +166,11 @@ If: tIF tOP
 	Terme tCP
 	{
 		int temp1 = newTmp();
+        if(temp1 == -1)
+        {
+            sprintf(err, "Error : Instruction table is full\n");
+            yyerror(err);
+        }
 		instruction instr1 = {AFC, {temp1, 1, -1}};
 		if(addInstruction(instr1) == -1)
 		{
@@ -153,6 +178,11 @@ If: tIF tOP
 			yyerror(err);
 		}
 		int temp3 = newTmp();
+        if(temp3 == -1)
+        {
+            sprintf(err, "Error : Instruction table is full\n");
+            yyerror(err);
+        }
 		instruction instr3 = {EQUAL, {temp3, $4, temp1}};
 		if(addInstruction(instr3) == -1)
 		{
@@ -176,6 +206,11 @@ If: tIF tOP
 /* Ifel: tIF tOP Terme tCP
 	{
 			int temp1 = newTmp();
+            if(temp1 == -1)
+            {
+                sprintf(err, "Error : Instruction table is full\n");
+                yyerror(err);
+            }
 			instruction instr = {COP, {temp1, $1, -1}};
 			if(addInstruction(instr) == -1)
 			{
@@ -229,6 +264,11 @@ While: tWHILE tOP
 	Cond tCP      // TODO: #27 Debug While
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Error : Instruction table is full\n");
+            yyerror(err);
+        }
 		instruction instr = {AFC, {temp, 1, -1}};
 		if(addInstruction(instr) == -1)
 		{
@@ -236,6 +276,11 @@ While: tWHILE tOP
 			yyerror(err);
 		}
 		int temp3 = newTmp();
+        if(temp3 == -1)
+        {
+            sprintf(err, "Error : Instruction table is full\n");
+            yyerror(err);
+        }
 		instruction instr3 = {EQUAL, {temp3, $4, temp}};
 		if(addInstruction(instr3) == -1)
 		{
@@ -377,6 +422,11 @@ Ope :   Add
 Add :   Terme tADD Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {ADD, {temp, $1, $3}};       // Add the two terms with the result being in temp3
 		if(addInstruction(instr) == -1)
 		{
@@ -389,6 +439,11 @@ Add :   Terme tADD Terme
 Sub :   Terme tSUB Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {SUB, {temp, $1, $3}};       // Substract the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -401,6 +456,11 @@ Sub :   Terme tSUB Terme
 Mul :   Terme tMUL Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {MUL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -413,6 +473,11 @@ Mul :   Terme tMUL Terme
 Div :   Terme tDIV Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {DIV, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -442,6 +507,11 @@ Cond : Eqsup
 Eqsup : Terme tEQSUP Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {EQSUP, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -453,6 +523,11 @@ Eqsup : Terme tEQSUP Terme
 Eqinf : Terme tEQINF Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {EQINF, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -464,6 +539,11 @@ Eqinf : Terme tEQINF Terme
 Sup : Terme tSUP Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {SUP, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -475,6 +555,11 @@ Sup : Terme tSUP Terme
 Inf : Terme tINF Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {INF, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -486,6 +571,11 @@ Inf : Terme tINF Terme
 Equal : Terme tEQUAL Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {EQUAL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -497,6 +587,11 @@ Equal : Terme tEQUAL Terme
 Nequal : Terme tNEQUAL Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {NEQUAL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
@@ -508,6 +603,11 @@ Nequal : Terme tNEQUAL Terme
 Or: Terme tOR Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {OR, {temp, $1, $3}};
 		if(addInstruction(instr) == -1)
 		{
@@ -519,6 +619,11 @@ Or: Terme tOR Terme
 And: Terme tAND Terme
 	{
 		int temp = newTmp();
+        if(temp == -1)
+        {
+            sprintf(err, "Failed to create temporary variable.\n");
+            yyerror(err);
+        }
 		instruction instr = {AND, {temp, $1, $3}};
 		if(addInstruction(instr) == -1)
 		{
@@ -542,6 +647,11 @@ Terme : tOP Ope tCP
 	| tNB
 		{
 			int addrTemp =newTmp();
+            if(addrTemp == -1)
+            {
+                sprintf(err, "Failed to create temporary variable.\n");
+                yyerror(err);
+            }
 			instruction instr = {AFC, {addrTemp, $1, -1}};
 			if(addInstruction(instr) == -1)
 			{
@@ -571,7 +681,7 @@ Print : tPRINT tOP tID tCP
 ;
 
 %%
-void yyerror(char *s) { fprintf(stderr, "%s\n", s); exit(1);}
+void yyerror(char *s) { fprintf(stderr, "%s", s); exit(1);}
 int main(int argc, char **argv) {
 	if(argc != 2) {
 		fprintf(stderr, "Usage: %s <input file>\n", argv[0]);
@@ -584,7 +694,8 @@ int main(int argc, char **argv) {
 	}
 	yyin = f;
 	yyparse();
-    interpret();
+    printInstrTable();
+    /* interpret(); */
 	fclose(f);
 	return 0;
 }

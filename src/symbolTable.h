@@ -145,7 +145,7 @@ int isSymbolTableEmpty();
 /**
  * @brief Removes all symbols at the highest scope from the table
  *
- * @return 0 if executed correctly
+ * @return 0 if executed correctly. -1 if the table is empty.
  */
 int deleteFromChangeScope();
 
@@ -207,7 +207,7 @@ int getFunctionReturnAddress(char *functionName);
  *
  * @param functionName Name of the function
  * @param parameterIndex Index of the parameter (starting at 1)
- * @return The address of the parameter. -1 if the function or the parameter could not be found.
+ * @return The address of the parameter. -1 if the function could not be found. -2 if the parameter index is invalid.
  */
 int getFunctionParameterAddress(char *functionName, int parameterIndex);
 

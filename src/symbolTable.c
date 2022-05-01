@@ -34,7 +34,6 @@ int newTmp()
     }
     else
     {
-        fprintf(stderr, "Error: the symbol table is full of temp var.\n");
         return -1;
     }
 }
@@ -106,7 +105,6 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
 {
     if (symbolTable.topSymbolIndex == BASE_VAR_TEMP - 1) // The symbol table being limited to 924 (BASE_VAR_TEMP) symbols, an error must be handled if trying to add another symbol
     {
-        fprintf(stderr, "Symbol table is full. Program cannot compile!\n");
         return -1;
     }
     char *name = (char *)malloc(sizeofSymbol);
@@ -115,7 +113,7 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
     symbolTable.topSymbolIndex += 1;
     symbolTable.symbolArray[symbolTable.topSymbolIndex] = sym;
 
-    // printf("Adding symbol '%s' to symbol table at depth %d and topindex is %d -- function depth: %d\n", symbolTable.symbolArray[symbolTable.topSymbolIndex].symbolName, symbolTable.symbolArray[symbolTable.topSymbolIndex].depth, symbolTable.topSymbolIndex, symbolTable.symbolArray[symbolTable.topSymbolIndex].functionDepth);
+    LOG_DEBUG("Adding symbol '%s' to symbol table at depth %d and topindex is %d -- function depth: %d\n", symbolTable.symbolArray[symbolTable.topSymbolIndex].symbolName, symbolTable.symbolArray[symbolTable.topSymbolIndex].depth, symbolTable.topSymbolIndex, symbolTable.symbolArray[symbolTable.topSymbolIndex].functionDepth);
     return 0;
 }
 
@@ -123,7 +121,6 @@ int addFunction(char *functionName, int functionAddress)
 {
     if (functionTable.topFunctionIndex == FUNCTION_TABLE_SIZE - 1)
     {
-        fprintf(stderr, "Function table is full. Program cannot compile!\n");
         return -1;
     }
     char *name = (char *)malloc(strlen(functionName) + 1);
@@ -143,7 +140,6 @@ int setFunctionReturnAddress(char *functionName, int returnAddress)
     }
     if (i == FUNCTION_TABLE_SIZE)
     {
-        fprintf(stderr, "Function '%s' not found in function table.\n", functionName);
         return -1;
     }
     functionTable.functionArray[i].returnAddress = returnAddress;
@@ -191,8 +187,7 @@ int deleteSymbol()
 {
     if (isSymbolTableEmpty())
     {
-        fprintf(stderr, "Nothing to delete, empty stack!\n");
-        exit(-1);
+        return -1;
     }
     else
     {
@@ -208,7 +203,10 @@ int deleteFromChangeScope()
         int i = symbolTable.topSymbolIndex;
         while (i >= 0 && symbolTable.symbolArray[i].depth > depth)
         {
-            deleteSymbol();
+            if(deleteSymbol() == -1)
+            {
+                return -1;
+            }
             i--;
         }
     }
@@ -244,7 +242,6 @@ int getFunctionParameterAddress(char *functionName, int parameterIndex)
     }
     if (i == FUNCTION_TABLE_SIZE)
     {
-        fprintf(stderr, "Function '%s' not found in function table.\n", functionName);
         return -1;
     }
     int functionDepth = functionTable.functionArray[i].functionDepth;
@@ -266,8 +263,7 @@ int getFunctionParameterAddress(char *functionName, int parameterIndex)
     }
     if (parameterAddress == -1)
     {
-        fprintf(stderr, "Parameter index %d not found in function '%s'\n", parameterIndex, functionName);
-        return -1;
+        return -2;
     }
     return parameterAddress;
 }
@@ -295,7 +291,6 @@ int addArgument()
 {
     if (symbolTable.topIndexArgs == SYMBOL_TABLE_SIZE - 1)
     {
-        fprintf(stderr, "Argument table is full. Program cannot compile!\n");
         return -1;
     }
     symbolTable.topIndexArgs += 1;

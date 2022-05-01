@@ -10,6 +10,7 @@ D [0-9]
 
 %%
 [ \t\n]+	{};
+"//".*		{};
 "main()" {return tMAIN;}
 "const" {return tCONST;}
 "int" {return tINT;}

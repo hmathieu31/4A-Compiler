@@ -1,3 +1,5 @@
+$allTestsPassed = $true
+
 if (Test-Path -Path .\tests\tests_log.log) {
     Remove-Item .\tests\tests_log.log
 }
@@ -13,6 +15,7 @@ foreach ($item in Get-ChildItem .\tests\tests_ok\) {
     }
     else {
         Write-Output -InputObject $test" - failed ❌"
+        $allTestsPassed = $false
     }
 }
 
@@ -28,5 +31,15 @@ foreach ($item in Get-ChildItem .\tests\tests_ko) {
     }
     else {
         Write-Output -InputObject $test" - failed ❌"
+        $allTestsPassed = $false
     }
+}
+
+Write-Output " `n---------------------------------- "
+Write-Output " --- Tests summary ---"
+if ($allTestsPassed -eq $true) {
+    Write-Output "All tests passed successfully ✅"
+}
+else {
+    Write-Output "Some tests failed ❌"
 }

@@ -10,6 +10,7 @@
  */
 
 #include "symbolTable.h"
+#include "macrologger.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +20,7 @@ SymbolTable symbolTable;
 
 FunctionTable functionTable;
 
-int depth = 0;
+int depth = -1;
 
 int currentFunctionDepth = 0;
 
@@ -199,7 +200,7 @@ int deleteSymbol()
     return 0;
 }
 
-int deleteFromChangeScope() // TODO #1 Handle the changes of scope stemming from functions (defined before the main)
+int deleteFromChangeScope()
 {
     if (!isSymbolTableEmpty())
     {

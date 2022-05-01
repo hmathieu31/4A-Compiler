@@ -34,7 +34,6 @@ FunBody : tOB
                 {increaseFunctionDepth(); increaseDepth();}
         Ligne Return tCB {decreaseDepth();}
         | tOB
-                {increaseDepth();}
         Return tCB {decreaseDepth();}
         ;
 Return : tRETURN Terme tSCOL;

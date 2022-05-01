@@ -31,10 +31,8 @@ Body : tOB
                 {decreaseDepth();deleteFromChangeScope();}
         ;
 FunBody : tOB
-                {increaseFunctionDepth(); increaseDepth();}
         Ligne Return tCB {decreaseDepth();}
-        | tOB
-        Return tCB {decreaseDepth();}
+        | tOB Return tCB {decreaseDepth();}
         ;
 Return : tRETURN Terme tSCOL;
 Ligne : Instr Ligne 
@@ -64,7 +62,7 @@ Fun: tINT tID
                         exit(1);
                 }
         }
-        tOP Params tCP FunBody
+        tOP {increaseFunctionDepth();} Params tCP {increaseDepth();} FunBody
         {
                 instruction instr = {JMP, {-1}};
                 int line = addInstruction(instr);

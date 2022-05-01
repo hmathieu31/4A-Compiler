@@ -80,7 +80,7 @@ typedef struct Function
     char *functionName;
     int functionAddress;
     int returnAddress;
-    int functionDepth
+    int functionDepth;
 } Function;
 
 typedef struct SymbolTable
@@ -200,6 +200,16 @@ int setFunctionReturnAddress(char* functionName, int returnAddress);
  * @return The address the function must return to. Or -1 if the return address is not set.
  */
 int getFunctionReturnAddress(char *functionName);
+
+/**
+ * @brief Get the address of the functions's parameter of given index
+ * 
+ * @param functionName Name of the function
+ * @param parameterIndex Index of the parameter (starting at 1)
+ * @return The address of the parameter. -1 if the function or the parameter could not be found.
+ */
+int getFunctionParameterAddress(char *functionName, int parameterIndex);
+
 
 /**
  * @brief Testing function displaying the table of symbols.

@@ -234,6 +234,43 @@ int getTopIndex()
     return symbolTable.topSymbolIndex;
 }
 
+int getFunctionParameterAddress(char *functionName, int parameterIndex)
+{
+    int i = 0;
+    while (i < FUNCTION_TABLE_SIZE && strcmp(functionTable.functionArray[i].functionName, functionName) != 0)
+    {
+        i++;
+    }
+    if (i == FUNCTION_TABLE_SIZE)
+    {
+        fprintf(stderr, "Function '%s' not found in function table.\n", functionName);
+        return -1;
+    }
+    int functionDepth = functionTable.functionArray[i].functionDepth;
+    int parameterAddress = -1;
+    int parameterCount = 0;
+    i = 0;
+    while (parameterAddress == -1 && i <= symbolTable.topSymbolIndex)
+    {
+        symbol symbol = symbolTable.symbolArray[i];
+        if (symbol.functionDepth == functionDepth && symbol.depth == -1) // Parameter variable have a depth of -1
+        {
+            parameterCount++;
+        }
+        if (parameterCount == parameterIndex)
+        {
+            parameterAddress = i;
+        }
+        i++;
+    }
+    if (parameterAddress == -1)
+    {
+        fprintf(stderr, "Parameter index %d not found in function '%s'\n", parameterIndex, functionName);
+        return -1;
+    }
+    return parameterAddress;
+}
+
 int getFunctionReturnAddress(char *functionName)
 {
     int functionReturnAddress = -1;

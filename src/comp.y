@@ -81,7 +81,7 @@ Fun: tINT tID
 Params : Dec tCOL Params
         |Dec
         |;
-InvokeFun: tID tOP Args tCP     // TODO: #36 Implement a getAddress of arguments function to be called here
+InvokeFun: tID tOP Args tCP
         {
                 int currentLine = getNumberOfInstructions();
                 if(currentLine == -1)
@@ -104,8 +104,8 @@ InvokeFun: tID tOP Args tCP     // TODO: #36 Implement a getAddress of arguments
                 // TODO: #37 Handle the return variable issue
         }
         ;
-Args: Terme
-        | Terme tCOL Args
+Args: Terme {addArgument($1, t_int)}
+        | Terme {addArgument($1, t_int)} tCOL Args
         |;
 If: tIF tOP
         {$2 = getNumberOfInstructions();}

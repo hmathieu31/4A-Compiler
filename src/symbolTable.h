@@ -12,7 +12,8 @@
 #ifndef SYMBOLTABLES_H
 #define SYMBOLTABLES_H
 
-#define TABLE_SIZE 1025
+#define SYMBOL_TABLE_SIZE 1025
+#define BASE_ARGS 1009
 #define BASE_VAR_TEMP 925
 #define FUNCTION_TABLE_SIZE 65
 
@@ -85,9 +86,10 @@ typedef struct Function
 
 typedef struct SymbolTable
 {
-    symbol symbolArray[TABLE_SIZE];
+    symbol symbolArray[SYMBOL_TABLE_SIZE];
     int topSymbolIndex;
     int topIndexTemp;
+    int topIndexArgs;
 } SymbolTable;
 
 typedef struct FunctionTable
@@ -209,6 +211,22 @@ int getFunctionReturnAddress(char *functionName);
  * @return The address of the parameter. -1 if the function or the parameter could not be found.
  */
 int getFunctionParameterAddress(char *functionName, int parameterIndex);
+
+/**
+ * @brief Add a new argument to the table of arguments
+ * 
+ * @param argumentName 
+ * @param typ 
+ * @return 0 if the argument was correctly added. -1 if the argument could not be added. (table full)
+ */
+int addArgument(char *argumentName, type typ);
+
+/**
+ * @brief Clears all the arguments in the table
+ * 
+ */
+void clearArgumentTable();
+
 
 
 /**

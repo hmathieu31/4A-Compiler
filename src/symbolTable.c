@@ -26,7 +26,7 @@ int currentFunctionDepth = 0;
 
 int newTmp()
 {
-    if (symbolTable.topSymbolIndex < TABLE_SIZE - 1)
+    if (symbolTable.topSymbolIndex < BASE_ARGS - 1)
     {
         int addrTemp = symbolTable.topIndexTemp + 1;
         symbolTable.topIndexTemp += 1;
@@ -68,11 +68,12 @@ void initTable()
 {
     symbolTable.topSymbolIndex = -1;
     symbolTable.topIndexTemp = BASE_VAR_TEMP - 1;
+    symbolTable.topIndexArgs = BASE_ARGS - 1;
     symbol symInit = {
         "",
         t_int,
         -1};
-    for (int i = 0; i < TABLE_SIZE - 1; i++)
+    for (int i = 0; i < BASE_ARGS - 1; i++)
     {
         symbolTable.symbolArray[i] = symInit;
     }
@@ -288,6 +289,28 @@ int getFunctionReturnAddress(char *functionName)
         functionTable.functionArray[i - 1].returnAddress = -1; // Reset of function return address once it has been retrieved
     }
     return functionReturnAddress;
+}
+
+int addArgument(char *argumentName, type typ)
+{
+    if (symbolTable.topIndexArgs == SYMBOL_TABLE_SIZE - 1)
+    {
+        fprintf(stderr, "Argument table is full. Program cannot compile!\n");
+        return -1;
+    }
+    char *name = (char *)malloc(strlen(argumentName) + 1);
+    strcpy(name, argumentName);
+    symbolTable.topIndexArgs += 1;
+    symbolTable.symbolArray[symbolTable.topIndexArgs].symbolName = name;
+    symbolTable.symbolArray[symbolTable.topIndexArgs].typ = typ;
+    symbolTable.symbolArray[symbolTable.topIndexArgs].depth = -1;
+    symbolTable.symbolArray[symbolTable.topIndexArgs].functionDepth = -1;
+    return 0;
+}
+
+void clearArgumentTable()
+{
+    symbolTable.topIndexArgs = -1;
 }
 
 void printSymbolTable()

@@ -734,8 +734,8 @@ int main(int argc, char **argv) {
 		fclose(f);
 		return 1;
 	}
-    printInstrTable();
-    /* interpret(); */
+    /* printInstrTable(); */
+    interpret();
 	fclose(f);
 	return 0;
 }

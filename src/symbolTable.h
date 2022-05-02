@@ -80,8 +80,8 @@ typedef struct Function
     char *functionName;
     int functionAddress;
     int returnAddress;
-    int returnVarAddress;
     int functionDepth;
+    int returnVarAddress;
 } Function;
 
 typedef struct SymbolTable

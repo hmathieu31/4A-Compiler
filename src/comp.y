@@ -8,6 +8,7 @@
 #include "interpreter.h"
 
 extern FILE *yyin;
+extern int yylineno;
 char err[100];
 
 void yyerror(char *s);
@@ -44,7 +45,25 @@ FunBody : tOB
 	Ligne Return tCB {decreaseDepth();}
 	| tOB Return tCB {decreaseDepth();}
 	;
-Return : tRETURN Terme tSCOL;
+Return : tRETURN Terme tSCOL
+	{
+		int returnVar = addSymbol("_ret", sizeof("_ret"), t_int);
+		if(returnVar == -1)
+		{
+			sprintf(err, "Could not add return variable\n");
+			yyerror(err);
+		}
+
+		instruction instr = {COP, {returnVar, $2, -1}};
+		if(addInstruction(instr) == -1)
+		{
+			sprintf(err, "Line %d | Could not add %s instruction\n", yylineno ,stringOfInstruction(instr));
+			yyerror(err);
+		}
+		setFunctionReturnVarAddress(returnVar);
+
+	}
+;
 Ligne : Instr Ligne
 	|Instr
 	|;
@@ -137,7 +156,13 @@ InvokeFun: tID tOP Args tCP
 			yyerror(err);
 		}
 		resetFunctionDepth();
-		// TODO: #37 Handle the return variable issue
+		int returnVar = getFunctionReturnVarAddress($1);
+		if(returnVar == -1)
+		{
+			sprintf(err, "No return variable found\n");
+			yyerror(err);
+		}
+		$$ = returnVar;
 	}
 	;
 Args: Terme
@@ -148,7 +173,7 @@ Args: Terme
             sprintf(err, "Error : Memory space allocated to arguments overflowed\n");
             yyerror(err);
         }
-		instruction instr = {AFC, {argAddr, $1, -1}};
+		instruction instr = {COP, {argAddr, $1, -1}};
 		addInstruction(instr);
 	}
 	| Terme
@@ -159,7 +184,7 @@ Args: Terme
             sprintf(err, "Error : Memory space allocated to arguments overflowed\n");
             yyerror(err);
         }
-		instruction instr = {AFC, {argAddr, $1, -1}};
+		instruction instr = {COP, {argAddr, $1, -1}};
 		addInstruction(instr);
 	} tCOL Args
 	|;
@@ -203,7 +228,7 @@ If: tIF tOP
 	Body
 	{
 		int currentLine = getNumberOfInstructions();
-		patchJmpInstruction($1, currentLine - 1, JMF);
+		patchJmpInstruction($1, currentLine, JMF);
 	};
 /* Ifel: tIF tOP Terme tCP
 	{
@@ -289,7 +314,7 @@ While: tWHILE tOP
 			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
 			yyerror(err);
 		}
-		instruction instrJMPF = {JMF, {temp3, -1, -1}};
+		instruction instrJMPF = {JMF, {temp3, -2, -1}};
 		int line = addInstruction(instrJMPF);
 		if(line == -1)
 		{
@@ -300,7 +325,7 @@ While: tWHILE tOP
 	}
 	Body
 		{
-		instruction instrJMP = {JMP, {$2 - 1, -1, -1}};
+		instruction instrJMP = {JMP, {$2, -1, -1}};
 		if(addInstruction(instrJMP) == -1) {
 			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMP));
 			yyerror(err);
@@ -315,7 +340,7 @@ Dec :   tCONST tINT tID
 				sprintf(err, "Variable \"%s\" already exists. \n", $3);
 				yyerror(err);
 			}
-			if(addSymbol($3, sizeof($3), t_int))
+			if(addSymbol($3, sizeof($3), t_int) == -1)
 			{
 				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $3);
 				yyerror(err);
@@ -328,7 +353,7 @@ Dec :   tCONST tINT tID
 				sprintf(err, "Variable \"%s\" already exists. \n", $2);
 				yyerror(err);
 			}
-			if(addSymbol($2, sizeof($2), t_int))
+			if(addSymbol($2, sizeof($2), t_int) == -1)
 			{
 				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $2);
 				yyerror(err);
@@ -341,7 +366,7 @@ Dec :   tCONST tINT tID
 				sprintf(err, "Variable \"%s\" already exists. \n", $3);
 				yyerror(err);
 			}
-			if(addSymbol($3, sizeof($3), t_int))
+			if(addSymbol($3, sizeof($3), t_int) == -1)
 			{
 				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $3);
 				yyerror(err);
@@ -376,7 +401,7 @@ Defaff : tCONST tINT tID tEQ Terme
 				sprintf(err, "Variable \"%s\" already exists. \n", $3);
 				yyerror(err);
 			}
-			if(addSymbol($3, sizeof($3), t_int))
+			if(addSymbol($3, sizeof($3), t_int) == -1)
 			{
 				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $3);
 				yyerror(err);
@@ -398,7 +423,7 @@ Defaff : tCONST tINT tID tEQ Terme
 				sprintf(err, "Variable \"%s\" already exists. \n", $2);
 				yyerror(err);
 			}
-			if(addSymbol($2, sizeof($2), t_int))
+			if(addSymbol($2, sizeof($2), t_int) == -1)
 			{
 				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $2);
 				yyerror(err);

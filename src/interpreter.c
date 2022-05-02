@@ -51,10 +51,11 @@ void interpret()
         fprintf(stderr, "No entry point found\n");
         exit(-1);
     }
-    instruction instr = getInstruction(i + 1);
+    instruction instr = getInstruction(i);
     while (instr.ope != -1)
     {
         instr = getInstruction(i);
+        i++;
         switch (instr.ope)
         {
         case ENTRY:
@@ -114,6 +115,5 @@ void interpret()
             printf("Unknown instruction\n");
             break;
         }
-        i++;
     }
 }

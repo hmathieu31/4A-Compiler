@@ -83,6 +83,7 @@ void initFunctionTable()
     Function funcInit = {
         "",
         -1,
+        -1,
         -1};
     for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
     {
@@ -114,7 +115,7 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
     symbolTable.symbolArray[symbolTable.topSymbolIndex] = sym;
 
     LOG_DEBUG("Adding symbol '%s' to symbol table at depth %d and topindex is %d -- function depth: %d\n", symbolTable.symbolArray[symbolTable.topSymbolIndex].symbolName, symbolTable.symbolArray[symbolTable.topSymbolIndex].depth, symbolTable.topSymbolIndex, symbolTable.symbolArray[symbolTable.topSymbolIndex].functionDepth);
-    return 0;
+    return symbolTable.topSymbolIndex;
 }
 
 int addFunction(char *functionName, int functionAddress)
@@ -144,6 +145,35 @@ int setFunctionReturnAddress(char *functionName, int returnAddress)
     }
     functionTable.functionArray[i].returnAddress = returnAddress;
     return 0;
+}
+
+int setFunctionReturnVarAddress(int returnVarAddress)
+{
+    int i = 0;
+    while (i < FUNCTION_TABLE_SIZE && functionTable.functionArray[i].functionDepth != currentFunctionDepth)
+    {
+        i++;
+    }
+    if (i == FUNCTION_TABLE_SIZE)
+    {
+        return -1;
+    }
+    functionTable.functionArray[i].returnVarAddress = returnVarAddress;
+    return 0;
+}
+
+int getFunctionReturnVarAddress(char *functionName)
+{
+    int i = 0;
+    while (i < FUNCTION_TABLE_SIZE && strcmp(functionTable.functionArray[i].functionName, functionName) != 0)
+    {
+        i++;
+    }
+    if (i == FUNCTION_TABLE_SIZE)
+    {
+        return -1;
+    }
+    return functionTable.functionArray[i].returnVarAddress;
 }
 
 int getFunctionAddress(char *functionName)

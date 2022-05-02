@@ -80,6 +80,7 @@ typedef struct Function
     char *functionName;
     int functionAddress;
     int returnAddress;
+    int returnVarAddress;
     int functionDepth;
 } Function;
 
@@ -115,7 +116,7 @@ void initFunctionTable();
  * @param symbolName
  * @param size_of_symbol The size of the symbol in bytes
  * @param type For now int only
- * @return 0 if the symbol was correctly. -1 if the symbol could not be added. (table full)
+ * @return The address of the symbol if added correctly. -1 if the symbol could not be added. (table full)
  */
 int addSymbol(char *symbolName, int sizeofSymbol, enum type typ);
 
@@ -191,6 +192,8 @@ int getTopIndex();
 /**
  * @brief Set the address of the return instruction in the function
  *
+ * @param functionName
+ * @param returnAddress The address of the return instruction in the function
  * @return 0 if the operation executed correctly. -1 if the function could not be found.
  */
 int setFunctionReturnAddress(char *functionName, int returnAddress);
@@ -198,9 +201,26 @@ int setFunctionReturnAddress(char *functionName, int returnAddress);
 /**
  * @brief Get the return address corresponding to the current function then resets it.
  *
+ * @param functionName
  * @return The address the function must return to. Or -1 if the return address is not set.
  */
 int getFunctionReturnAddress(char *functionName);
+
+/**
+ * @brief Set the address of the return variable in the function
+ *
+ * @param returnVarAddress The address of the return variable of the function in the symbolTable
+ * @return 0 if the operation executed correctly. -1 if the function could not be found.
+ */
+int setFunctionReturnVarAddress(int returnVarAddress);
+
+/**
+ * @brief Get the return variable address corresponding to the function then resets it.
+ *
+ * @param functionName
+ * @return The address of the return variable in the symbol table. Or -1 if the return variable address is not set.
+ */
+int getFunctionReturnVarAddress(char *functionName);
 
 /**
  * @brief Get the address of the functions's parameter of given index

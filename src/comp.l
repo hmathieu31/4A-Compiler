@@ -5,6 +5,7 @@
 %}
 
 %option noyywrap
+%option yylineno
 
 D [0-9]
 

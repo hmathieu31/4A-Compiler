@@ -66,13 +66,14 @@ Fun: tINT tID
 			yyerror(err);
 		}
 		int line = getNumberOfInstructions();
+        increaseFunctionDepth();
 		if(addFunction($2, line) == -1)
 		{
 			sprintf(err, "Error : could not add function %s\n", $2);
 			yyerror(err);
 		}
 	}
-	tOP {increaseFunctionDepth();} Params tCP {increaseDepth();} FunBody
+	tOP Params tCP {increaseDepth();} FunBody
 	{
 		instruction instr = {JMP, {-1}};
 		int line = addInstruction(instr);
@@ -135,6 +136,7 @@ InvokeFun: tID tOP Args tCP
 			sprintf(err, "Error : Instruction table is full\n");
 			yyerror(err);
 		}
+		resetFunctionDepth();
 		// TODO: #37 Handle the return variable issue
 	}
 	;

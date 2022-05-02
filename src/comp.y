@@ -34,7 +34,7 @@ Main: tMAIN
 		instruction instr = {ENTRY, {1, 1, 1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Error : could not add entry point");
+			sprintf(err, "could not add entry point");
 			yyerror(err);
 		}
 	} Body;
@@ -85,14 +85,14 @@ Fun: tINT tID
 	{
 		if(getFunctionAddress($2) != -1)
 		{
-			fprintf(stderr ,"Error : function %s already defined\n", $2);
+			fprintf(stderr ,"Function %s already defined\n", $2);
 			yyerror(err);
 		}
 		int line = getNumberOfInstructions();
         increaseFunctionDepth();
 		if(addFunction($2, line) == -1)
 		{
-			sprintf(err, "Error : could not add function %s", $2);
+			sprintf(err, "Could not add function %s", $2);
 			yyerror(err);
 		}
 	}
@@ -102,12 +102,12 @@ Fun: tINT tID
 		int line = addInstruction(instr);
 		if(line == -1)
 		{
-			sprintf(err, "Error : Instruction table is full");
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
 		}
 		if(setFunctionReturnAddress($2, line) == -1)
 		{
-			sprintf(err, "Error : Function %s not found", $2);
+			sprintf(err, "Function '%s' undefined", $2);
 			yyerror(err);
 		}
 	}
@@ -119,7 +119,7 @@ InvokeFun: tID tOP Args tCP
 	{
 		if(setFunctionScope($1) == -1)
 		{
-			sprintf(err, "Error : Function %s not defined", $1);
+			sprintf(err, "Function '%s' undefined", $1);
 			yyerror(err);
 		}
 		int argAddr = getNextArgumentAddress();
@@ -129,18 +129,18 @@ InvokeFun: tID tOP Args tCP
 			int paramAddr = getFunctionParameterAddress($1, i);
             if(paramAddr == -1)
             {
-                sprintf(err, "Error : Function %s is undefined", $1);
+                sprintf(err, "Function '%s' is undefined", $1);
                 yyerror(err);
             }
             if(paramAddr == -2)
             {
-                sprintf(err, "Error : Function %s has no argument %d", $1, i);
+                sprintf(err, "Function '%s' has no argument at index %d", $1, i);
                 yyerror(err);
             }
 			instruction instr = {COP, {paramAddr, argAddr, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Error : Instruction table is full");
+				sprintf(err, "Instruction table is full");
 				yyerror(err);
 			}
 			argAddr = getNextArgumentAddress();
@@ -149,14 +149,14 @@ InvokeFun: tID tOP Args tCP
 		int currentLine = getNumberOfInstructions();
 		if(currentLine == -1)
 		{
-			sprintf(err, "Error : Instruction table is empty");
+			sprintf(err, "Instruction table is empty");
 			yyerror(err);
 		}
 		patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1, JMP);
 		instruction instr = {JMP, {getFunctionAddress($1), -1, -1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Error : Instruction table is full");
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
 		}
 		resetFunctionDepth();
@@ -174,7 +174,7 @@ Args: Terme
 		int argAddr = addArgument();
         if(argAddr == -1)
         {
-            sprintf(err, "Error : Memory space allocated to arguments overflowed");
+            sprintf(err, "Memory space allocated to arguments overflowed");
             yyerror(err);
         }
 		instruction instr = {COP, {argAddr, $1, -1}};
@@ -185,7 +185,7 @@ Args: Terme
 		int argAddr = addArgument();
         if(argAddr == -1)
         {
-            sprintf(err, "Error : Memory space allocated to arguments overflowed");
+            sprintf(err, "Memory space allocated to arguments overflowed");
             yyerror(err);
         }
 		instruction instr = {COP, {argAddr, $1, -1}};
@@ -199,7 +199,7 @@ If: tIF tOP
 		int temp1 = newTmp();
         if(temp1 == -1)
         {
-            sprintf(err, "Error : Instruction table is full");
+            sprintf(err, "Instruction table is full");
             yyerror(err);
         }
 		instruction instr1 = {AFC, {temp1, 1, -1}};
@@ -211,7 +211,7 @@ If: tIF tOP
 		int temp3 = newTmp();
         if(temp3 == -1)
         {
-            sprintf(err, "Error : Instruction table is full");
+            sprintf(err, "Instruction table is full");
             yyerror(err);
         }
 		instruction instr3 = {EQUAL, {temp3, $4, temp1}};
@@ -239,7 +239,7 @@ If: tIF tOP
 			int temp1 = newTmp();
             if(temp1 == -1)
             {
-                sprintf(err, "Error : Instruction table is full");
+                sprintf(err, "Instruction table is full");
                 yyerror(err);
             }
 			instruction instr = {COP, {temp1, $1, -1}};
@@ -297,7 +297,7 @@ While: tWHILE tOP
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Error : Instruction table is full");
+            sprintf(err, "Instruction table is full");
             yyerror(err);
         }
 		instruction instr = {AFC, {temp, 1, -1}};
@@ -309,7 +309,7 @@ While: tWHILE tOP
 		int temp3 = newTmp();
         if(temp3 == -1)
         {
-            sprintf(err, "Error : Instruction table is full");
+            sprintf(err, "Instruction table is full");
             yyerror(err);
         }
 		instruction instr3 = {EQUAL, {temp3, $4, temp}};

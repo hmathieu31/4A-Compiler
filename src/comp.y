@@ -9,10 +9,12 @@
 
 extern FILE *yyin;
 extern int yylineno;
+int error_count = 0;
 char err[100];
 
-void yyerror(char *s);
+void yyerror(const char *s);
 %}
+%define parse.error detailed
 %union { int nb; char *var; }
 %token tEQ tCP tSUB tADD tDIV tMUL tMAIN tCONST tINT tPRINT tOB tCOL tCB tSCOL tERROR tEQUAL tNEQUAL tSUP tINF tEQSUP tEQINF tAND tOR tRETURN tELSE
 %right tEQ
@@ -32,7 +34,7 @@ Main: tMAIN
 		instruction instr = {ENTRY, {1, 1, 1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Error : could not add entry point\n");
+			sprintf(err, "Error : could not add entry point");
 			yyerror(err);
 		}
 	} Body;
@@ -50,14 +52,14 @@ Return : tRETURN Terme tSCOL
 		int returnVar = addSymbol("_ret", sizeof("_ret"), t_int);
 		if(returnVar == -1)
 		{
-			sprintf(err, "Could not add return variable\n");
+			sprintf(err, "Could not add return variable");
 			yyerror(err);
 		}
 
 		instruction instr = {COP, {returnVar, $2, -1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Line %d | Could not add %s instruction\n", yylineno ,stringOfInstruction(instr));
+			sprintf(err, "Line %d | Could not add %s instruction", yylineno ,stringOfInstruction(instr));
 			yyerror(err);
 		}
 		setFunctionReturnVarAddress(returnVar);
@@ -68,7 +70,9 @@ Ligne : Instr Ligne
 	|Instr
 	|;
 Instr: Boucle
-	   |Expr tSCOL;
+	   |Expr tSCOL
+	   |error tSCOL
+	   ;
 Boucle: If
 	/* |Ifel */
 	|While;
@@ -88,7 +92,7 @@ Fun: tINT tID
         increaseFunctionDepth();
 		if(addFunction($2, line) == -1)
 		{
-			sprintf(err, "Error : could not add function %s\n", $2);
+			sprintf(err, "Error : could not add function %s", $2);
 			yyerror(err);
 		}
 	}
@@ -98,12 +102,12 @@ Fun: tINT tID
 		int line = addInstruction(instr);
 		if(line == -1)
 		{
-			sprintf(err, "Error : Instruction table is full\n");
+			sprintf(err, "Error : Instruction table is full");
 			yyerror(err);
 		}
 		if(setFunctionReturnAddress($2, line) == -1)
 		{
-			sprintf(err, "Error : Function %s not found\n", $2);
+			sprintf(err, "Error : Function %s not found", $2);
 			yyerror(err);
 		}
 	}
@@ -115,7 +119,7 @@ InvokeFun: tID tOP Args tCP
 	{
 		if(setFunctionScope($1) == -1)
 		{
-			sprintf(err, "Error : Function %s not defined\n", $1);
+			sprintf(err, "Error : Function %s not defined", $1);
 			yyerror(err);
 		}
 		int argAddr = getNextArgumentAddress();
@@ -125,18 +129,18 @@ InvokeFun: tID tOP Args tCP
 			int paramAddr = getFunctionParameterAddress($1, i);
             if(paramAddr == -1)
             {
-                sprintf(err, "Error : Function %s is undefined\n", $1);
+                sprintf(err, "Error : Function %s is undefined", $1);
                 yyerror(err);
             }
             if(paramAddr == -2)
             {
-                sprintf(err, "Error : Function %s has no argument %d\n", $1, i);
+                sprintf(err, "Error : Function %s has no argument %d", $1, i);
                 yyerror(err);
             }
 			instruction instr = {COP, {paramAddr, argAddr, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Error : Instruction table is full\n");
+				sprintf(err, "Error : Instruction table is full");
 				yyerror(err);
 			}
 			argAddr = getNextArgumentAddress();
@@ -145,21 +149,21 @@ InvokeFun: tID tOP Args tCP
 		int currentLine = getNumberOfInstructions();
 		if(currentLine == -1)
 		{
-			sprintf(err, "Error : Instruction table is empty\n");
+			sprintf(err, "Error : Instruction table is empty");
 			yyerror(err);
 		}
 		patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1, JMP);
 		instruction instr = {JMP, {getFunctionAddress($1), -1, -1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Error : Instruction table is full\n");
+			sprintf(err, "Error : Instruction table is full");
 			yyerror(err);
 		}
 		resetFunctionDepth();
 		int returnVar = getFunctionReturnVarAddress($1);
 		if(returnVar == -1)
 		{
-			sprintf(err, "No return variable found\n");
+			sprintf(err, "No return variable found");
 			yyerror(err);
 		}
 		$$ = returnVar;
@@ -170,7 +174,7 @@ Args: Terme
 		int argAddr = addArgument();
         if(argAddr == -1)
         {
-            sprintf(err, "Error : Memory space allocated to arguments overflowed\n");
+            sprintf(err, "Error : Memory space allocated to arguments overflowed");
             yyerror(err);
         }
 		instruction instr = {COP, {argAddr, $1, -1}};
@@ -181,7 +185,7 @@ Args: Terme
 		int argAddr = addArgument();
         if(argAddr == -1)
         {
-            sprintf(err, "Error : Memory space allocated to arguments overflowed\n");
+            sprintf(err, "Error : Memory space allocated to arguments overflowed");
             yyerror(err);
         }
 		instruction instr = {COP, {argAddr, $1, -1}};
@@ -195,32 +199,32 @@ If: tIF tOP
 		int temp1 = newTmp();
         if(temp1 == -1)
         {
-            sprintf(err, "Error : Instruction table is full\n");
+            sprintf(err, "Error : Instruction table is full");
             yyerror(err);
         }
 		instruction instr1 = {AFC, {temp1, 1, -1}};
 		if(addInstruction(instr1) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr1));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr1));
 			yyerror(err);
 		}
 		int temp3 = newTmp();
         if(temp3 == -1)
         {
-            sprintf(err, "Error : Instruction table is full\n");
+            sprintf(err, "Error : Instruction table is full");
             yyerror(err);
         }
 		instruction instr3 = {EQUAL, {temp3, $4, temp1}};
 		if(addInstruction(instr3) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr3));
 			yyerror(err);
 		}
 		instruction instrJMPF = {JMF, {temp3, -1, -1}};
 		int line = addInstruction(instrJMPF);
 		if(line == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMPF));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instrJMPF));
 			yyerror(err);
 		}
 		$1 = line;
@@ -235,34 +239,34 @@ If: tIF tOP
 			int temp1 = newTmp();
             if(temp1 == -1)
             {
-                sprintf(err, "Error : Instruction table is full\n");
+                sprintf(err, "Error : Instruction table is full");
                 yyerror(err);
             }
 			instruction instr = {COP, {temp1, $1, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction.\n");
+				sprintf(err, "Failed to add instruction.");
 				yyerror(err);
 			}
 			int temp2 = newTmp();
 			instruction instr2 = {COP, {AFC, 0, -1}};
 			if(addInstruction(instr2) == -1)
 			{
-				sprintf(err, "Failed to add instruction.\n");
+				sprintf(err, "Failed to add instruction.");
 				yyerror(err);
 			}
 			int temp3 = newTmp();
 			instruction instr3 = {EQUAL, {temp3, temp1, temp2}};
 			if(addInstruction(instr3) == -1)
 			{
-				sprintf(err, "Failed to add instruction.\n");
+				sprintf(err, "Failed to add instruction.");
 				yyerror(err);
 			}
 			instruction instrJMPF = {JMF, {temp3, -1, -1}};
 			int line = addInstruction(instrJMPF);
 			if(line == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMPF));
+				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instrJMPF));
 				yyerror(err);
 			}
 			$1 = line;
@@ -275,7 +279,7 @@ If: tIF tOP
 			int line = addInstruction(instr);
 			if(line == -1)
 			{
-				sprintf(err, "Failed to add instruction.\n");
+				sprintf(err, "Failed to add instruction.");
 				yyerror(err);
 			}
 			$1 = line;
@@ -293,32 +297,32 @@ While: tWHILE tOP
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Error : Instruction table is full\n");
+            sprintf(err, "Error : Instruction table is full");
             yyerror(err);
         }
 		instruction instr = {AFC, {temp, 1, -1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		int temp3 = newTmp();
         if(temp3 == -1)
         {
-            sprintf(err, "Error : Instruction table is full\n");
+            sprintf(err, "Error : Instruction table is full");
             yyerror(err);
         }
 		instruction instr3 = {EQUAL, {temp3, $4, temp}};
 		if(addInstruction(instr3) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr3));
 			yyerror(err);
 		}
 		instruction instrJMPF = {JMF, {temp3, -2, -1}};
 		int line = addInstruction(instrJMPF);
 		if(line == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMPF));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instrJMPF));
 			yyerror(err);
 		}
 		$1 = line;
@@ -327,7 +331,7 @@ While: tWHILE tOP
 		{
 		instruction instrJMP = {JMP, {$2, -1, -1}};
 		if(addInstruction(instrJMP) == -1) {
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMP));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instrJMP));
 			yyerror(err);
 		}
 		int currentLine = getNumberOfInstructions();
@@ -337,7 +341,7 @@ Dec :   tCONST tINT tID
 		{
 			if(getSymbolAddress($3) != -1)
 			{
-				sprintf(err, "Variable \"%s\" already exists. \n", $3);
+				sprintf(err, "Variable \"%s\" already exists. ", $3);
 				yyerror(err);
 			}
 			if(addSymbol($3, sizeof($3), t_int) == -1)
@@ -350,7 +354,7 @@ Dec :   tCONST tINT tID
 		{
 			if(getSymbolAddress($2) != -1)
 			{
-				sprintf(err, "Variable \"%s\" already exists. \n", $2);
+				sprintf(err, "Variable \"%s\" already exists. ", $2);
 				yyerror(err);
 			}
 			if(addSymbol($2, sizeof($2), t_int) == -1)
@@ -363,7 +367,7 @@ Dec :   tCONST tINT tID
 		{
 			if(getSymbolAddress($3) != -1)
 			{
-				sprintf(err, "Variable \"%s\" already exists. \n", $3);
+				sprintf(err, "Variable \"%s\" already exists. ", $3);
 				yyerror(err);
 			}
 			if(addSymbol($3, sizeof($3), t_int) == -1)
@@ -378,7 +382,7 @@ Aff :   tID tEQ Terme
 			int addrSymbol = getSymbolAddress($1);
 			if(addrSymbol == -1)
 			{
-				sprintf(err, "Variable \"%s\" is undefined.\n", $1);
+				sprintf(err, "Variable \"%s\" is undefined.", $1);
 				yyerror(err);
 			}
 			instruction instr = {
@@ -387,7 +391,7 @@ Aff :   tID tEQ Terme
 			};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 				yyerror(err);
 			}
 			freeAddrsTemp();
@@ -398,7 +402,7 @@ Defaff : tCONST tINT tID tEQ Terme
 			int addrSymbol = getSymbolAddress($3);
 			if(addrSymbol != -1)
 			{
-				sprintf(err, "Variable \"%s\" already exists. \n", $3);
+				sprintf(err, "Variable \"%s\" already exists. ", $3);
 				yyerror(err);
 			}
 			if(addSymbol($3, sizeof($3), t_int) == -1)
@@ -410,7 +414,7 @@ Defaff : tCONST tINT tID tEQ Terme
 			instruction instr = {COP, {addrSymbol, $5, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 				yyerror(err);
 			}
 			freeAddrsTemp();
@@ -420,7 +424,7 @@ Defaff : tCONST tINT tID tEQ Terme
 			int addrSymbol = getSymbolAddress($2);
 			if(addrSymbol != -1)
 			{
-				sprintf(err, "Variable \"%s\" already exists. \n", $2);
+				sprintf(err, "Variable \"%s\" already exists. ", $2);
 				yyerror(err);
 			}
 			if(addSymbol($2, sizeof($2), t_int) == -1)
@@ -432,7 +436,7 @@ Defaff : tCONST tINT tID tEQ Terme
 			instruction instr = {COP, {addrSymbol, $4, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 				yyerror(err);
 			}
 			freeAddrsTemp();
@@ -451,13 +455,13 @@ Add :   Terme tADD Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {ADD, {temp, $1, $3}};       // Add the two terms with the result being in temp3
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -468,13 +472,13 @@ Sub :   Terme tSUB Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {SUB, {temp, $1, $3}};       // Substract the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -485,13 +489,13 @@ Mul :   Terme tMUL Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {MUL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -502,13 +506,13 @@ Div :   Terme tDIV Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {DIV, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -536,13 +540,13 @@ Eqsup : Terme tEQSUP Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {EQSUP, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -552,13 +556,13 @@ Eqinf : Terme tEQINF Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {EQINF, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -568,13 +572,13 @@ Sup : Terme tSUP Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {SUP, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -584,13 +588,13 @@ Inf : Terme tINF Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {INF, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -600,13 +604,13 @@ Equal : Terme tEQUAL Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {EQUAL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -616,13 +620,13 @@ Nequal : Terme tNEQUAL Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {NEQUAL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -632,13 +636,13 @@ Or: Terme tOR Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {OR, {temp, $1, $3}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -648,13 +652,13 @@ And: Terme tAND Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.\n");
+            sprintf(err, "Failed to create temporary variable.");
             yyerror(err);
         }
 		instruction instr = {AND, {temp, $1, $3}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 		$$ = temp;
@@ -676,13 +680,13 @@ Terme : tOP Ope tCP
 			int addrTemp =newTmp();
             if(addrTemp == -1)
             {
-                sprintf(err, "Failed to create temporary variable.\n");
+                sprintf(err, "Failed to create temporary variable.");
                 yyerror(err);
             }
 			instruction instr = {AFC, {addrTemp, $1, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 				yyerror(err);
 			}
 			$$ = addrTemp;
@@ -695,20 +699,24 @@ Print : tPRINT tOP tID tCP
 		int addrSymbol = getSymbolAddress($3);
 		if(addrSymbol == -1)
 		{
-			sprintf(err, "Failed to get address of symbol \"%s\".\n", $3);
+			sprintf(err, "Failed to get address of symbol \"%s\".", $3);
 			yyerror(err);
 		}
 		instruction instr = {PRI, {addrSymbol, -1, -1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr));
+			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
 			yyerror(err);
 		}
 	}
 ;
 
 %%
-void yyerror(char *s) { fprintf(stderr, "%s", s); exit(1);}
+void yyerror(const char *s) { 
+	fprintf(stderr, "ERROR | Line %d | %s\n", yylineno, s);
+	error_count++;
+}
+
 int main(int argc, char **argv) {
 	if(argc != 2) {
 		fprintf(stderr, "Usage: %s <input file>\n", argv[0]);
@@ -721,6 +729,11 @@ int main(int argc, char **argv) {
 	}
 	yyin = f;
 	yyparse();
+	if(error_count > 0) {
+		fprintf(stderr, "  ERROR -- Compilation failed. --  \n");
+		fclose(f);
+		return 1;
+	}
     printInstrTable();
     /* interpret(); */
 	fclose(f);

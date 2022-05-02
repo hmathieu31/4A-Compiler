@@ -111,9 +111,12 @@ int getNumberOfInstructions();
 /**
  * @brief Patch the jump based instruction with the correct address
  * 
- * @param from Address from where the jump is
- * @param to Address to where the jump is
+ * @param at Address where the jump instruction is at
+ * @param to Address to where the jump must go to
+ * @param jmpType Type of jump (JMP or JMF)
+ * 
+ * @return 0 if executed successfully. -1 if the jump type is not supported.
  */
-void patchJmpInstruction(int from, int to);
+int patchJmpInstruction(int at, int to, operator jmpType);
 
 #endif

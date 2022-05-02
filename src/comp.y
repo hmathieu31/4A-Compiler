@@ -75,7 +75,7 @@ Fun: tINT tID
 	}
 	tOP Params tCP {increaseDepth();} FunBody
 	{
-		instruction instr = {JMP, {-1}};
+		instruction instr = {JMP, {-2, -1, -1}};
 		int line = addInstruction(instr);
 		if(line == -1)
 		{
@@ -129,8 +129,8 @@ InvokeFun: tID tOP Args tCP
 			sprintf(err, "Error : Instruction table is empty\n");
 			yyerror(err);
 		}
-		patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1);
-		instruction instr = {JMP, {getFunctionAddress($1)}};
+		patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1, JMP);
+		instruction instr = {JMP, {getFunctionAddress($1), -1, -1}};
 		if(addInstruction(instr) == -1)
 		{
 			sprintf(err, "Error : Instruction table is full\n");
@@ -203,7 +203,7 @@ If: tIF tOP
 	Body
 	{
 		int currentLine = getNumberOfInstructions();
-		patchJmpInstruction($1, currentLine - 1);
+		patchJmpInstruction($1, currentLine - 1, JMF);
 	};
 /* Ifel: tIF tOP Terme tCP
 	{
@@ -306,7 +306,7 @@ While: tWHILE tOP
 			yyerror(err);
 		}
 		int currentLine = getNumberOfInstructions();
-		patchJmpInstruction($1, currentLine);
+		patchJmpInstruction($1, currentLine, JMF);
 	};
 Dec :   tCONST tINT tID
 		{

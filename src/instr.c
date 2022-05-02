@@ -114,7 +114,18 @@ int getNumberOfInstructions()
     return i;
 }
 
-void patchJmpInstruction(int from, int to) {
-    instrArray[from].ops[1] = to;
+int patchJmpInstruction(int at, int to, operator jmpType) {
+    switch (jmpType) {
+        case JMP:
+            instrArray[at].ops[0] = to;
+            break;
+        case JMF:
+            instrArray[at].ops[1] = to;
+            break;
+        default:
+            return -1;
+            break;
+    }
+    return 0;
 }
     

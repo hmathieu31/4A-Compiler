@@ -148,7 +148,7 @@ Args: Terme
             sprintf(err, "Error : Memory space allocated to arguments overflowed\n");
             yyerror(err);
         }
-		instruction instr = {AFC, {argAddr, $1, -1}};
+		instruction instr = {COP, {argAddr, $1, -1}};
 		addInstruction(instr);
 	}
 	| Terme
@@ -159,7 +159,7 @@ Args: Terme
             sprintf(err, "Error : Memory space allocated to arguments overflowed\n");
             yyerror(err);
         }
-		instruction instr = {AFC, {argAddr, $1, -1}};
+		instruction instr = {COP, {argAddr, $1, -1}};
 		addInstruction(instr);
 	} tCOL Args
 	|;
@@ -203,7 +203,7 @@ If: tIF tOP
 	Body
 	{
 		int currentLine = getNumberOfInstructions();
-		patchJmpInstruction($1, currentLine - 1, JMF);
+		patchJmpInstruction($1, currentLine, JMF);
 	};
 /* Ifel: tIF tOP Terme tCP
 	{
@@ -289,7 +289,7 @@ While: tWHILE tOP
 			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instr3));
 			yyerror(err);
 		}
-		instruction instrJMPF = {JMF, {temp3, -1, -1}};
+		instruction instrJMPF = {JMF, {temp3, -2, -1}};
 		int line = addInstruction(instrJMPF);
 		if(line == -1)
 		{
@@ -300,7 +300,7 @@ While: tWHILE tOP
 	}
 	Body
 		{
-		instruction instrJMP = {JMP, {$2 - 1, -1, -1}};
+		instruction instrJMP = {JMP, {$2, -1, -1}};
 		if(addInstruction(instrJMP) == -1) {
 			sprintf(err, "Failed to add instruction \"%s\".\n", stringOfInstruction(instrJMP));
 			yyerror(err);

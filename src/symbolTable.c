@@ -26,7 +26,7 @@ int currentFunctionDepth = 0;
 
 int newTmp()
 {
-    if (symbolTable.topSymbolIndex < BASE_ARGS - 1)
+    if (symbolTable.topSymbolIndex < BASE_ARGS)
     {
         int addrTemp = symbolTable.topIndexTemp + 1;
         symbolTable.topIndexTemp += 1;
@@ -72,7 +72,7 @@ void initTable()
         "",
         t_int,
         -1};
-    for (int i = 0; i < BASE_ARGS - 1; i++)
+    for (int i = 0; i < SYMBOL_TABLE_SIZE; i++)
     {
         symbolTable.symbolArray[i] = symInit;
     }
@@ -103,7 +103,7 @@ int isSymbolTableEmpty()
 
 int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
 {
-    if (symbolTable.topSymbolIndex == BASE_VAR_TEMP - 1) // The symbol table being limited to 924 (BASE_VAR_TEMP) symbols, an error must be handled if trying to add another symbol
+    if (symbolTable.topSymbolIndex == BASE_VAR_TEMP - 1) // The symbol table being limited to 924 (BASE_VAR_TEMP - 1) symbols, an error must be handled if trying to add another symbol
     {
         return -1;
     }
@@ -203,7 +203,7 @@ int deleteFromChangeScope()
         int i = symbolTable.topSymbolIndex;
         while (i >= 0 && symbolTable.symbolArray[i].depth > depth)
         {
-            if(deleteSymbol() == -1)
+            if (deleteSymbol() == -1)
             {
                 return -1;
             }
@@ -251,7 +251,7 @@ int getFunctionParameterAddress(char *functionName, int parameterIndex)
     while (parameterAddress == -1 && i <= symbolTable.topSymbolIndex)
     {
         symbol symbol = symbolTable.symbolArray[i];
-        if (symbol.functionDepth == functionDepth && symbol.depth == -1) // Parameter variable have a depth of -1
+        if (symbol.functionDepth == functionDepth && symbol.depth == -1) // Parameter variables have a depth of -1
         {
             parameterCount++;
         }
@@ -301,11 +301,11 @@ int addArgument()
     return symbolTable.topIndexArgs;
 }
 
-int iterator = BASE_ARGS - 1;
+int iterator = BASE_ARGS;
 int getNextArgumentAddress()
 {
     int nextArgumentAddress = -1;
-    if (iterator < symbolTable.topIndexArgs) // If there are arguments to be iterated on
+    if (iterator <= symbolTable.topIndexArgs) // If there are arguments to be iterated on
     {
         nextArgumentAddress = iterator;
         iterator++;
@@ -316,7 +316,7 @@ int getNextArgumentAddress()
 void clearArgumentTable()
 {
     symbolTable.topIndexArgs = BASE_ARGS - 1;
-    iterator = BASE_ARGS - 1;
+    iterator = BASE_ARGS;
 }
 
 void printSymbolTable()

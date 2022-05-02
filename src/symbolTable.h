@@ -12,10 +12,10 @@
 #ifndef SYMBOLTABLES_H
 #define SYMBOLTABLES_H
 
-#define SYMBOL_TABLE_SIZE 1025
+#define SYMBOL_TABLE_SIZE 1024
 #define BASE_ARGS 1009
 #define BASE_VAR_TEMP 925
-#define FUNCTION_TABLE_SIZE 65
+#define FUNCTION_TABLE_SIZE 64
 
 typedef enum type
 {

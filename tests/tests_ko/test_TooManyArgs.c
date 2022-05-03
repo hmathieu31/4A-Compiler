@@ -1,6 +1,6 @@
 int fun(int a , int b)
 {
-    print(a);
+    printf(a);
     return 1;
 }
 

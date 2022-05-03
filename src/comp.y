@@ -34,8 +34,9 @@ Main: tMAIN
 		instruction instr = {ENTRY, {1, 1, 1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "could not add entry point");
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 	} Body;
 Body : tOB
@@ -52,18 +53,18 @@ Return : tRETURN Terme tSCOL
 		int returnVar = addSymbol("_ret", sizeof("_ret"), t_int);
 		if(returnVar == -1)
 		{
-			sprintf(err, "Could not add return variable");
+			sprintf(err, "Symbol table is full");
 			yyerror(err);
 		}
 
 		instruction instr = {COP, {returnVar, $2, -1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Line %d | Could not add %s instruction", yylineno ,stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		setFunctionReturnVarAddress(returnVar);
-
 	}
 ;
 Ligne : Instr Ligne
@@ -93,8 +94,9 @@ Fun: tINT tID
         increaseFunctionDepth();
 		if(addFunction($2, line) == -1)
 		{
-			sprintf(err, "Could not add function %s", $2);
+			sprintf(err, "Could not add function %s, function table is full", $2);
 			yyerror(err);
+			exit(1);
 		}
 	}
 	tOP Params tCP {increaseDepth();} FunBody
@@ -105,6 +107,7 @@ Fun: tINT tID
 		{
 			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		if(setFunctionReturnAddress($2, line) == -1)
 		{
@@ -118,14 +121,16 @@ Params : Dec tCOL Params
 	|;
 InvokeFun: tID tOP Args tCP
 	{
+		int error_state = 0;
 		if(setFunctionScope($1) == -1)
 		{
 			sprintf(err, "Function '%s' undefined", $1);
 			yyerror(err);
+			error_state = 1;
 		}
 		int argAddr = getNextArgumentAddress();
 		int i = 1;
-		while(argAddr != -1)
+		while(argAddr != -1 && !error_state)
 		{
 			int paramAddr = getFunctionParameterAddress($1, i);
             if(paramAddr == -1)
@@ -135,39 +140,45 @@ InvokeFun: tID tOP Args tCP
             }
             if(paramAddr == -2)
             {
-                sprintf(err, "Function '%s' has no argument at index %d", $1, i);
+                sprintf(err, "Too many arguments for function '%s'", $1);
                 yyerror(err);
+				error_state = 1;
             }
 			instruction instr = {COP, {paramAddr, argAddr, -1}};
 			if(addInstruction(instr) == -1)
 			{
 				sprintf(err, "Instruction table is full");
 				yyerror(err);
+				exit(1);
 			}
 			argAddr = getNextArgumentAddress();
 			i++;
 		}
-		int currentLine = getNumberOfInstructions();
-		if(currentLine == -1)
+		if (!error_state)
 		{
-			sprintf(err, "Instruction table is empty");
-			yyerror(err);
+			int currentLine = getNumberOfInstructions();
+			if(currentLine == -1)
+			{
+				sprintf(err, "Instruction table is empty");
+				yyerror(err);
+			}
+			patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1, JMP);
+			instruction instr = {JMP, {getFunctionAddress($1), -1, -1}};
+			if(addInstruction(instr) == -1)
+			{
+				sprintf(err, "Instruction table is full");
+				yyerror(err);
+				exit(1);
+			}
+			resetFunctionDepth();
+			int returnVar = getFunctionReturnVarAddress($1);
+			if(returnVar == -1)
+			{
+				sprintf(err, "No return variable found");
+				yyerror(err);
+			}
+			$$ = returnVar;
 		}
-		patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1, JMP);
-		instruction instr = {JMP, {getFunctionAddress($1), -1, -1}};
-		if(addInstruction(instr) == -1)
-		{
-			sprintf(err, "Instruction table is full");
-			yyerror(err);
-		}
-		resetFunctionDepth();
-		int returnVar = getFunctionReturnVarAddress($1);
-		if(returnVar == -1)
-		{
-			sprintf(err, "No return variable found");
-			yyerror(err);
-		}
-		$$ = returnVar;
 	}
 	;
 Args: Terme
@@ -175,22 +186,34 @@ Args: Terme
 		int argAddr = addArgument();
         if(argAddr == -1)
         {
-            sprintf(err, "Memory space allocated to arguments overflowed");
+            sprintf(err, "Memory space allocated to arguments exhausted");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {COP, {argAddr, $1, -1}};
-		addInstruction(instr);
+		if(addInstruction(instr) == -1)
+		{
+			sprintf(err, "Instruction table is full");
+			yyerror(err);
+			exit(1);
+		}
 	}
 	| Terme
 	{
 		int argAddr = addArgument();
         if(argAddr == -1)
         {
-            sprintf(err, "Memory space allocated to arguments overflowed");
+            sprintf(err, "Memory space allocated to arguments exhausted");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {COP, {argAddr, $1, -1}};
-		addInstruction(instr);
+		if(addInstruction(instr) == -1)
+		{
+			sprintf(err, "Instruction table is full");
+			yyerror(err);
+			exit(1);
+		}
 	} tCOL Args
 	|;
 If: tIF tOP
@@ -200,33 +223,38 @@ If: tIF tOP
 		int temp1 = newTmp();
         if(temp1 == -1)
         {
-            sprintf(err, "Instruction table is full");
+            sprintf(err, "Memory space allocated to temporary variables exhausted");
             yyerror(err);
+			exit(1);
         }
 		instruction instr1 = {AFC, {temp1, 1, -1}};
 		if(addInstruction(instr1) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr1));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		int temp3 = newTmp();
         if(temp3 == -1)
         {
-            sprintf(err, "Instruction table is full");
+            sprintf(err, "Memory space allocated to temporary variables exhausted");
             yyerror(err);
+			exit(1);
         }
 		instruction instr3 = {EQUAL, {temp3, $4, temp1}};
 		if(addInstruction(instr3) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr3));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		instruction instrJMPF = {JMF, {temp3, -1, -1}};
 		int line = addInstruction(instrJMPF);
 		if(line == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instrJMPF));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$1 = line;
 	}
@@ -293,38 +321,43 @@ If: tIF tOP
 	}; */
 While: tWHILE tOP
 	{$2 = getNumberOfInstructions();}
-	Cond tCP      // TODO: #27 Debug While
+	Cond tCP
 	{
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Instruction table is full");
+            sprintf(err, "Memory space allocated to temporary variables exhausted");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {AFC, {temp, 1, -1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		int temp3 = newTmp();
         if(temp3 == -1)
         {
-            sprintf(err, "Instruction table is full");
+            sprintf(err, "Memory space allocated to temporary variables exhausted");
             yyerror(err);
+			exit(1);
         }
 		instruction instr3 = {EQUAL, {temp3, $4, temp}};
 		if(addInstruction(instr3) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr3));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		instruction instrJMPF = {JMF, {temp3, -2, -1}};
 		int line = addInstruction(instrJMPF);
 		if(line == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instrJMPF));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$1 = line;
 	}
@@ -332,8 +365,9 @@ While: tWHILE tOP
 		{
 		instruction instrJMP = {JMP, {$2, -1, -1}};
 		if(addInstruction(instrJMP) == -1) {
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instrJMP));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		int currentLine = getNumberOfInstructions();
 		patchJmpInstruction($1, currentLine, JMF);
@@ -347,8 +381,9 @@ Dec :   tCONST tINT tID
 			}
 			if(addSymbol($3, sizeof($3), t_int) == -1)
 			{
-				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $3);
+				sprintf(err, "Symbol table full.");
 				yyerror(err);
+				exit(1);
 			}
 		}
 	|tINT tID
@@ -360,22 +395,23 @@ Dec :   tCONST tINT tID
 			}
 			if(addSymbol($2, sizeof($2), t_int) == -1)
 			{
-				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $2);
+				sprintf(err, "Symbol table full.");
 				yyerror(err);
+				exit(1);
 			}
 		}
 	|Dec tCOL tID
 		{
 			if(getSymbolAddress($3) != -1)
 			{
-				sprintf(err, "Variable \"%s\" already exists. ", $3);
+				sprintf(err, "Variable \"%s\" already exists.", $3);
 				yyerror(err);
 			}
 			if(addSymbol($3, sizeof($3), t_int) == -1)
 			{
-				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $3);
+				sprintf(err, "Symbol table full.");
 				yyerror(err);
-
+				exit(1);
 			}
 		};
 Aff :   tID tEQ Terme
@@ -383,7 +419,7 @@ Aff :   tID tEQ Terme
 			int addrSymbol = getSymbolAddress($1);
 			if(addrSymbol == -1)
 			{
-				sprintf(err, "Variable \"%s\" is undefined.", $1);
+				sprintf(err, "Variable \"%s\" undefined.", $1);
 				yyerror(err);
 			}
 			instruction instr = {
@@ -392,8 +428,9 @@ Aff :   tID tEQ Terme
 			};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+				sprintf(err, "Instruction table is full.");
 				yyerror(err);
+				exit(1);
 			}
 			freeAddrsTemp();
 		}
@@ -408,15 +445,17 @@ Defaff : tCONST tINT tID tEQ Terme
 			}
 			if(addSymbol($3, sizeof($3), t_int) == -1)
 			{
-				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $3);
+				sprintf(err, "Symbol table full.");
 				yyerror(err);
+				exit(1);
 			}
 			addrSymbol = getSymbolAddress($3);
 			instruction instr = {COP, {addrSymbol, $5, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+				sprintf(err, "Instruction table is full.");
 				yyerror(err);
+				exit(1);
 			}
 			freeAddrsTemp();
 		}
@@ -430,15 +469,17 @@ Defaff : tCONST tINT tID tEQ Terme
 			}
 			if(addSymbol($2, sizeof($2), t_int) == -1)
 			{
-				sprintf(err, "Symbol table full. Could not add variable \"%s\"", $2);
+				sprintf(err, "Symbol table full.");
 				yyerror(err);
+				exit(1);
 			}
 			addrSymbol = getSymbolAddress($2);
 			instruction instr = {COP, {addrSymbol, $4, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+				sprintf(err, "Instruction table is full.");
 				yyerror(err);
+				exit(1);
 			}
 			freeAddrsTemp();
 		}
@@ -456,14 +497,16 @@ Add :   Terme tADD Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {ADD, {temp, $1, $3}};       // Add the two terms with the result being in temp3
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full.");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	}
@@ -473,14 +516,16 @@ Sub :   Terme tSUB Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {SUB, {temp, $1, $3}};       // Substract the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full.");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	}
@@ -490,14 +535,16 @@ Mul :   Terme tMUL Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {MUL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full.");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	}
@@ -507,14 +554,16 @@ Div :   Terme tDIV Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {DIV, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full.");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	}
@@ -541,14 +590,16 @@ Eqsup : Terme tEQSUP Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {EQSUP, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full.");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	};
@@ -557,14 +608,16 @@ Eqinf : Terme tEQINF Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {EQINF, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	};
@@ -573,14 +626,16 @@ Sup : Terme tSUP Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {SUP, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	};
@@ -589,14 +644,16 @@ Inf : Terme tINF Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {INF, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	};
@@ -605,14 +662,16 @@ Equal : Terme tEQUAL Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {EQUAL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	};
@@ -621,14 +680,16 @@ Nequal : Terme tNEQUAL Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {NEQUAL, {temp, $1, $3}};       // Add the two temporary vars with the result being in temp
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	}
@@ -637,14 +698,16 @@ Or: Terme tOR Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {OR, {temp, $1, $3}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	};
@@ -653,14 +716,16 @@ And: Terme tAND Terme
 		int temp = newTmp();
         if(temp == -1)
         {
-            sprintf(err, "Failed to create temporary variable.");
+            sprintf(err, "Memory space allocated to temporary variables is exhausted.");
             yyerror(err);
+			exit(1);
         }
 		instruction instr = {AND, {temp, $1, $3}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 		$$ = temp;
 	};
@@ -681,14 +746,16 @@ Terme : tOP Ope tCP
 			int addrTemp =newTmp();
             if(addrTemp == -1)
             {
-                sprintf(err, "Failed to create temporary variable.");
+                sprintf(err, "Memory space allocated to temporary variables is exhausted.");
                 yyerror(err);
+				exit(1);
             }
 			instruction instr = {AFC, {addrTemp, $1, -1}};
 			if(addInstruction(instr) == -1)
 			{
-				sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+				sprintf(err, "Instruction table is full");
 				yyerror(err);
+				exit(1);
 			}
 			$$ = addrTemp;
 		}
@@ -702,12 +769,14 @@ Print : tPRINT tOP tID tCP
 		{
 			sprintf(err, "Failed to get address of symbol \"%s\".", $3);
 			yyerror(err);
+			exit(1);
 		}
 		instruction instr = {PRI, {addrSymbol, -1, -1}};
 		if(addInstruction(instr) == -1)
 		{
-			sprintf(err, "Failed to add instruction \"%s\".", stringOfInstruction(instr));
+			sprintf(err, "Instruction table is full");
 			yyerror(err);
+			exit(1);
 		}
 	}
 ;

@@ -80,6 +80,7 @@ Expr : Dec
 	|Aff
 	|Defaff
 	|Ope
+	|InvokeFun
 	|Print;
 Fun: tINT tID
 	{

@@ -746,7 +746,15 @@ Terme : tOP Ope tCP
 	| Cond
 		{$$ = $1;}
 	| tID
-		{$$ = getSymbolAddress($1);}
+		{
+			int addr = getSymbolAddress($1);
+			if(addr == -1)
+			{
+				sprintf(err, "'%s' is undefined.", $1);
+				yyerror(err);
+			}
+			$$ = addr;
+		}
 	| tNB
 		{
 			int addrTemp =newTmp();
@@ -789,7 +797,7 @@ Print : tPRINT tOP tID tCP
 		int addrSymbol = getSymbolAddress($3);
 		if(addrSymbol == -1)
 		{
-			sprintf(err, "Failed to get address of symbol \"%s\".", $3);
+			sprintf(err, " '%s' is undefined.", $3);
 			yyerror(err);
 			exit(1);
 		}

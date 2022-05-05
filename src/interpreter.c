@@ -81,6 +81,9 @@ void interpret()
         case JMP:
             i = instr.ops[0];
             break;
+        case JMX:
+            i = interpreterTable[instr.ops[0]];
+            break;
         case JMF:
             if (interpreterTable[instr.ops[0]] == 0)
             {
@@ -112,7 +115,7 @@ void interpret()
             printf("%d\n", interpreterTable[instr.ops[0]]);
             break;
         default:
-            printf("Unknown instruction\n");
+            printf("\n");
             break;
         }
     }

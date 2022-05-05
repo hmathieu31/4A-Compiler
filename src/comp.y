@@ -101,7 +101,7 @@ Fun: tINT tID
 	}
 	tOP Params tCP {increaseDepth();} FunBody
 	{
-		instruction instr = {JMP, {-2, -1, -1}};
+		instruction instr = {JMX, {FUNCTION_JMP_ADDR, -1, -1}};
 		int line = addInstruction(instr);
 		if(line == -1)
 		{
@@ -162,9 +162,15 @@ InvokeFun: tID tOP Args tCP
 				sprintf(err, "Instruction table is empty");
 				yyerror(err);
 			}
-			patchJmpInstruction(getFunctionReturnAddress($1), currentLine + 1, JMP);
-			instruction instr = {JMP, {getFunctionAddress($1), -1, -1}};
+			instruction instr = {AFC, {FUNCTION_JMP_ADDR, currentLine + 2, -1}};
 			if(addInstruction(instr) == -1)
+			{
+				sprintf(err, "Instruction table is full");
+				yyerror(err);
+				exit(1);
+			}
+			instruction instr1 = {JMP, {getFunctionAddress($1), -1, -1}};
+			if(addInstruction(instr1) == -1)
 			{
 				sprintf(err, "Instruction table is full");
 				yyerror(err);
@@ -760,7 +766,23 @@ Terme : tOP Ope tCP
 			$$ = addrTemp;
 		}
 	| InvokeFun
-		{$$ = $1;}
+		{
+			int addrTemp =newTmp();
+			if(addrTemp == -1)
+			{
+				sprintf(err, "Memory space allocated to temporary variables is exhausted.");
+				yyerror(err);
+				exit(1);
+			}
+			instruction instr = {COP, {addrTemp, $1, -1}};
+			if(addInstruction(instr) == -1)
+			{
+				sprintf(err, "Instruction table is full");
+				yyerror(err);
+				exit(1);
+			}
+			$$ = addrTemp;
+		}
 	;
 Print : tPRINT tOP tID tCP
 	{
@@ -804,8 +826,8 @@ int main(int argc, char **argv) {
 		fclose(f);
 		return 1;
 	}
-    /* printInstrTable(); */
-    interpret();
+/*     printInstrTable();
+ */    interpret();
 	fclose(f);
 	return 0;
 }

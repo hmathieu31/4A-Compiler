@@ -24,6 +24,7 @@ typedef enum operator {
     COP,
     AFC,
     JMP,
+    JMX,
     JMF,
     INF,
     SUP,
@@ -45,6 +46,7 @@ static const char* const operator_string[] = {
     [COP]= "COP",
     [AFC]= "AFC",
     [JMP]= "JMP",
+    [JMX]= "JMX", // Jump unconditionnaly to the instruction contained at the adress given in the operand
     [JMF]= "JMF",
     [INF]= "INF",
     [SUP]= "SUP",

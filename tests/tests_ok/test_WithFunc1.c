@@ -13,5 +13,5 @@ main() {
     int c, d;
     c = 4;
     int a = fun(5,7);
-    printf(c);
+    printf(a);
 }

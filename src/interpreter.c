@@ -60,6 +60,7 @@ void interpret()
         {
         case ENTRY:
             printf("Entry point\n");
+            break;
         case ADD:
             interpreterTable[instr.ops[0]] = interpreterTable[instr.ops[1]] + interpreterTable[instr.ops[2]];
             break;
@@ -80,6 +81,9 @@ void interpret()
             break;
         case JMP:
             i = instr.ops[0];
+            break;
+        case JMX:
+            i = interpreterTable[instr.ops[0]];
             break;
         case JMF:
             if (interpreterTable[instr.ops[0]] == 0)
@@ -112,7 +116,7 @@ void interpret()
             printf("%d\n", interpreterTable[instr.ops[0]]);
             break;
         default:
-            printf("Unknown instruction\n");
+            printf("\n");
             break;
         }
     }

@@ -1,13 +1,12 @@
 
 int fun(int x, int y) {
     int a = x;
-    return a + y + 1;
+    return a + y + 1; 
 }
 
 main() {
     const int a = 3;
-    int x;
     int b = fun(2, 1);
-    int e = fun(a, b);
-    printf(b);
+    int d = fun(1, 2) + fun(3, 4) + fun(a,b) + fun(e,1);
+    printf(d);
 }

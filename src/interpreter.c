@@ -60,6 +60,7 @@ void interpret()
         {
         case ENTRY:
             printf("Entry point\n");
+            break;
         case ADD:
             interpreterTable[instr.ops[0]] = interpreterTable[instr.ops[1]] + interpreterTable[instr.ops[2]];
             break;

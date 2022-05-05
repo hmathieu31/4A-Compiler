@@ -6,6 +6,7 @@ int fun(int x, int y) {
 
 main() {
     const int a = 3;
+    int e = 4;
     int b = fun(2, 1);
     int d = fun(1, 2) + fun(3, 4) + fun(a,b) + fun(e,1);
     printf(d);

@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -25,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">4A Compiler<span id="projectnumber">&#160;0.2.0</span>
+   <div id="projectname">4A Compiler<span id="projectnumber">&#160;0.3.0</span>
    </div>
    <div id="projectbrief">A compiler for a C-like language coded during 4A at INSA by Guillaume Aubut and Hugo Mathieu</div>
   </td>
@@ -52,22 +48,6 @@ $(function() {
 </script>
 <div id="main-nav"></div>
 </div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('globals.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -89,6 +69,7 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>addArgument()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a2c09e5a7bff65ddd3d4cf45057bdb924">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a2c09e5a7bff65ddd3d4cf45057bdb924">symbolTable.h</a></li>
 <li>addFunction()&#160;:&#160;<a class="el" href="symbol_table_8c.html#acd2e5457e6bc8db86f8d016320731213">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#adcb5a623461922cc2f0903453e12ab8e">symbolTable.h</a></li>
 <li>addInstruction()&#160;:&#160;<a class="el" href="instr_8c.html#a6838a06d6d5f00a5e841ead1e379b7bf">instr.c</a>, <a class="el" href="instr_8h.html#a6838a06d6d5f00a5e841ead1e379b7bf">instr.h</a></li>
+<li>addScope()&#160;:&#160;<a class="el" href="symbol_table_8c.html#afb3db0bb7d9fd4b1289c5d13321eef37">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#afb3db0bb7d9fd4b1289c5d13321eef37">symbolTable.h</a></li>
 <li>addSymbol()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a9530a1bb92e37e0e2313b8bab9ab2379">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a9530a1bb92e37e0e2313b8bab9ab2379">symbolTable.h</a></li>
 <li>affectToAddrTemp()&#160;:&#160;<a class="el" href="symbol_table_8h.html#a78bdd5e327c259ccbd08ad68bdc31949">symbolTable.h</a></li>
 </ul>
@@ -116,6 +97,7 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>getFunctionDepth()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a628818be65d7cdc090e682f1931a7f53">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a628818be65d7cdc090e682f1931a7f53">symbolTable.h</a></li>
 <li>getFunctionParameterAddress()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a991c7c62c7bcb9a697cca3c4f95013f6">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a991c7c62c7bcb9a697cca3c4f95013f6">symbolTable.h</a></li>
 <li>getFunctionReturnAddress()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a9c3ffe409f38e1afdf6b73e28f3ad7a0">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a9c3ffe409f38e1afdf6b73e28f3ad7a0">symbolTable.h</a></li>
+<li>getFunctionReturnVarAddress()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a0e68a29d9e6acd12e0f4b432a6ef9756">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a0e68a29d9e6acd12e0f4b432a6ef9756">symbolTable.h</a></li>
 <li>getInstruction()&#160;:&#160;<a class="el" href="instr_8c.html#ab076a1327fba95f96dba46827790baee">instr.c</a>, <a class="el" href="instr_8h.html#ab076a1327fba95f96dba46827790baee">instr.h</a></li>
 <li>getNextArgumentAddress()&#160;:&#160;<a class="el" href="symbol_table_8c.html#ad89f820c51083c20da055027f81ebe32">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#ad89f820c51083c20da055027f81ebe32">symbolTable.h</a></li>
 <li>getNumberOfInstructions()&#160;:&#160;<a class="el" href="instr_8c.html#a9e0325f04aab1b96be2015167888128b">instr.c</a>, <a class="el" href="instr_8h.html#a9e0325f04aab1b96be2015167888128b">instr.h</a></li>
@@ -130,8 +112,10 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>initFunctionTable()&#160;:&#160;<a class="el" href="symbol_table_8c.html#adcbe96ad9ac9949655f899b0d4bfc041">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#adcbe96ad9ac9949655f899b0d4bfc041">symbolTable.h</a></li>
 <li>initInstrArray()&#160;:&#160;<a class="el" href="instr_8c.html#a895bd86f05211de9b521b6100c85fd61">instr.c</a>, <a class="el" href="instr_8h.html#a895bd86f05211de9b521b6100c85fd61">instr.h</a></li>
 <li>initInterpretTable()&#160;:&#160;<a class="el" href="interpreter_8c.html#aef94cd2f1c21826c7d1c360bd662f6a4">interpreter.c</a>, <a class="el" href="interpreter_8h.html#aef94cd2f1c21826c7d1c360bd662f6a4">interpreter.h</a></li>
+<li>initScopesStack()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a3d0dbd21c6a2001e387c14cfee7781de">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a3d0dbd21c6a2001e387c14cfee7781de">symbolTable.h</a></li>
 <li>initTable()&#160;:&#160;<a class="el" href="symbol_table_8c.html#ab267dc188ced9d670d3cd12777e0bec0">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#ab267dc188ced9d670d3cd12777e0bec0">symbolTable.h</a></li>
 <li>interpret()&#160;:&#160;<a class="el" href="interpreter_8c.html#aeec8fb0aa4c6922ab518df077d175f1c">interpreter.c</a>, <a class="el" href="interpreter_8h.html#aeec8fb0aa4c6922ab518df077d175f1c">interpreter.h</a></li>
+<li>isFunctionDefined()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a137d0b3424f9d9e973446ffeb20ab730">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#aefdd8666572c2277d944ec70c30cab17">symbolTable.h</a></li>
 <li>isSymbolTableEmpty()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a58a56fc0e447e51f84476b859208275f">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a58a56fc0e447e51f84476b859208275f">symbolTable.h</a></li>
 </ul>
 
@@ -142,29 +126,28 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 
 
 <h3><a id="index_p" name="index_p"></a>- p -</h3><ul>
-<li>patchJmpInstruction()&#160;:&#160;<a class="el" href="instr_8c.html#ad6bed36c0ef2e69dda4050f24d62002c">instr.c</a>, <a class="el" href="instr_8h.html#ad6bed36c0ef2e69dda4050f24d62002c">instr.h</a></li>
+<li>patchJmpInstruction()&#160;:&#160;<a class="el" href="instr_8c.html#a108a25a9ebf6a34bb0c5e62f7da3edc3">instr.c</a>, <a class="el" href="instr_8h.html#a108a25a9ebf6a34bb0c5e62f7da3edc3">instr.h</a></li>
+<li>popScope()&#160;:&#160;<a class="el" href="symbol_table_8c.html#ad66b84e97decc3de404c87f0dc34b587">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#ad66b84e97decc3de404c87f0dc34b587">symbolTable.h</a></li>
 <li>printInstrTable()&#160;:&#160;<a class="el" href="instr_8c.html#a3ac7a82da8c9cb562704e3bc2a27c845">instr.c</a>, <a class="el" href="instr_8h.html#a3ac7a82da8c9cb562704e3bc2a27c845">instr.h</a></li>
 <li>printSymbolTable()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a1f266fb4c213084c049e19c47723f82a">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a1f266fb4c213084c049e19c47723f82a">symbolTable.h</a></li>
 </ul>
 
 
 <h3><a id="index_r" name="index_r"></a>- r -</h3><ul>
-<li>resetFunctionDepth()&#160;:&#160;<a class="el" href="symbol_table_8c.html#ad9c5c16e1d1303b3603e369ff5072323">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#ad9c5c16e1d1303b3603e369ff5072323">symbolTable.h</a></li>
+<li>resetFunctionScope()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a55c3e5d37f4b99ec592c92154c8e4990">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a55c3e5d37f4b99ec592c92154c8e4990">symbolTable.h</a></li>
 </ul>
 
 
 <h3><a id="index_s" name="index_s"></a>- s -</h3><ul>
 <li>setFunctionReturnAddress()&#160;:&#160;<a class="el" href="symbol_table_8c.html#a5762791d5c9d3afea274cfad5e544de4">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#a5762791d5c9d3afea274cfad5e544de4">symbolTable.h</a></li>
+<li>setFunctionReturnVarAddress()&#160;:&#160;<a class="el" href="symbol_table_8c.html#af0c43b9aeaa3e8ef8f3cbd5462a91c9b">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#af0c43b9aeaa3e8ef8f3cbd5462a91c9b">symbolTable.h</a></li>
 <li>setFunctionScope()&#160;:&#160;<a class="el" href="symbol_table_8c.html#ad6f3c8e9ebfd8293c3c2732e17003c18">symbolTable.c</a>, <a class="el" href="symbol_table_8h.html#ad6f3c8e9ebfd8293c3c2732e17003c18">symbolTable.h</a></li>
 <li>stringOfInstruction()&#160;:&#160;<a class="el" href="instr_8c.html#aa85bf56aab77409f0c7d297d2747ac14">instr.c</a>, <a class="el" href="instr_8h.html#a10bad4589f05450744d205d184387b15">instr.h</a></li>
 </ul>
 </div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+</small></address>
 </body>
 </html>

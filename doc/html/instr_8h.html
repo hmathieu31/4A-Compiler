@@ -9,10 +9,6 @@
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="resize.js"></script>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
@@ -25,7 +21,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">4A Compiler<span id="projectnumber">&#160;0.2.0</span>
+   <div id="projectname">4A Compiler<span id="projectnumber">&#160;0.3.0</span>
    </div>
    <div id="projectbrief">A compiler for a C-like language coded during 4A at INSA by Guillaume Aubut and Hugo Mathieu</div>
   </td>
@@ -51,23 +47,6 @@ $(function() {
 /* @license-end */
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('instr_8h.html',''); initResizable(); });
-/* @license-end */
-</script>
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -82,6 +61,11 @@ $(document).ready(function(){initNavTree('instr_8h.html',''); initResizable(); }
 </iframe>
 </div>
 
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+</div>
+</div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
@@ -128,19 +112,21 @@ Enumerations</h2></td></tr>
 &#160;&#160;<b>COP</b>
 , <b>AFC</b>
 , <b>JMP</b>
-, <b>JMF</b>
+, <b>JMX</b>
 , <br />
-&#160;&#160;<b>INF</b>
+&#160;&#160;<b>JMF</b>
+, <b>INF</b>
 , <b>SUP</b>
 , <b>EQUAL</b>
-, <b>NEQUAL</b>
 , <br />
-&#160;&#160;<b>EQINF</b>
+&#160;&#160;<b>NEQUAL</b>
+, <b>EQINF</b>
 , <b>EQSUP</b>
 , <b>AND</b>
-, <b>OR</b>
 , <br />
-&#160;&#160;<b>PRI</b>
+&#160;&#160;<b>OR</b>
+, <b>PRI</b>
+, <b>ENTRY</b>
 <br />
  }</td></tr>
 <tr class="separator:aa5cd52a426f56a1c35b00d50ff3c8879"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,9 +152,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initInstrArray</b> ()
 <tr class="memitem:a9e0325f04aab1b96be2015167888128b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instr_8h.html#a9e0325f04aab1b96be2015167888128b">getNumberOfInstructions</a> ()</td></tr>
 <tr class="memdesc:a9e0325f04aab1b96be2015167888128b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Number Of Instructions in the table.  <a href="instr_8h.html#a9e0325f04aab1b96be2015167888128b">More...</a><br /></td></tr>
 <tr class="separator:a9e0325f04aab1b96be2015167888128b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6bed36c0ef2e69dda4050f24d62002c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instr_8h.html#ad6bed36c0ef2e69dda4050f24d62002c">patchJmpInstruction</a> (int from, int to)</td></tr>
-<tr class="memdesc:ad6bed36c0ef2e69dda4050f24d62002c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Patch the jump based instruction with the correct address.  <a href="instr_8h.html#ad6bed36c0ef2e69dda4050f24d62002c">More...</a><br /></td></tr>
-<tr class="separator:ad6bed36c0ef2e69dda4050f24d62002c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a108a25a9ebf6a34bb0c5e62f7da3edc3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="instr_8h.html#a108a25a9ebf6a34bb0c5e62f7da3edc3">patchJmpInstruction</a> (int at, int to, operator jmpType)</td></tr>
+<tr class="memdesc:a108a25a9ebf6a34bb0c5e62f7da3edc3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Patch the jump based instruction with the correct address.  <a href="instr_8h.html#a108a25a9ebf6a34bb0c5e62f7da3edc3">More...</a><br /></td></tr>
+<tr class="separator:a108a25a9ebf6a34bb0c5e62f7da3edc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>Hugo Mathieu (<a href="#" onclick="location.href='mai'+'lto:'+'hma'+'th'+'ieu'+'@i'+'nsa'+'-t'+'oul'+'ou'+'se.'+'fr'; return false;">hmath<span class="obfuscator">.nosp@m.</span>ieu@<span class="obfuscator">.nosp@m.</span>insa-<span class="obfuscator">.nosp@m.</span>toul<span class="obfuscator">.nosp@m.</span>ouse.<span class="obfuscator">.nosp@m.</span>fr</a>) Guillaume Aubut (@Ger0th) </dd></dl>
@@ -250,23 +236,29 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initInstrArray</b> ()
 
 </div>
 </div>
-<a id="ad6bed36c0ef2e69dda4050f24d62002c" name="ad6bed36c0ef2e69dda4050f24d62002c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6bed36c0ef2e69dda4050f24d62002c">&#9670;&nbsp;</a></span>patchJmpInstruction()</h2>
+<a id="a108a25a9ebf6a34bb0c5e62f7da3edc3" name="a108a25a9ebf6a34bb0c5e62f7da3edc3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a108a25a9ebf6a34bb0c5e62f7da3edc3">&#9670;&nbsp;</a></span>patchJmpInstruction()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void patchJmpInstruction </td>
+          <td class="memname">int patchJmpInstruction </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>from</em>, </td>
+          <td class="paramname"><em>at</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>to</em>&#160;</td>
+          <td class="paramname"><em>to</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">operator&#160;</td>
+          <td class="paramname"><em>jmpType</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -279,11 +271,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initInstrArray</b> ()
 <p>Patch the jump based instruction with the correct address. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">from</td><td>Address from where the jump is </td></tr>
-    <tr><td class="paramname">to</td><td>Address to where the jump is </td></tr>
+    <tr><td class="paramname">at</td><td>Address where the jump instruction is at </td></tr>
+    <tr><td class="paramname">to</td><td>Address to where the jump must go to </td></tr>
+    <tr><td class="paramname">jmpType</td><td>Type of jump (JMP or JMF)</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>0 if executed successfully. -1 if the jump type is not supported. </dd></dl>
 
 </div>
 </div>
@@ -335,13 +329,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>initInstrArray</b> ()
 </div>
 </div>
 </div><!-- contents -->
-</div><!-- doc-content -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="instr_8h.html">instr.h</a></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.3
+</small></address>
 </body>
 </html>

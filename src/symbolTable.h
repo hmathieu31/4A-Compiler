@@ -25,6 +25,7 @@ typedef enum type
 
 /**
  * @brief Creates a new temporary variable in the symbol table.
+ * The current function depth is stored as well.
  *
  * @return  The address of the new temporary variable. Or -1 if the table was full.
  */

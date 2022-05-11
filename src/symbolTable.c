@@ -28,8 +28,10 @@ int newTmp()
 {
     if (symbolTable.topSymbolIndex < BASE_ARGS)
     {
-        int addrTemp = symbolTable.topIndexTemp + 1;
         symbolTable.topIndexTemp += 1;
+        int addrTemp = symbolTable.topIndexTemp;
+        symbol sym = {"temp", t_int, -1, currentFunctionDepth};
+        symbolTable.symbolArray[addrTemp] = sym;
         return addrTemp;
     }
     else
@@ -40,7 +42,10 @@ int newTmp()
 
 void freeAddrsTemp()
 {
-    symbolTable.topIndexTemp = BASE_VAR_TEMP - 1;
+    while (symbolTable.topIndexTemp > BASE_ARGS - 1 && symbolTable.symbolArray[symbolTable.topIndexTemp].functionDepth == currentFunctionDepth)
+    {
+        symbolTable.topIndexTemp -= 1;
+    }    
 }
 
 void increaseDepth()

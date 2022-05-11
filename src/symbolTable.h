@@ -132,6 +132,14 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ);
 int addFunction(char *FunctionName, int functionAddress);
 
 /**
+ * @brief Checks if the functions has been defined
+ * 
+ * @param FunctionName 
+ * @return 1 if the function has been defined. 0 otherwise.
+ */
+int isFunctionDefined(char * FunctionName);
+
+/**
  * @brief Delete the symbol at the top of the table.
  *
  * @return 1 if the symbol was successfully deleted. Fails with -1 and prints an error message if trying to delete while table is empty.

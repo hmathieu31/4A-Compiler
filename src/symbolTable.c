@@ -137,6 +137,19 @@ int addFunction(char *functionName, int functionAddress)
     return 0;
 }
 
+int isFunctionDefined(char * functionName)
+{
+    int defined = 0;
+    for (int i = 0; i < functionTable.topFunctionIndex + 1; i++)
+    {
+        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
+        {
+            defined = 1;
+        }
+    }
+    return defined;
+}
+
 int setFunctionReturnAddress(char *functionName, int returnAddress)
 {
     int i = 0;

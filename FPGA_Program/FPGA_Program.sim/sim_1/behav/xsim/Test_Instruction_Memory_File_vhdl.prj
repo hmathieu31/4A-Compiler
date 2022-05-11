@@ -9,6 +9,7 @@ vhdl xil_defaultlib  \
 "../../../../FPGA_Program.srcs/sim_1/new/Test_UAL.vhd" \
 "../../../../FPGA_Program.srcs/sim_1/new/Test_Register_File.vhd" \
 "../../../../FPGA_Program.srcs/sim_1/new/Test_Data_Memory_File.vhd" \
+"../../../../FPGA_Program.srcs/sim_1/new/Test_Instruction_Memory_File.vhd" \
 
 # Do not sort compile order
 nosort

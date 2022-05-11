@@ -43,8 +43,9 @@ entity Data_Memory_File is
 end Data_Memory_File;
 
 architecture Behavioral of Data_Memory_File is
-    type Dmem is array (0 to 7) of STD_LOGIC_VECTOR(7 downto 0);
-    signal Dataindex : Dmem;
+    type Dmem is array (0 to 255) of STD_LOGIC_VECTOR(7 downto 0);
+    signal Dataindex : Dmem := (others => (others => '0'));
+    
 begin
     process
     begin
@@ -57,4 +58,5 @@ begin
             O<=Dataindex(to_integer(unsigned(Addr)));    
           end if;
     end process;
+    
 end Behavioral;

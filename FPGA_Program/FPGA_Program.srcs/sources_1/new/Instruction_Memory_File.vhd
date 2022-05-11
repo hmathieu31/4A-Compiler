@@ -41,8 +41,8 @@ end Instruction_Memory_File;
 
 architecture Behavioral of Instruction_Memory_File is
 
-  type Imem is array (0 to 7) of STD_LOGIC_VECTOR(31 downto 0);
-  signal Instindex : Imem;
+  type Imem is array (0 to 255) of STD_LOGIC_VECTOR(31 downto 0);
+  signal Instindex : Imem := (others =>( others => '0'));
 
 begin
     process

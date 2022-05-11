@@ -70,7 +70,7 @@ signal RF_addrB : STD_LOGIC_VECTOR (3 downto 0) := (others => '0');
 signal RF_addrW : STD_LOGIC_VECTOR (3 downto 0) := (others => '0');
 signal RF_W : STD_LOGIC;
 signal RF_DATA : STD_LOGIC_VECTOR (7 downto 0) := (others => '0');
-signal RF_RST : STD_LOGIC;--actif bas
+signal RF_RST : STD_LOGIC := '1';--actif bas
 signal RF_CLK : STD_LOGIC;
 --Outputs
 signal RF_QA : STD_LOGIC_VECTOR (7 downto 0) := (others => '0');
@@ -129,7 +129,7 @@ OPin : in STD_LOGIC_VECTOR (3 downto 0);
 Aout : out STD_LOGIC_VECTOR (7 downto 0);
 Bouftou : out STD_LOGIC_VECTOR (7 downto 0);     
 Cout : out STD_LOGIC_VECTOR (7 downto 0);
-OPout : out STD_LOGIC_VECTOR (3 downto 0);
+OPout : out STD_LOGIC_VECTOR (7 downto 0);
 CLK : in STD_LOGIC
 );
 END COMPONENT;
@@ -138,53 +138,54 @@ END COMPONENT;
 signal Ain_LIDI: std_logic_vector(7 downto 0) := (others=> '0');
 signal Bin_LIDI: std_logic_vector(7 downto 0) := (others=> '0');
 signal Cin_LIDI: std_logic_vector(7 downto 0) := (others=> '0');
-signal OPin_LIDI: std_logic_vector(3 downto 0) := (others=> '0');
+signal OPin_LIDI: std_logic_vector(7 downto 0) := (others=> '0');
 signal CLK_LIDI: std_logic := '0';
 --Outputs
 signal Aout_LIDI : std_logic_vector(7 downto 0) := (others=> '0');
 signal Bouftou_LIDI : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_LIDI : std_logic_vector(7 downto 0) := (others=> '0');
-signal OPout_LIDI : std_logic_vector(3 downto 0) := (others=> '0');
+signal OPout_LIDI : std_logic_vector(7 downto 0) := (others=> '0');
 --DIEX
 --Inputs
 signal Ain_DIEX: std_logic_vector(7 downto 0) := (others=> '0');
 signal Bin_DIEX: std_logic_vector(7 downto 0) := (others=> '0');
 signal Cin_DIEX: std_logic_vector(7 downto 0) := (others=> '0');
-signal OPin_DIEX: std_logic_vector(3 downto 0) := (others=> '0');
+signal OPin_DIEX: std_logic_vector(7 downto 0) := (others=> '0');
 signal CLK_DIEX: std_logic := '0';
 --Outputs
 signal Aout_DIEX : std_logic_vector(7 downto 0) := (others=> '0');
 signal Bouftou_DIEX : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_DIEX : std_logic_vector(7 downto 0) := (others=> '0');
-signal OPout_DIEX : std_logic_vector(3 downto 0) := (others=> '0');
+signal OPout_DIEX : std_logic_vector(7 downto 0) := (others=> '0');
 --EXmem
 --Inputs
 signal Ain_Exmem: std_logic_vector(7 downto 0) := (others=> '0');
 signal Bin_Exmem: std_logic_vector(7 downto 0) := (others=> '0');
 signal Cin_Exmem: std_logic_vector(7 downto 0) := (others=> '0');
-signal OPin_Exmem: std_logic_vector(3 downto 0) := (others=> '0');
+signal OPin_Exmem: std_logic_vector(7 downto 0) := (others=> '0');
 signal CLK_Exmem: std_logic := '0';
 --Outputs
 signal Aout_Exmem : std_logic_vector(7 downto 0) := (others=> '0');
 signal Bouftou_Exmem : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_Exmem : std_logic_vector(7 downto 0) := (others=> '0');
-signal OPout_Exmem : std_logic_vector(3 downto 0) := (others=> '0');
+signal OPout_Exmem : std_logic_vector(7 downto 0) := (others=> '0');
 --MemRE
 --Inputs
 signal Ain_MemRE: std_logic_vector(7 downto 0) := (others=> '0');
 signal Bin_MemRE: std_logic_vector(7 downto 0) := (others=> '0');
 signal Cin_MemRE: std_logic_vector(7 downto 0) := (others=> '0');
-signal OPin_MemRE: std_logic_vector(3 downto 0) := (others=> '0');
+signal OPin_MemRE: std_logic_vector(7 downto 0) := (others=> '0');
 signal CLK_MemRE: std_logic := '0';
 --Outputs
 signal Aout_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
 signal Bouftou_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
-signal OPout_MemRE : std_logic_vector(3 downto 0) := (others=> '0');
+signal OPout_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
+
+signal Glob_CLK : std_logic := '0';
 
 
-
-
+constant Clock_Period : time := 2 ns;
 begin
 
 --IMF
@@ -192,6 +193,15 @@ IMF : Instruction_Memory_File PORT MAP(
 Addr => IMF_Addr,
 CLK => IMF_CLK,
 O => IMF_O
+);
+
+--DMF
+DMF : Data_Memory_File PORT MAP(
+Addr => DMF_Addr,
+I => DMF_I,
+RW => DMF_RW,
+RST => DMF_RST,
+CLK => DMF_CLK
 );
 
 --RF
@@ -270,4 +280,71 @@ Cout=>Cout_MemRE,
 OPout=>OPout_MemRE,
 CLK=>CLK_MemRE
 );
+
+--Global CLK
+Clock_process : process
+begin
+Glob_CLK <= not(Glob_CLK);
+IMF_CLK <= Glob_CLK;
+DMF_CLK <= Glob_CLK;
+RF_CLK <= Glob_CLK;
+CLK_LIDI <= Glob_CLK;
+CLK_DIEX <= Glob_CLK;
+CLK_Exmem <= Glob_CLK;
+CLK_MemRE <= Glob_CLK;
+wait for Clock_period/2;
+end process;
+
+Global_Process : process
+begin
+--AFC
+if IMF_O(31 downto 24)=X"06" then
+    --AFC (6)
+    OPin_LIDI<=IMF_O(31 downto 24);--operande
+    Ain_LIDI<=IMF_O(23 downto 16);--adresse destination
+    Bin_LIDI<=IMF_O(15 downto 8);--valeur à affecter
+    
+    OPin_DIEX<=OPout_LIDI;
+    Ain_DIEX<=Aout_LIDI;
+    Bin_DIEX<=Bouftou_LIDI;
+    
+    OPin_Exmem<=OPout_DIEX;
+    Ain_Exmem<=Aout_DIEX;
+    Bin_Exmem<=Bouftou_DIEX;
+    
+    OPin_MemRE<=OPout_Exmem;
+    Ain_MemRE<=Aout_Exmem;
+    Bin_MemRE<=Bouftou_Exmem;
+    
+    
+    RF_AddrW<=Aout_MemRE;
+    RF_DATA<=Bouftou_MemRE;
+    RF_W<='1';
+end if;
+
+--COP
+if IMF_O(31 downto 24)=X"05" then
+    --COP (5)
+    OPin_LIDI<=IMF_O(31 downto 24);--operande
+    Ain_LIDI<=IMF_O(23 downto 16);--adresse destination
+    Bin_LIDI<=IMF_O(15 downto 8);--adresse memoire de la valeur a copier
+    
+    RF_AddrA <=Bouftou_LIDI;--donne l adresse memoire de la valeur qu on cherche
+    OPin_DIEX<=OPout_LIDI;
+    Ain_DIEX<=Aout_LIDI;
+    Bin_DIEX<=RF_QA;--recupere la valeur a l'adresse memoire qu on cherche
+    
+    OPin_Exmem<=OPout_DIEX;
+    Ain_Exmem<=Aout_DIEX;
+    Bin_Exmem<=Bouftou_DIEX;
+    
+    OPin_MemRE<=OPout_Exmem;
+    Ain_MemRE<=Aout_Exmem;
+    Bin_MemRE<=Bouftou_Exmem;
+    
+    OPin_MemRE<=OPout_Exmem;
+    Ain_MemRE<=Aout_Exmem;
+    Bin_MemRE<=Bouftou_Exmem;
+end if;
+end process;
 end Behavioral;

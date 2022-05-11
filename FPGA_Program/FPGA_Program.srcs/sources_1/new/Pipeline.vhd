@@ -35,11 +35,11 @@ entity Pipeline is
     Port ( Ain : in STD_LOGIC_VECTOR (7 downto 0);
            Bin : in STD_LOGIC_VECTOR (7 downto 0);
            Cin : in STD_LOGIC_VECTOR (7 downto 0);
-           OPin : in STD_LOGIC_VECTOR (3 downto 0);
+           OPin : in STD_LOGIC_VECTOR (7 downto 0);
            Aout : out STD_LOGIC_VECTOR (7 downto 0);
            Bouftou : out STD_LOGIC_VECTOR (7 downto 0);     
            Cout : out STD_LOGIC_VECTOR (7 downto 0);
-           OPout : out STD_LOGIC_VECTOR (3 downto 0);
+           OPout : out STD_LOGIC_VECTOR (7 downto 0);
            CLK : in STD_LOGIC);
 end Pipeline;
 

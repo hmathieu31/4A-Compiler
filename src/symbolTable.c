@@ -20,9 +20,11 @@ SymbolTable symbolTable;
 
 FunctionTable functionTable;
 
+Node * topNode;
+
 int depth = -1;
 
-int currentFunctionDepth = 0;
+ int currentFunctionScope = 0;
 
 int newTmp()
 {
@@ -30,7 +32,7 @@ int newTmp()
     {
         symbolTable.topIndexTemp += 1;
         int addrTemp = symbolTable.topIndexTemp;
-        symbol sym = {"temp", t_int, -1, currentFunctionDepth};
+        symbol sym = {"temp", t_int, -1, currentFunctionScope};
         symbolTable.symbolArray[addrTemp] = sym;
         return addrTemp;
     }
@@ -42,7 +44,7 @@ int newTmp()
 
 void freeAddrsTemp()
 {
-    while (symbolTable.topIndexTemp > BASE_ARGS - 1 && symbolTable.symbolArray[symbolTable.topIndexTemp].functionDepth == currentFunctionDepth)
+    while (symbolTable.topIndexTemp > BASE_ARGS - 1 && symbolTable.symbolArray[symbolTable.topIndexTemp].functionDepth == currentFunctionScope)
     {
         symbolTable.topIndexTemp -= 1;
     }    
@@ -60,12 +62,13 @@ void decreaseDepth()
 
 void increaseFunctionDepth()
 {
-    currentFunctionDepth++;
+    pushScope(currentFunctionScope);
+    currentFunctionScope++;
 }
 
-void resetFunctionDepth()
+void resetFunctionScope()
 {
-    currentFunctionDepth = 0;
+    currentFunctionScope = popScope();
 }
 
 void initTable()
@@ -97,6 +100,27 @@ void initFunctionTable()
     functionTable.topFunctionIndex = -1;
 }
 
+void pushScope(int scope)
+{
+    Node * newNode = malloc(sizeof(Node));
+    newNode->scope = scope;
+    newNode->link = topNode;
+    topNode = newNode;
+}
+
+int popScope()
+{
+    if (topNode == NULL)
+    {
+        return -1;
+    }
+    int scope = topNode->scope;
+    Node * tmp = topNode;
+    topNode = topNode->link;
+    free(tmp);
+    return scope;
+}
+
 int isSymbolTableEmpty()
 {
     int empty = 0;
@@ -115,7 +139,7 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
     }
     char *name = (char *)malloc(sizeofSymbol);
     strncpy(name, symbolName, sizeofSymbol);
-    symbol sym = {name, typ, depth, currentFunctionDepth};
+    symbol sym = {name, typ, depth, currentFunctionScope};
     symbolTable.topSymbolIndex += 1;
     symbolTable.symbolArray[symbolTable.topSymbolIndex] = sym;
 
@@ -132,7 +156,7 @@ int addFunction(char *functionName, int functionAddress)
     char *name = (char *)malloc(strlen(functionName) + 1);
     strcpy(name, functionName);
     functionTable.topFunctionIndex += 1;
-    Function function = {name, functionAddress, -1, currentFunctionDepth};
+    Function function = {name, functionAddress, -1, currentFunctionScope};
     functionTable.functionArray[functionTable.topFunctionIndex] = function;
     return 0;
 }
@@ -168,7 +192,7 @@ int setFunctionReturnAddress(char *functionName, int returnAddress)
 int setFunctionReturnVarAddress(int returnVarAddress)
 {
     int i = 0;
-    while (i < FUNCTION_TABLE_SIZE && functionTable.functionArray[i].functionDepth != currentFunctionDepth)
+    while (i < FUNCTION_TABLE_SIZE && functionTable.functionArray[i].functionDepth != currentFunctionScope)
     {
         i++;
     }
@@ -224,7 +248,8 @@ int setFunctionScope(char *functionName)
     {
         if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
         {
-            currentFunctionDepth = functionTable.functionArray[i].functionDepth;
+            pushScope(currentFunctionScope);
+            currentFunctionScope = functionTable.functionArray[i].functionDepth;
             return 0;
         }
     }
@@ -267,7 +292,7 @@ int getSymbolAddress(char *symbol)
     int i = 0;
     while (i <= symbolTable.topSymbolIndex && symbolAddress == -1)
     {
-        if (strcmp(symbolTable.symbolArray[i].symbolName, symbol) == 0 && symbolTable.symbolArray[i].functionDepth == currentFunctionDepth)
+        if (strcmp(symbolTable.symbolArray[i].symbolName, symbol) == 0 && symbolTable.symbolArray[i].functionDepth == currentFunctionScope)
         {
             symbolAddress = i;
         }

@@ -67,7 +67,7 @@ void increaseFunctionDepth();
  * @brief Reset the current function depth before entering the main
  *
  */
-void resetFunctionDepth();
+void resetFunctionScope();
 
 typedef struct symbol
 {
@@ -100,6 +100,12 @@ typedef struct FunctionTable
     int topFunctionIndex;
 } FunctionTable;
 
+typedef struct Node
+{
+    int scope;
+    struct Node *link;
+} Node;
+
 /**
  * @brief Initialise the table at the start of the compilation
  *
@@ -111,6 +117,12 @@ void initTable();
  *
  */
 void initFunctionTable();
+
+/**
+ * @brief Initializes the scopes stack at the start of the compilation
+ * 
+ */
+void initScopesStack();
 
 /**
  * @brief Add a new symbol to the table
@@ -138,6 +150,20 @@ int addFunction(char *FunctionName, int functionAddress);
  * @return 1 if the function has been defined. 0 otherwise.
  */
 int isFunctionDefined(char * FunctionName);
+
+/**
+ * @brief Add a new function scope value to the scopes stack.
+ * 
+ * @param scope 
+ */
+void pushScope(int scope);
+
+/**
+ * @brief Returns the upper scope of the current scope and removes it from the stack.
+ * 
+ * @return The scope at the top of the stack. -1 if the stack is empty.
+ */
+int popScope();
 
 /**
  * @brief Delete the symbol at the top of the table.

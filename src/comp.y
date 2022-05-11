@@ -26,11 +26,11 @@ void yyerror(const char *s);
 %type <nb> Terme Add Sub Mul Div Ope Eqinf Eqsup Sup Inf Equal Nequal Cond And Or InvokeFun
 %start Program
 %%
-Program: {initTable(); initInstrArray(); initFunctionTable();} Code;
+Program: {initTable(); initInstrArray(); initFunctionTable(); initScopesStack();} Code;
 Code : Main | Fun Code;
 Main: tMAIN
 	{
-		resetFunctionDepth();
+		resetFunctionScope();
 		instruction instr = {ENTRY, {1, 1, 1}};
 		if(addInstruction(instr) == -1)
 		{
@@ -92,6 +92,7 @@ Fun: tINT tID
 		}
 		int line = getNumberOfInstructions();
         increaseFunctionDepth();
+		setFunctionScope($2);
 		if(addFunction($2, line) == -1)
 		{
 			sprintf(err, "Could not add function %s, function table is full", $2);
@@ -176,7 +177,7 @@ InvokeFun: tID tOP Args tCP
 				yyerror(err);
 				exit(1);
 			}
-			resetFunctionDepth();
+			resetFunctionScope();
 			int returnVar = getFunctionReturnVarAddress($1);
 			if(returnVar == -1)
 			{
@@ -834,8 +835,8 @@ int main(int argc, char **argv) {
 		fclose(f);
 		return 1;
 	}
-/*     printInstrTable();
- */    interpret();
+    printInstrTable();
+    interpret();
 	fclose(f);
 	return 0;
 }

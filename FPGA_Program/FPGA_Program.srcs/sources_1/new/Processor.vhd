@@ -218,7 +218,7 @@ QB => RF_QB
 );
 
 --UAL
-Ual_UAL : UAL PORT MAP(
+Ual_UAL: UAL PORT MAP(
 A=> UAL_A,
 B=> UAL_B,
 Ctrl_Alu=> UAL_Ctrl_Alu,
@@ -294,57 +294,52 @@ CLK_Exmem <= Glob_CLK;
 CLK_MemRE <= Glob_CLK;
 wait for Clock_period/2;
 end process;
+--ADD(1 X"01") SUB(2 X"02") MUL(3 X"03") COP(5 X"05") AFC(6 X"06") LOAD(19 X"13") STORE(20 X"14")
+--LIDI
+OPin_LIDI<=IMF_O(31 downto 24);
+Ain_LIDI<=IMF_O(23 downto 16);
+Bin_LIDI<=IMF_O(15 downto 8);
+Cin_LIDI<=IMF_O(7 downto 0);
 
-Global_Process : process
-begin
---AFC
-if IMF_O(31 downto 24)=X"06" then
-    --AFC (6)
-    OPin_LIDI<=IMF_O(31 downto 24);--operande
-    Ain_LIDI<=IMF_O(23 downto 16);--adresse destination
-    Bin_LIDI<=IMF_O(15 downto 8);--valeur à affecter
-    
-    OPin_DIEX<=OPout_LIDI;
-    Ain_DIEX<=Aout_LIDI;
-    Bin_DIEX<=Bouftou_LIDI;
-    
-    OPin_Exmem<=OPout_DIEX;
-    Ain_Exmem<=Aout_DIEX;
-    Bin_Exmem<=Bouftou_DIEX;
-    
-    OPin_MemRE<=OPout_Exmem;
-    Ain_MemRE<=Aout_Exmem;
-    Bin_MemRE<=Bouftou_Exmem;
-    
-    
-    RF_AddrW<=Aout_MemRE;
-    RF_DATA<=Bouftou_MemRE;
-    RF_W<='1';
-end if;
+--RF
+RF_AddrA<=Bouftou_LIDI;
+RF_AddrB<=Cout_LIDI;
 
---COP
-if IMF_O(31 downto 24)=X"05" then
-    --COP (5)
-    OPin_LIDI<=IMF_O(31 downto 24);--operande
-    Ain_LIDI<=IMF_O(23 downto 16);--adresse destination
-    Bin_LIDI<=IMF_O(15 downto 8);--adresse memoire de la valeur a copier
-    
-    RF_AddrA <=Bouftou_LIDI;--donne l adresse memoire de la valeur qu on cherche
-    OPin_DIEX<=OPout_LIDI;
-    Ain_DIEX<=Aout_LIDI;
-    Bin_DIEX<=RF_QA;--recupere la valeur a l'adresse memoire qu on cherche
-    
-    OPin_Exmem<=OPout_DIEX;
-    Ain_Exmem<=Aout_DIEX;
-    Bin_Exmem<=Bouftou_DIEX;
-    
-    OPin_MemRE<=OPout_Exmem;
-    Ain_MemRE<=Aout_Exmem;
-    Bin_MemRE<=Bouftou_Exmem;
-    
-    OPin_MemRE<=OPout_Exmem;
-    Ain_MemRE<=Aout_Exmem;
-    Bin_MemRE<=Bouftou_Exmem;
-end if;
-end process;
+--DIEX
+OPin_DIEX<=OPout_LIDI;
+Ain_DIEX<=Aout_LIDI;
+Bin_DIEX<=Bouftou_LIDI when OPout_LIDI=X"06" or OPout_LIDI=X"13" else
+          RF_QA when OPout_LIDI=X"01" or OPout_LIDI=X"02" or OPout_LIDI=X"03" or OPout_LIDI=X"05" or OPout_LIDI=X"14";
+Cin_DIEX<=RF_QB;
+
+--LC UAL
+UAL_Ctrl_Alu<=OPout_DIEX(2 downto 0) when OPout_DIEX=X"01" or OPout_DIEX=X"02" or OPout_DIEX=X"03";
+UAL_A<=Bouftou_DIEX;
+UAL_B<=Cout_DIEX;
+
+--Exmem
+OPin_Exmem<=OPout_DIEX;
+Ain_Exmem<=Aout_DIEX;
+Bin_Exmem<=Bouftou_DIEX when OPout_DIEX=X"05" or OPout_DIEX=X"06" or OPout_DIEX=X"13" or OPout_DIEX=X"14" else
+           UAL_S when OPout_DIEX=X"01" or OPout_DIEX=X"02" or OPout_DIEX=X"03";
+
+--MUX DMF
+DMF_Addr<= Bouftou_Exmem when OPout_Exmem=X"13" else
+           Aout_Exmem when OPout_Exmem=X"14";
+DMF_RW<='0' when OPout_Exmem=X"14" else 
+                   '1' when OPout_Exmem=X"13";
+DMF_I<=Bouftou_Exmem;
+
+--MemRE
+OPin_MemRE<=OPout_Exmem;
+Ain_MemRE<=Aout_Exmem;
+Bin_MemRE<=Bouftou_Exmem when OPout_EXmem=X"" else
+           DMF_O when OPout_Exmem=X"";
+
+--End
+RF_AddrW<=Aout_MemRE;
+RF_W<='1' when OPout_MemRE=X"06" else
+      '0' when OPout_MemRE=X"";
+RF_DATA<=Bouftou_MemRE;
+
 end Behavioral;

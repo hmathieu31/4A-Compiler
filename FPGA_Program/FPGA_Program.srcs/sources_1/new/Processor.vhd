@@ -40,6 +40,7 @@ COMPONENT Instruction_Memory_File
 PORT(
 Addr : in STD_LOGIC_VECTOR (7 downto 0);
 CLK : in STD_LOGIC;
+Blok : in STD_LOGIC;
 O : out STD_LOGIC_VECTOR (31 downto 0)
 );
 END COMPONENT;
@@ -47,6 +48,7 @@ END COMPONENT;
 --Inputs
 signal IMF_Addr: std_logic_vector(7 downto 0) := (others => '0');
 signal IMF_CLK: std_logic;
+signal IMF_Blok: std_logic :='0';
 --Outputs
 signal IMF_O: std_logic_vector(31 downto 0) := (others => '0');
 
@@ -125,7 +127,7 @@ PORT(
 Ain : in STD_LOGIC_VECTOR (7 downto 0);
 Bin : in STD_LOGIC_VECTOR (7 downto 0);
 Cin : in STD_LOGIC_VECTOR (7 downto 0);
-OPin : in STD_LOGIC_VECTOR (3 downto 0);
+OPin : in STD_LOGIC_VECTOR (7 downto 0);
 Aout : out STD_LOGIC_VECTOR (7 downto 0);
 Bouftou : out STD_LOGIC_VECTOR (7 downto 0);     
 Cout : out STD_LOGIC_VECTOR (7 downto 0);
@@ -133,6 +135,21 @@ OPout : out STD_LOGIC_VECTOR (7 downto 0);
 CLK : in STD_LOGIC
 );
 END COMPONENT;
+
+COMPONENT Control_Unit
+PORT ( Ain : in STD_LOGIC_VECTOR (7 downto 0);
+           OPin : in STD_LOGIC_VECTOR (7 downto 0);
+           Bin : in STD_LOGIC_VECTOR (7 downto 0);
+           Cin : in STD_LOGIC_VECTOR (7 downto 0);
+           Aout : out STD_LOGIC_VECTOR (7 downto 0);
+           Bouftou : out STD_LOGIC_VECTOR (7 downto 0);     
+           Cout : out STD_LOGIC_VECTOR (7 downto 0);
+           OPout : out STD_LOGIC_VECTOR (7 downto 0);
+           Blok : out STD_LOGIC;
+           CLK : in STD_LOGIC
+       );
+END COMPONENT;
+
 --LIDI
 --Inputs
 signal Ain_LIDI: std_logic_vector(7 downto 0) := (others=> '0');
@@ -182,6 +199,21 @@ signal Bouftou_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
 signal Cout_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
 signal OPout_MemRE : std_logic_vector(7 downto 0) := (others=> '0');
 
+--Control_Unit
+--Inputs
+signal CU_Ain : STD_LOGIC_VECTOR (7 downto 0);
+signal CU_OPin : STD_LOGIC_VECTOR (7 downto 0);
+signal CU_Bin : STD_LOGIC_VECTOR (7 downto 0);
+signal CU_Cin : STD_LOGIC_VECTOR (7 downto 0);
+signal CU_CLK : STD_LOGIC := '0';
+--Outputs
+signal CU_Aout : STD_LOGIC_VECTOR (7 downto 0);
+signal CU_Bouftou : STD_LOGIC_VECTOR (7 downto 0);
+signal CU_Cout : STD_LOGIC_VECTOR (7 downto 0);
+signal CU_OPout : STD_LOGIC_VECTOR (7 downto 0);
+signal CU_Blok : STD_LOGIC;
+
+--Global_Clock
 signal Glob_CLK : std_logic := '0';
 
 
@@ -192,6 +224,7 @@ begin
 IMF : Instruction_Memory_File PORT MAP(
 Addr => IMF_Addr,
 CLK => IMF_CLK,
+Blok => IMF_Blok,
 O => IMF_O
 );
 
@@ -281,6 +314,19 @@ OPout=>OPout_MemRE,
 CLK=>CLK_MemRE
 );
 
+CU : Control_Unit PORT MAP(
+Ain=>CU_Ain,
+OPin=>CU_OPin,
+Bin=>CU_Bin,
+Cin=>CU_Cin,
+CLK=>CU_CLK,
+Aout=>CU_Aout,
+Bouftou=>CU_Bouftou,
+Cout=>CU_Cout,
+OPout=>CU_OPout,
+Blok=>CU_Blok
+);
+
 --Global CLK
 Clock_process : process
 begin
@@ -288,27 +334,37 @@ Glob_CLK <= not(Glob_CLK);
 IMF_CLK <= Glob_CLK;
 DMF_CLK <= Glob_CLK;
 RF_CLK <= Glob_CLK;
+CU_CLK<= Glob_CLK;
 CLK_LIDI <= Glob_CLK;
 CLK_DIEX <= Glob_CLK;
 CLK_Exmem <= Glob_CLK;
 CLK_MemRE <= Glob_CLK;
 wait for Clock_period/2;
 end process;
---ADD(1 X"01") SUB(2 X"02") MUL(3 X"03") COP(5 X"05") AFC(6 X"06") LOAD(19 X"13") STORE(20 X"14")
+
+--NOP(0 X"00") ADD(1 X"01") SUB(2 X"02") MUL(3 X"03") COP(5 X"05") AFC(6 X"06") LOAD(19 X"13") STORE(20 X"14")
+
+--CU
+CU_OPin<=IMF_O(31 downto 24);
+CU_Ain<=IMF_O(23 downto 16);
+CU_Bin<=IMF_O(15 downto 8);
+CU_Cin<=IMF_O(7 downto 0);
+IMF_Blok<=CU_Blok;
+
 --LIDI
-OPin_LIDI<=IMF_O(31 downto 24);
-Ain_LIDI<=IMF_O(23 downto 16);
-Bin_LIDI<=IMF_O(15 downto 8);
-Cin_LIDI<=IMF_O(7 downto 0);
+OPin_LIDI<=CU_OPout;
+Ain_LIDI<=CU_Aout;
+Bin_LIDI<=CU_Bouftou;
+Cin_LIDI<=CU_Cout;
 
 --RF
-RF_AddrA<=Bouftou_LIDI;
-RF_AddrB<=Cout_LIDI;
+RF_AddrA<=Bouftou_LIDI(3 downto 0);
+RF_AddrB<=Cout_LIDI(3 downto 0);
 
 --DIEX
 OPin_DIEX<=OPout_LIDI;
 Ain_DIEX<=Aout_LIDI;
-Bin_DIEX<=Bouftou_LIDI when OPout_LIDI=X"06" or OPout_LIDI=X"13" else
+Bin_DIEX<=Bouftou_LIDI when OPout_LIDI=X"00" or OPout_LIDI=X"06" or OPout_LIDI=X"13" else
           RF_QA when OPout_LIDI=X"01" or OPout_LIDI=X"02" or OPout_LIDI=X"03" or OPout_LIDI=X"05" or OPout_LIDI=X"14";
 Cin_DIEX<=RF_QB;
 
@@ -333,13 +389,16 @@ DMF_I<=Bouftou_Exmem;
 --MemRE
 OPin_MemRE<=OPout_Exmem;
 Ain_MemRE<=Aout_Exmem;
-Bin_MemRE<=Bouftou_Exmem when OPout_EXmem=X"" else
-           DMF_O when OPout_Exmem=X"";
+Bin_MemRE<=Bouftou_Exmem when OPout_EXmem=X"01" or OPout_EXmem=X"02" or OPout_EXmem=X"03" or OPout_EXmem=X"05" or OPout_EXmem=X"06" else
+           DMF_O when OPout_Exmem=X"13" or OPout_EXmem=X"14";
 
 --End
-RF_AddrW<=Aout_MemRE;
-RF_W<='1' when OPout_MemRE=X"06" else
-      '0' when OPout_MemRE=X"";
+RF_AddrW<=Aout_MemRE(3 downto 0);
+RF_W<='1' when OPout_MemRE=X"01" or OPout_MemRE=X"02" or OPout_MemRE=X"03" or OPout_MemRE=X"05" or OPout_MemRE=X"06" or OPout_MemRE=X"013" else
+      '0' when OPout_MemRE=X"14";
 RF_DATA<=Bouftou_MemRE;
+
+--TESTS
+IMF_Addr <=X"01" after 0 ns, X"02" after 12 ns;
 
 end Behavioral;

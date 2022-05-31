@@ -36,19 +36,29 @@ use IEEE.Numeric_STD.ALL;
 entity Instruction_Memory_File is
     Port ( Addr : in STD_LOGIC_VECTOR (7 downto 0);
            CLK : in STD_LOGIC;
-           O : out STD_LOGIC_VECTOR (31 downto 0));
+           O : out STD_LOGIC_VECTOR (31 downto 0);
+           Blok : in STD_LOGIC
+           );
 end Instruction_Memory_File;
 
 architecture Behavioral of Instruction_Memory_File is
 
   type Imem is array (0 to 255) of STD_LOGIC_VECTOR(31 downto 0);
-  signal Instindex : Imem := (others =>( others => '0'));
+  signal Instindex : Imem := (others =>(others =>'0'));
+
 
 begin
+--enter the instructions in the instruction memory : (X"OPAABBCC")
+  Instindex(1) <= X"01010203";
+  Instindex(2) <= X"02020304"; 
     process
     begin
         wait until CLK'event and CLK='1';
-        O<=Instindex(to_integer(unsigned(Addr)));
+        if Blok ='0' then
+            O<=Instindex(to_integer(unsigned(Addr)));
+        elsif Blok='1' then
+            O<=X"00000000";
+        end if;
     end process;
 
 

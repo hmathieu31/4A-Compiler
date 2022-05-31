@@ -1,0 +1,1 @@
+-wto "7da1edf8d82b4b749cbf1cc5ed338777" --incr --debug "typical" --relax --mt "8" -L "xil_defaultlib" -L "secureip" --snapshot "Processor_behav" "xil_defaultlib.Processor" -log "elaborate.log" 

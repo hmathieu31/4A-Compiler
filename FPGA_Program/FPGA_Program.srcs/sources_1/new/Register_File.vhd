@@ -57,9 +57,9 @@ begin
         if RST='0' then
            poiss<= (others => X"00");
         elsif W='1' then
-                poiss(to_integer(unsigned(addrW)))<=DATA;
-            end if;
-        end process;
+           poiss(to_integer(unsigned(addrW)))<=DATA;
+        end if;
+    end process;
     QA<=DATA when addrW = addrA and W='1' else poiss(to_integer(unsigned(addrA)));
     QB<=DATA when addrW = addrB and W='1' else poiss(to_integer(unsigned(addrB)));  
 end Behavioral;

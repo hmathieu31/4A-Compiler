@@ -8,6 +8,7 @@ CC=gcc
 
 ifeq ($(OS), Windows_NT)
  PARS=win_bison
+ SHELL=pwsh
 else
  PARS=bison
 endif
@@ -50,14 +51,14 @@ $(TEST): $(T_OBJ)
 
 clean_obj:
 ifeq ($(OS), Windows_NT)
-	pwsh -Command Set-location ./bin ; Remove-Item * -Include *.tab.c, *.tab.h, *.yy.c, *.o, *.output
+	pwsh -Command Remove-Item -Path "./bin/*" -Include *.tab.c, *.tab.h, *.yy.c, *.o, *.output
 else
 	cd ./bin ; rm *.tab.c *.tab.h *.yy.c *.o *.output
 endif
 
 clean:
 ifeq ($(OS), Windows_NT)
-	pwsh -Command Set-location ./bin ; Remove-Item *
+	pwsh -Command Remove-Item "./bin/*"
 else
 	cd ./bin ; rm *
 endif

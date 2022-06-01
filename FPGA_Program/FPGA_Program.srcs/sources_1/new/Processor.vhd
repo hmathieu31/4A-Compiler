@@ -36,21 +36,44 @@ end Processor;
 
 architecture Behavioral of Processor is
 
+--COMPONENT Instruction_Controller
+--PORT
+--(
+--Feedback : in STD_LOGIC_VECTOR (31 downto 0);
+--CLK : in STD_LOGIC;
+--Cublok : in STD_LOGIC; 
+--Order : out STD_LOGIC_VECTOR (7 downto 0) := X"00";
+--Blok : out STD_LOGIC :='1'
+--);
+--END COMPONENT;
+----Instruction_Controller
+----Inputs
+--signal IC_Feedback : STD_LOGIC_VECTOR (31 downto 0);
+--signal IC_CLK : STD_LOGIC;
+--signal IC_Cublok : STD_LOGIC;
+----Outputs
+--signal IC_Order : STD_LOGIC_VECTOR (7 downto 0) := X"00";
+--signal IC_Blok : STD_LOGIC :='0';
+
 COMPONENT Instruction_Memory_File
 PORT(
 Addr : in STD_LOGIC_VECTOR (7 downto 0);
 CLK : in STD_LOGIC;
-Blok : in STD_LOGIC;
-O : out STD_LOGIC_VECTOR (31 downto 0)
+BlokIC : in STD_LOGIC;
+BlokCU : in STD_LOGIC;
+O : out STD_LOGIC_VECTOR (31 downto 0);
+CtrlO : out STD_LOGIC_VECTOR (31 downto 0)
 );
 END COMPONENT;
 --Instruction_Memory_File
 --Inputs
 signal IMF_Addr: std_logic_vector(7 downto 0) := (others => '0');
 signal IMF_CLK: std_logic;
-signal IMF_Blok: std_logic :='0';
+signal IMF_BlokIC: std_logic :='0';
+signal IMF_BlokCU : std_logic :='0';
 --Outputs
 signal IMF_O: std_logic_vector(31 downto 0) := (others => '0');
+signal IMF_CtrlO : std_logic_vector(31 downto 0) := (others => '0');
 
 COMPONENT Register_File
 PORT(
@@ -220,12 +243,23 @@ signal Glob_CLK : std_logic := '0';
 constant Clock_Period : time := 2 ns;
 begin
 
+--IC
+--IC : Instruction_Controller PORT MAP(
+--Feedback=>IC_Feedback,
+--CLK=>IC_CLK,
+--Cublok=>IC_Cublok,
+--Order=>IC_Order,
+--Blok=>IC_Blok
+--);
+
 --IMF
 IMF : Instruction_Memory_File PORT MAP(
 Addr => IMF_Addr,
 CLK => IMF_CLK,
-Blok => IMF_Blok,
-O => IMF_O
+BlokIC => IMF_BlokIC,
+BlokCU=>IMF_BlokCU,
+O => IMF_O,
+CtrlO => IMF_CtrlO
 );
 
 --DMF
@@ -331,6 +365,7 @@ Blok=>CU_Blok
 Clock_process : process
 begin
 Glob_CLK <= not(Glob_CLK);
+--IC_CLK<=Glob_CLK;
 IMF_CLK <= Glob_CLK;
 DMF_CLK <= Glob_CLK;
 RF_CLK <= Glob_CLK;
@@ -344,12 +379,20 @@ end process;
 
 --NOP(0 X"00") ADD(1 X"01") SUB(2 X"02") MUL(3 X"03") COP(5 X"05") AFC(6 X"06") LOAD(19 X"13") STORE(20 X"14")
 
+--IC
+--IC_Feedback<=IMF_CtrlO;
+--IC_Cublok<=CU_Blok;
+
+--IMF
+--IMF_Addr<=IC_Order;
+--IMF_BlokIC<=IC_Blok;
+IMF_BlokCU<=CU_Blok;
+
 --CU
 CU_OPin<=IMF_O(31 downto 24);
 CU_Ain<=IMF_O(23 downto 16);
 CU_Bin<=IMF_O(15 downto 8);
 CU_Cin<=IMF_O(7 downto 0);
-IMF_Blok<=CU_Blok;
 
 --LIDI
 OPin_LIDI<=CU_OPout;
@@ -364,7 +407,7 @@ RF_AddrB<=Cout_LIDI(3 downto 0);
 --DIEX
 OPin_DIEX<=OPout_LIDI;
 Ain_DIEX<=Aout_LIDI;
-Bin_DIEX<=Bouftou_LIDI when OPout_LIDI=X"00" or OPout_LIDI=X"06" or OPout_LIDI=X"13" else
+Bin_DIEX<=Bouftou_LIDI when OPout_LIDI=X"00" or OPout_LIDI=X"06" or OPout_LIDI=X"13" or OPout_LIDI=X"15" else
           RF_QA when OPout_LIDI=X"01" or OPout_LIDI=X"02" or OPout_LIDI=X"03" or OPout_LIDI=X"05" or OPout_LIDI=X"14";
 Cin_DIEX<=RF_QB;
 
@@ -376,7 +419,7 @@ UAL_B<=Cout_DIEX;
 --Exmem
 OPin_Exmem<=OPout_DIEX;
 Ain_Exmem<=Aout_DIEX;
-Bin_Exmem<=Bouftou_DIEX when OPout_DIEX=X"05" or OPout_DIEX=X"06" or OPout_DIEX=X"13" or OPout_DIEX=X"14" else
+Bin_Exmem<=Bouftou_DIEX when OPout_DIEX=X"05" or OPout_DIEX=X"06" or OPout_DIEX=X"13" or OPout_DIEX=X"14" or OPout_DIEX=X"15" else
            UAL_S when OPout_DIEX=X"01" or OPout_DIEX=X"02" or OPout_DIEX=X"03";
 
 --MUX DMF
@@ -389,7 +432,7 @@ DMF_I<=Bouftou_Exmem;
 --MemRE
 OPin_MemRE<=OPout_Exmem;
 Ain_MemRE<=Aout_Exmem;
-Bin_MemRE<=Bouftou_Exmem when OPout_EXmem=X"01" or OPout_EXmem=X"02" or OPout_EXmem=X"03" or OPout_EXmem=X"05" or OPout_EXmem=X"06" else
+Bin_MemRE<=Bouftou_Exmem when OPout_EXmem=X"01" or OPout_EXmem=X"02" or OPout_EXmem=X"03" or OPout_EXmem=X"05" or OPout_EXmem=X"06" or OPout_EXmem=X"15" else
            DMF_O when OPout_Exmem=X"13" or OPout_EXmem=X"14";
 
 --End
@@ -397,8 +440,6 @@ RF_AddrW<=Aout_MemRE(3 downto 0);
 RF_W<='1' when OPout_MemRE=X"01" or OPout_MemRE=X"02" or OPout_MemRE=X"03" or OPout_MemRE=X"05" or OPout_MemRE=X"06" or OPout_MemRE=X"013" else
       '0' when OPout_MemRE=X"14";
 RF_DATA<=Bouftou_MemRE;
-
---TESTS
-IMF_Addr <=X"01" after 0 ns, X"02" after 12 ns;
-
+--NOP(0 X"00") ADD(1 X"01") SUB(2 X"02") MUL(3 X"03") COP(5 X"05") AFC(6 X"06") LOAD(19 X"13") STORE(20 X"14") ENTRY (21 X"15")
+IMF_Addr<= X"01" after 2 ns, X"02" after 12 ns, X"00" after 22 ns;
 end Behavioral;

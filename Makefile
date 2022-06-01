@@ -18,7 +18,7 @@ else
  DICT=flex
 endif
 
-CFLAGS=-Wall -g -Isrc/ -Iexternal/ -DLOG_LEVEL=2
+CFLAGS=-Wall -g -Isrc/ -Iexternal/ -DLOG_LEVEL=3
 
 OBJ=bin/y.tab.o bin/lex.yy.o bin/symbolTable.o bin/instr.o bin/interpreter.o #main.o
 T_OBJ=bin/instr.o bin/testInstr.o

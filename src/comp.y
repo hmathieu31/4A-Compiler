@@ -26,7 +26,7 @@ void yyerror(const char *s);
 %type <nb> Terme Add Sub Mul Div Ope Eqinf Eqsup Sup Inf Equal Nequal Cond And Or InvokeFun
 %start Program
 %%
-Program: {initTable(); initInstrArray(); initFunctionTable(); initScopesStack();} Code;
+Program: {initTable(); initInstrArray(); initFunctionTable();} Code;
 Code : Main | Fun Code;
 Main: tMAIN
 	{
@@ -177,7 +177,7 @@ InvokeFun: tID tOP Args tCP
 				yyerror(err);
 				exit(1);
 			}
-			resetFunctionScope();
+			decreaseFunctionScope();
 			int returnVar = getFunctionReturnVarAddress($1);
 			if(returnVar == -1)
 			{

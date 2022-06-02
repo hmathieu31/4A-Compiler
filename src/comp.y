@@ -3,9 +3,11 @@
 #include <stdio.h>
 
 #include "symbolTable.h"
+#include "functionTable.h"
 #include "instr.h"
 #include "macrologger.h"
 #include "interpreter.h"
+#include "stack.h"
 
 extern FILE *yyin;
 extern int yylineno;
@@ -30,7 +32,6 @@ Program: {initTable(); initInstrArray(); initFunctionTable();} Code;
 Code : Main | Fun Code;
 Main: tMAIN
 	{
-		resetFunctionScope();
 		instruction instr = {ENTRY, {1, 1, 1}};
 		if(addInstruction(instr) == -1)
 		{
@@ -85,13 +86,13 @@ Expr : Dec
 	|Print;
 Fun: tINT tID
 	{
-		if(getFunctionAddress($2) != -1)
+		if(getFunction($2).functionAddress != -1)
 		{
 			fprintf(stderr ,"Function %s already defined\n", $2);
 			yyerror(err);
 		}
 		int line = getNumberOfInstructions();
-        increaseFunctionDepth();
+        increaseFunctionId();
 		setFunctionScope($2);
 		if(addFunction($2, line) == -1)
 		{
@@ -170,7 +171,7 @@ InvokeFun: tID tOP Args tCP
 				yyerror(err);
 				exit(1);
 			}
-			instruction instr1 = {JMP, {getFunctionAddress($1), -1, -1}};
+			instruction instr1 = {JMP, {getFunction($1).functionAddress , -1, -1}};
 			if(addInstruction(instr1) == -1)
 			{
 				sprintf(err, "Instruction table is full");
@@ -178,7 +179,7 @@ InvokeFun: tID tOP Args tCP
 				exit(1);
 			}
 			decreaseFunctionScope();
-			int returnVar = getFunctionReturnVarAddress($1);
+			int returnVar = getFunction($1).returnVarAddress;
 			if(returnVar == -1)
 			{
 				sprintf(err, "No return variable found");

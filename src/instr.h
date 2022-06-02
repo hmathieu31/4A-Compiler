@@ -39,6 +39,7 @@ typedef enum operator {
 } operator;
 
 static const char* const operator_string[] = {
+    // NOP is not an operator: 0
     [ADD] = "ADD",
     [SUB] = "SUB",
     [MUL] = "MUL",
@@ -57,6 +58,8 @@ static const char* const operator_string[] = {
     [AND]= "AND",
     [OR]= "OR",
     [PRI]= "PRI",
+    // [LOAD]: 19
+    // [STORE]: 20
     [ENTRY]= "ENTRY"
 };
 

@@ -11,20 +11,17 @@
 
 #include "symbolTable.h"
 #include "macrologger.h"
+#include "stack.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+extern int currentFunctionId;
+
 SymbolTable symbolTable;
 
-FunctionTable functionTable;
-
-Node * topNode;
-
 int depth = -1;
-
- int currentFunctionScope = 0;
 
 int newTmp()
 {
@@ -32,7 +29,7 @@ int newTmp()
     {
         symbolTable.topIndexTemp += 1;
         int addrTemp = symbolTable.topIndexTemp;
-        symbol sym = {"temp", t_int, -1, currentFunctionScope};
+        symbol sym = {"temp", t_int, -1, currentFunctionId};
         symbolTable.symbolArray[addrTemp] = sym;
         return addrTemp;
     }
@@ -44,10 +41,10 @@ int newTmp()
 
 void freeAddrsTemp()
 {
-    while (symbolTable.topIndexTemp > BASE_ARGS - 1 && symbolTable.symbolArray[symbolTable.topIndexTemp].functionDepth == currentFunctionScope)
+    while (symbolTable.topIndexTemp > BASE_ARGS - 1 && symbolTable.symbolArray[symbolTable.topIndexTemp].functionId == currentFunctionId)
     {
         symbolTable.topIndexTemp -= 1;
-    }    
+    }
 }
 
 void increaseDepth()
@@ -58,17 +55,6 @@ void increaseDepth()
 void decreaseDepth()
 {
     depth--;
-}
-
-void increaseFunctionDepth()
-{
-    pushScope(currentFunctionScope);
-    currentFunctionScope++;
-}
-
-void resetFunctionScope()
-{
-    currentFunctionScope = popScope();
 }
 
 void initTable()
@@ -84,41 +70,6 @@ void initTable()
     {
         symbolTable.symbolArray[i] = symInit;
     }
-}
-
-void initFunctionTable()
-{
-    Function funcInit = {
-        "",
-        -1,
-        -1,
-        -1};
-    for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
-    {
-        functionTable.functionArray[i] = funcInit;
-    }
-    functionTable.topFunctionIndex = -1;
-}
-
-void pushScope(int scope)
-{
-    Node * newNode = malloc(sizeof(Node));
-    newNode->scope = scope;
-    newNode->link = topNode;
-    topNode = newNode;
-}
-
-int popScope()
-{
-    if (topNode == NULL)
-    {
-        return -1;
-    }
-    int scope = topNode->scope;
-    Node * tmp = topNode;
-    topNode = topNode->link;
-    free(tmp);
-    return scope;
 }
 
 int isSymbolTableEmpty()
@@ -139,122 +90,14 @@ int addSymbol(char *symbolName, int sizeofSymbol, enum type typ)
     }
     char *name = (char *)malloc(sizeofSymbol);
     strncpy(name, symbolName, sizeofSymbol);
-    symbol sym = {name, typ, depth, currentFunctionScope};
+    symbol sym = {name, typ, depth, currentFunctionId};
     symbolTable.topSymbolIndex += 1;
     symbolTable.symbolArray[symbolTable.topSymbolIndex] = sym;
 
-    LOG_DEBUG("Adding symbol '%s' to symbol table at depth %d and topindex is %d -- function depth: %d\n", symbolTable.symbolArray[symbolTable.topSymbolIndex].symbolName, symbolTable.symbolArray[symbolTable.topSymbolIndex].depth, symbolTable.topSymbolIndex, symbolTable.symbolArray[symbolTable.topSymbolIndex].functionDepth);
+    LOG_DEBUG("Adding symbol '%s' to symbol table at depth %d and topindex is %d -- function depth: %d\n Current function scope = %d\n", symbolTable.symbolArray[symbolTable.topSymbolIndex].symbolName, symbolTable.symbolArray[symbolTable.topSymbolIndex].depth, symbolTable.topSymbolIndex, symbolTable.symbolArray[symbolTable.topSymbolIndex].functionId, currentFunctionId);
     return symbolTable.topSymbolIndex;
 }
 
-int addFunction(char *functionName, int functionAddress)
-{
-    if (functionTable.topFunctionIndex == FUNCTION_TABLE_SIZE - 1)
-    {
-        return -1;
-    }
-    char *name = (char *)malloc(strlen(functionName) + 1);
-    strcpy(name, functionName);
-    functionTable.topFunctionIndex += 1;
-    Function function = {name, functionAddress, -1, currentFunctionScope};
-    functionTable.functionArray[functionTable.topFunctionIndex] = function;
-    return 0;
-}
-
-int isFunctionDefined(char * functionName)
-{
-    int defined = 0;
-    for (int i = 0; i < functionTable.topFunctionIndex + 1; i++)
-    {
-        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
-        {
-            defined = 1;
-        }
-    }
-    return defined;
-}
-
-int setFunctionReturnAddress(char *functionName, int returnAddress)
-{
-    int i = 0;
-    while (i < FUNCTION_TABLE_SIZE && strcmp(functionTable.functionArray[i].functionName, functionName) != 0)
-    {
-        i++;
-    }
-    if (i == FUNCTION_TABLE_SIZE)
-    {
-        return -1;
-    }
-    functionTable.functionArray[i].returnAddress = returnAddress;
-    return 0;
-}
-
-int setFunctionReturnVarAddress(int returnVarAddress)
-{
-    int i = 0;
-    while (i < FUNCTION_TABLE_SIZE && functionTable.functionArray[i].functionDepth != currentFunctionScope)
-    {
-        i++;
-    }
-    if (i == FUNCTION_TABLE_SIZE)
-    {
-        return -1;
-    }
-    functionTable.functionArray[i].returnVarAddress = returnVarAddress;
-    return 0;
-}
-
-int getFunctionReturnVarAddress(char *functionName)
-{
-    int i = 0;
-    while (i < FUNCTION_TABLE_SIZE && strcmp(functionTable.functionArray[i].functionName, functionName) != 0)
-    {
-        i++;
-    }
-    if (i == FUNCTION_TABLE_SIZE)
-    {
-        return -1;
-    }
-    return functionTable.functionArray[i].returnVarAddress;
-}
-
-int getFunctionAddress(char *functionName)
-{
-    for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
-    {
-        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
-        {
-            return functionTable.functionArray[i].functionAddress;
-        }
-    }
-    return -1;
-}
-
-int getFunctionDepth(char *functionName)
-{
-    for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
-    {
-        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
-        {
-            return functionTable.functionArray[i].functionAddress;
-        }
-    }
-    return -1;
-}
-
-int setFunctionScope(char *functionName)
-{
-    for (int i = 0; i < FUNCTION_TABLE_SIZE; i++)
-    {
-        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
-        {
-            pushScope(currentFunctionScope);
-            currentFunctionScope = functionTable.functionArray[i].functionDepth;
-            return 0;
-        }
-    }
-    return -1;
-}
 
 int deleteSymbol()
 {
@@ -292,7 +135,7 @@ int getSymbolAddress(char *symbol)
     int i = 0;
     while (i <= symbolTable.topSymbolIndex && symbolAddress == -1)
     {
-        if (strcmp(symbolTable.symbolArray[i].symbolName, symbol) == 0 && symbolTable.symbolArray[i].functionDepth == currentFunctionScope)
+        if (strcmp(symbolTable.symbolArray[i].symbolName, symbol) == 0 && symbolTable.symbolArray[i].functionId == currentFunctionId)
         {
             symbolAddress = i;
         }
@@ -306,60 +149,6 @@ int getTopIndex()
     return symbolTable.topSymbolIndex;
 }
 
-int getFunctionParameterAddress(char *functionName, int parameterIndex)
-{
-    int i = 0;
-    while (i < FUNCTION_TABLE_SIZE && strcmp(functionTable.functionArray[i].functionName, functionName) != 0)
-    {
-        i++;
-    }
-    if (i == FUNCTION_TABLE_SIZE)
-    {
-        return -1;
-    }
-    int functionDepth = functionTable.functionArray[i].functionDepth;
-    int parameterAddress = -1;
-    int parameterCount = 0;
-    i = 0;
-    while (parameterAddress == -1 && i <= symbolTable.topSymbolIndex)
-    {
-        symbol symbol = symbolTable.symbolArray[i];
-        if (symbol.functionDepth == functionDepth && symbol.depth == -1) // Parameter variables have a depth of -1
-        {
-            parameterCount++;
-        }
-        if (parameterCount == parameterIndex)
-        {
-            parameterAddress = i;
-        }
-        i++;
-    }
-    if (parameterAddress == -1)
-    {
-        return -2;
-    }
-    return parameterAddress;
-}
-
-int getFunctionReturnAddress(char *functionName)
-{
-    int functionReturnAddress = -1;
-    int i = 0;
-    while (i <= functionTable.topFunctionIndex && functionReturnAddress == -1)
-    {
-        if (strcmp(functionTable.functionArray[i].functionName, functionName) == 0)
-        {
-            functionReturnAddress = functionTable.functionArray[i].returnAddress;
-        }
-        i++;
-    }
-    if (i <= functionTable.topFunctionIndex)
-    {
-        functionTable.functionArray[i - 1].returnAddress = -1; // Reset of function return address once it has been retrieved
-    }
-    return functionReturnAddress;
-}
-
 int addArgument()
 {
     if (symbolTable.topIndexArgs == SYMBOL_TABLE_SIZE - 1)
@@ -370,7 +159,7 @@ int addArgument()
     symbolTable.symbolArray[symbolTable.topIndexArgs].symbolName = NULL;
     symbolTable.symbolArray[symbolTable.topIndexArgs].typ = t_int;
     symbolTable.symbolArray[symbolTable.topIndexArgs].depth = -1;
-    symbolTable.symbolArray[symbolTable.topIndexArgs].functionDepth = -1;
+    symbolTable.symbolArray[symbolTable.topIndexArgs].functionId = -1;
     return symbolTable.topIndexArgs;
 }
 

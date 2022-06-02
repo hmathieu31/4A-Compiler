@@ -16,12 +16,30 @@
 #define SYMBOL_TABLE_SIZE 1024
 #define BASE_ARGS 1009
 #define BASE_VAR_TEMP 925
-#define FUNCTION_TABLE_SIZE 64
 
+/* Typedefs -----------------------------------------------------------------*/
 typedef enum type
 {
     t_int
 } type;
+
+typedef struct symbol
+{
+    char *symbolName;
+    type typ;
+    int depth;
+    int functionId;
+} symbol;
+
+typedef struct SymbolTable
+{
+    symbol symbolArray[SYMBOL_TABLE_SIZE];
+    int topSymbolIndex;
+    int topIndexTemp;
+    int topIndexArgs;
+} SymbolTable;
+
+/* Function prototypes ------------------------------------------------------*/
 
 /**
  * @brief Creates a new temporary variable in the symbol table.
@@ -38,14 +56,6 @@ int newTmp();
 void freeAddrsTemp();
 
 /**
- * @brief Affects the value to the temporary address addr_temp1 or addr_temp2 if 1 is unavailable.
- *
- * @param value Value to be stored at the address.
- * @return The temporary address used.
- */
-int affectToAddrTemp(int value);
-
-/**
  * @brief Increases the depth of a variable when entering a new body (if or while)
  *
  */
@@ -58,71 +68,10 @@ void increaseDepth();
 void decreaseDepth();
 
 /**
- * @brief Increases the current function depth
- *
- */
-void increaseFunctionDepth();
-
-/**
- * @brief Reset the current function depth before entering the main
- *
- */
-void resetFunctionScope();
-
-typedef struct symbol
-{
-    char *symbolName;
-    type typ;
-    int depth;
-    int functionDepth;
-} symbol;
-
-typedef struct Function
-{
-    char *functionName;
-    int functionAddress;
-    int returnAddress;
-    int functionDepth;
-    int returnVarAddress;
-} Function;
-
-typedef struct SymbolTable
-{
-    symbol symbolArray[SYMBOL_TABLE_SIZE];
-    int topSymbolIndex;
-    int topIndexTemp;
-    int topIndexArgs;
-} SymbolTable;
-
-typedef struct FunctionTable
-{
-    Function functionArray[FUNCTION_TABLE_SIZE];
-    int topFunctionIndex;
-} FunctionTable;
-
-typedef struct Node
-{
-    int scope;
-    struct Node *link;
-} Node;
-
-/**
  * @brief Initialise the table at the start of the compilation
  *
  */
 void initTable();
-
-/**
- * @brief Initializes the function table at the start of the compilation
- *
- */
-void initFunctionTable();
-
-/**
- * @brief Initializes the scopes stack at the start of the compilation
- * 
- */
-void initScopesStack();
 
 /**
  * @brief Add a new symbol to the table
@@ -133,37 +82,6 @@ void initScopesStack();
  * @return The address of the symbol if added correctly. -1 if the symbol could not be added. (table full)
  */
 int addSymbol(char *symbolName, int sizeofSymbol, enum type typ);
-
-/**
- * @brief Add a new function name to the function table
- *
- * @param functionName
- * @param functionAddress The address of the first line of assembler code of the function
- * @return 0 if the function was correctly. -1 if the function could not be added. (table full)
- */
-int addFunction(char *FunctionName, int functionAddress);
-
-/**
- * @brief Checks if the functions has been defined
- * 
- * @param FunctionName 
- * @return 1 if the function has been defined. 0 otherwise.
- */
-int isFunctionDefined(char * FunctionName);
-
-/**
- * @brief Add a new function scope value to the scopes stack.
- * 
- * @param scope 
- */
-void pushScope(int scope);
-
-/**
- * @brief Returns the upper scope of the current scope and removes it from the stack.
- * 
- * @return The scope at the top of the stack. -1 if the stack is empty.
- */
-int popScope();
 
 /**
  * @brief Delete the symbol at the top of the table.
@@ -195,30 +113,6 @@ int deleteFromChangeScope();
 int getSymbolAddress(char *symbol);
 
 /**
- * @brief Checks if the function has been declared and returns the address of its first line of code if present
- *
- * @param functionName
- * @return The address of the first line of assembler code of the function. -1 if the function is not present
- */
-int getFunctionAddress(char *functionName);
-
-/**
- * @brief Checks if the function has been declared and returns its depth (function identifier == rank at which
- * the function has been declared)
- * @param functionName
- * @return The identifier of the function (depth). -1 if the function is not preset.
- */
-int getFunctionDepth(char *functionName);
-
-/**
- * @brief Set the current Function to the depth corresponding of the function going to.
- *
- * @param functionName
- * @return 0 if effected correclty. -1 if the function could not be found.
- */
-int setFunctionScope(char *functionName);
-
-/**
  * @brief Get the Top Index of the SymbolTable (Testing purposes)
  *
  * @return the index of the top.
@@ -226,49 +120,7 @@ int setFunctionScope(char *functionName);
 int getTopIndex();
 
 /**
- * @brief Set the address of the return instruction in the function
- *
- * @param functionName
- * @param returnAddress The address of the return instruction in the function
- * @return 0 if the operation executed correctly. -1 if the function could not be found.
- */
-int setFunctionReturnAddress(char *functionName, int returnAddress);
-
-/**
- * @brief Get the return address corresponding to the current function then resets it.
- *
- * @param functionName
- * @return The address the function must return to. Or -1 if the return address is not set.
- */
-int getFunctionReturnAddress(char *functionName);
-
-/**
- * @brief Set the address of the return variable in the function
- *
- * @param returnVarAddress The address of the return variable of the function in the symbolTable
- * @return 0 if the operation executed correctly. -1 if the function could not be found.
- */
-int setFunctionReturnVarAddress(int returnVarAddress);
-
-/**
- * @brief Get the return variable address corresponding to the function then resets it.
- *
- * @param functionName
- * @return The address of the return variable in the symbol table. Or -1 if the return variable address is not set.
- */
-int getFunctionReturnVarAddress(char *functionName);
-
-/**
- * @brief Get the address of the functions's parameter of given index
- *
- * @param functionName Name of the function
- * @param parameterIndex Index of the parameter (starting at 1)
- * @return The address of the parameter. -1 if the function could not be found. -2 if the parameter index is invalid.
- */
-int getFunctionParameterAddress(char *functionName, int parameterIndex);
-
-/**
- * @brief Add a new argument to the table of arguments
+ * @brief Add a new argument to the table of arguments (subsection of the table of symbols)
  *
  * @return The address of the added arguments if the argument was correctly added. -1 if the argument could not be added. (table full)
  */
